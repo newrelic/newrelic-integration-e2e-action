@@ -35,7 +35,7 @@ func (c clientMock) FindEntityByGUID(guid *entities.EntityGUID) (entities.Entity
 }
 
 func (c clientMock) FindEntityMetrics(sample, customTagKey, entityTag string) ([]string, error) {
-	return nil, nil
+	return []string{"powerdns_authoritative_deferred_cache_actions"}, nil
 }
 
 func (c clientMock) NRQLQuery(query, customTagKey, entityTag string) error {

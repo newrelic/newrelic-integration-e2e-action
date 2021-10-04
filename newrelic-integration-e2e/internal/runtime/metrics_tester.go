@@ -47,23 +47,28 @@ func (mt MetricsTester) Test(tests spec.Tests, customTagKey, customTagValue stri
 			continue
 		}
 
-		for _, entity := range metrics.Entities {
-			if mt.isEntityException(entity.EntityType, tm.ExceptEntities) {
+		errors = append(errors, mt.checkMetrics(metrics.Entities, tm, queriedMetrics)...)
+	}
+	return errors
+}
+
+func (mt MetricsTester) checkMetrics(entities []spec.Entity, tm spec.TestMetrics, queriedMetrics []string) []error {
+	var errors []error
+	for _, entity := range entities {
+		if mt.isEntityException(entity.EntityType, tm.ExceptEntities) {
+			continue
+		}
+
+		for _, metric := range entity.Metrics {
+			if mt.isMetricException(metric.Name, tm.ExceptMetrics) {
 				continue
 			}
 
-			for _, metric := range entity.Metrics {
-				if mt.isMetricException(metric.Name, tm.ExceptMetrics) {
-					continue
-				}
-
-				if mt.containsMetric(metric.Name, queriedMetrics) {
-					continue
-				} else {
-					errors = append(errors, fmt.Errorf("finding Metric: %v", metric.Name))
-					continue
-				}
+			if mt.containsMetric(metric.Name, queriedMetrics) {
+				continue
 			}
+
+			errors = append(errors, fmt.Errorf("finding Metric: %v", metric.Name))
 		}
 	}
 	return errors

@@ -1,0 +1,14 @@
+specVersion: "2"
+owningTeam: integrations
+integrationName: powerdns
+humanReadableIntegrationName: PowerDNS
+entities:
+  - entityType: POWERDNS_AUTHORITATIVE
+    metrics:
+      - name: powerdns_authoritative_deferred_cache_actions
+        type: count
+        defaultResolution: 15
+        unit: count
+        dimensions:
+          - name: type
+            type: string
