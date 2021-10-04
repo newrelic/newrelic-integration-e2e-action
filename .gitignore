@@ -1,0 +1,6 @@
+.idea
+vendor
+.agent_dir
+agent_dir/newrelic-infra-agent/bin
+agent_dir/newrelic-infra-agent/exporters
+agent_dir/newrelic-infra-agent/integrations.d

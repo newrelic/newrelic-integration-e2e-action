@@ -1,0 +1,23 @@
+description: |
+  End-to-end tests for PowerDNS integration
+
+agent:
+  integrations:
+    nri-prometheus:  nri-prometheus
+
+scenarios:
+  - description: ""
+    before: []
+    after: []
+    integrations:
+      - name: nri-powerdns
+        binary_path: nri-powerdns
+        exporter_binary_path: nri-powerdns-exporter
+        config:
+          powerdns_url: http://localhost:8081/api/v1/
+          exporter_port: 9121
+          api_key: authoritative-secret
+    tests:
+      nrqls: []
+      entities: []
+      metrics: []
