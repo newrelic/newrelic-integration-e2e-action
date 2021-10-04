@@ -24,5 +24,5 @@ snyk-test:
 
 run:
 	@printf "=== newrelic-integration-e2e === [ run / $* ]: running the binary \n"
-	@cd newrelic-integration-e2e; go run $(CURDIR)/newrelic-integration-e2e/cmd/main.go --commit_sha=$(GITHUB_SHA) --root_dir=$(ROOT_DIR) \
+	@cd newrelic-integration-e2e; go run $(CURDIR)/newrelic-integration-e2e/cmd/main.go --commit_sha=$(COMMIT_SHA) --root_dir=$(ROOT_DIR) \
 	 --agent_dir=$(CURDIR)/agent_dir --account_id=$(ACCOUNT_ID) --api_key=$(API_KEY) --license_key=$(LICENSE_KEY) --spec_path=$(ROOT_DIR)/$(SPEC_PATH) --verbose_mode=$(VERBOSE)

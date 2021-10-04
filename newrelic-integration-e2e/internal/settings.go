@@ -170,5 +170,6 @@ func NewSettings(
 		licenseKey:     options.licenseKey,
 		apiKey:         options.apiKey,
 		accountID:      options.accountID,
+		commitSha:      options.commitSha,
 	}, nil
 }
