@@ -1,0 +1,31 @@
+name: Self-test action
+
+on:
+  push:
+    branches:
+      - master
+      - main
+  pull_request:
+
+# ATTENTION
+# This is a self-test pipeline and it is *NOT* intended to be used as a base/quickstart on how to
+# use the action. Please refer to the examples in the README.md file for that
+
+jobs:
+  test_local:
+    runs-on: ubuntu-latest
+    name: Test get config files with local files
+    steps:
+      - name: checkout-repository
+        uses: actions/checkout@v2
+      - name: Setup go
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.17
+      - name: Run action
+        uses: ./
+        with:
+          spec_path: newrelic-integration-e2e/test/testdata/powerdns-e2e.yml
+          account_id: ${{ secrets.ACCOUNT_ID }}
+          api_key: ${{ secrets.API_KEY }}
+          license_key: ${{ secrets.LICENSE_KEY }}
