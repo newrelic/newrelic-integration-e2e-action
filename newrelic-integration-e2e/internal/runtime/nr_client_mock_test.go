@@ -9,6 +9,7 @@ const (
 	errFindEntityGUID   = "wrongEntitySample"
 	errFindEntityByGUID = "wrongEntityGUID"
 	correctEntityType   = "correctEntityType"
+	errNRQLQuery        = "wrongNRQLQuery"
 )
 
 type clientMock struct{}
@@ -38,5 +39,8 @@ func (c clientMock) FindEntityMetrics(sample, customTagKey, entityTag string) ([
 }
 
 func (c clientMock) NRQLQuery(query, customTagKey, entityTag string) error {
+	if query == errNRQLQuery {
+		return errors.New("an-error")
+	}
 	return nil
 }
