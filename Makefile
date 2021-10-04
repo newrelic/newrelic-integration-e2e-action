@@ -1,7 +1,7 @@
 # Variables
 VERBOSE ?= false
 
-all: validate test
+all: validate test snyk-test
 
 validate:
 	@printf "=== newrelic-integration-e2e === [ validate ]: running golangci-lint & semgrep... "
@@ -12,6 +12,15 @@ validate:
 test:
 	@echo "=== newrelic-integration-e2e === [ test ]: running unit tests..."
 	@cd newrelic-integration-e2e; go test -race ./... -count=1
+
+snyk-test:
+	@docker run --rm -t \
+			--name "newrelic-integration-e2e-snyk-test" \
+			-v $(CURDIR):/go/src/github.com/newrelic/newrelic-integration-e2e-action/newrelic-integration-e2e \
+			-w /go/src/github.com/newrelic/newrelic-integration-e2e-action/newrelic-integration-e2e \
+			-e SNYK_TOKEN \
+			-e GO111MODULE=auto \
+			snyk/snyk:golang snyk test --severity-threshold=high
 
 run:
 	@printf "=== newrelic-integration-e2e === [ run / $* ]: running the binary \n"
