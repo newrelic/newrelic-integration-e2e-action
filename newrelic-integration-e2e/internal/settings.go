@@ -23,6 +23,7 @@ type settingOptions struct {
 	rootDir       string
 	accountID     int
 	apiKey        string
+	commitSha     string
 }
 
 type SettingOption func(*settingOptions)
@@ -70,6 +71,12 @@ func SettingsWithApiKey(apiKey string) SettingOption {
 	}
 }
 
+func SettingsWithCommitSha(commitSha string) SettingOption {
+	return func(o *settingOptions) {
+		o.commitSha = commitSha
+	}
+}
+
 type Settings interface {
 	Logger() *logrus.Logger
 	SpecDefinition() *spec.Definition
@@ -80,6 +87,7 @@ type Settings interface {
 	ApiKey() string
 	AccountID() int
 	CustomTagKey() string
+	CommitSha() string
 }
 
 type settings struct {
@@ -91,6 +99,7 @@ type settings struct {
 	licenseKey     string
 	accountID      int
 	apiKey         string
+	commitSha      string
 }
 
 func (s *settings) Logger() *logrus.Logger {
@@ -127,6 +136,10 @@ func (s *settings) AccountID() int {
 
 func (s *settings) CustomTagKey() string {
 	return customTagKey
+}
+
+func (s *settings) CommitSha() string {
+	return s.commitSha
 }
 
 // New returns a Scheduler

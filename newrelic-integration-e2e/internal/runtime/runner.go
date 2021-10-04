@@ -32,6 +32,7 @@ type Runner struct {
 	spec          *spec.Definition
 	specParentDir string
 	customTagKey  string
+	commitSha     string
 }
 
 func NewRunner(agent agent.Agent, testers []Tester, settings e2e.Settings) *Runner {
@@ -44,6 +45,7 @@ func NewRunner(agent agent.Agent, testers []Tester, settings e2e.Settings) *Runn
 		spec:          settings.SpecDefinition(),
 		specParentDir: settings.SpecParentDir(),
 		customTagKey:  settings.CustomTagKey(),
+		commitSha:     settings.CommitSha(),
 	}
 }
 
@@ -108,11 +110,10 @@ func (r *Runner) executeTests(tests spec.Tests, scenarioTag string) error {
 	return nil
 }
 
-// TODO Improve tag with more info from each scenario, like GH commit
 func (r *Runner) generateScenarioTag() string {
 	b := make([]rune, scenarioTagRuneNr)
 	for i := range b {
 		b[i] = letterRunes[rand.Intn(len(letterRunes))]
 	}
-	return string(b)
+	return r.commitSha + string(b)
 }

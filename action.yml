@@ -22,7 +22,7 @@ runs:
   using: "composite"
   steps:
     - id: run-spec
-      run: make -C ${{ github.action_path }} ROOT_DIR=${{ github.workspace }} ACCOUNT_ID=${{ inputs.account_id }} API_KEY=${{ inputs.api_key }} LICENSE_KEY=${{ inputs.license_key }} SPEC_PATH=${{ inputs.spec_path }} VERBOSE=${{ inputs.verbose }} run
+      run: make -C ${{ github.action_path }} GITHUB_SHA=$GITHUB_SHA ROOT_DIR=${{ github.workspace }} ACCOUNT_ID=${{ inputs.account_id }} API_KEY=${{ inputs.api_key }} LICENSE_KEY=${{ inputs.license_key }} SPEC_PATH=${{ inputs.spec_path }} VERBOSE=${{ inputs.verbose }} run
       shell: bash
 
 

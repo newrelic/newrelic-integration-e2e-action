@@ -23,7 +23,7 @@ const (
 	flagRootDir     = "root_dir"
 )
 
-func processCliArgs() (string, string, string, string, string, int, logrus.Level) {
+func processCliArgs() (string, string, string, string, string, int, string, logrus.Level) {
 	specsPath := flag.String(flagSpecPath, "", "Relative path to the spec file")
 	licenseKey := flag.String(flagLicenseKey, "", "New Relic License Key")
 	agentDir := flag.String(flagAgentDir, "", "Directory used to deploy the agent")
@@ -31,6 +31,7 @@ func processCliArgs() (string, string, string, string, string, int, logrus.Level
 	verboseMode := flag.Bool(flagVerboseMode, false, "If true the debug level is enabled")
 	apiKey := flag.String(flagApiKey, "", "New Relic Api Key")
 	accountID := flag.Int(flagAccountID, 0, "New Relic accountID to be used")
+	commitSha := flag.String(flagAccountID, "", "Current commit sha")
 	flag.Parse()
 
 	if *licenseKey == "" {
@@ -53,14 +54,14 @@ func processCliArgs() (string, string, string, string, string, int, logrus.Level
 	if *verboseMode {
 		logLevel = logrus.DebugLevel
 	}
-	return *licenseKey, *specsPath, *rootDir, *agentDir, *apiKey, *accountID, logLevel
+	return *licenseKey, *specsPath, *rootDir, *agentDir, *apiKey, *accountID, *commitSha, logLevel
 
 }
 
 func main() {
 	logrus.Info("running e2e")
 
-	licenseKey, specsPath, rootDir, agentDir, apiKey, accountID, logLevel := processCliArgs()
+	licenseKey, specsPath, rootDir, agentDir, apiKey, accountID, commitSha, logLevel := processCliArgs()
 	s, err := e2e.NewSettings(
 		e2e.SettingsWithSpecPath(specsPath),
 		e2e.SettingsWithLogLevel(logLevel),
@@ -69,6 +70,7 @@ func main() {
 		e2e.SettingsWithRootDir(rootDir),
 		e2e.SettingsWithApiKey(apiKey),
 		e2e.SettingsWithAccountID(accountID),
+		e2e.SettingsWithCommitSha(commitSha),
 	)
 	if err != nil {
 		logrus.Fatalf("error loading settings: %s", err)
