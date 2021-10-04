@@ -16,7 +16,7 @@ on:
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  GO_VERSION: '1.16'
+  GO_VERSION: '1.17'
 
 jobs:
   static-analysis:
@@ -33,9 +33,9 @@ jobs:
         uses: golangci/golangci-lint-action@v2
         continue-on-error: ${{ github.event_name != 'pull_request' }}
         with:
+          working-directory: newrelic-integration-e2e
           only-new-issues: true
   snyk:
-    if: ${{ false }}
     name: Run security checks via snyk
     runs-on: ubuntu-20.04
     steps:
@@ -51,7 +51,6 @@ jobs:
         run: make snyk-test
 
   test-nix:
-    if: ${{ false }}
     name: Run unit tests on *Nix
     runs-on: ubuntu-20.04
     steps:
