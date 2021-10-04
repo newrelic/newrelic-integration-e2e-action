@@ -21,6 +21,7 @@ const (
 	flagLicenseKey  = "license_key"
 	flagAgentDir    = "agent_dir"
 	flagRootDir     = "root_dir"
+	flagCommitSha   = "commit_sha"
 )
 
 func processCliArgs() (string, string, string, string, string, int, string, logrus.Level) {
@@ -31,7 +32,7 @@ func processCliArgs() (string, string, string, string, string, int, string, logr
 	verboseMode := flag.Bool(flagVerboseMode, false, "If true the debug level is enabled")
 	apiKey := flag.String(flagApiKey, "", "New Relic Api Key")
 	accountID := flag.Int(flagAccountID, 0, "New Relic accountID to be used")
-	commitSha := flag.String(flagAccountID, "", "Current commit sha")
+	commitSha := flag.String(flagCommitSha, "", "Current commit sha")
 	flag.Parse()
 
 	if *licenseKey == "" {
