@@ -14,7 +14,7 @@ on:
 jobs:
   test_local:
     runs-on: ubuntu-latest
-    name: Test get config files with local files
+    name: Test run the e2e test on powerdns local testdata
     steps:
       - name: checkout-repository
         uses: actions/checkout@v2
