@@ -34,7 +34,7 @@ func TestAgent_SetUp(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	t.Run("Given a scenario with 1 integration, the correct files should be in the AgentDir the customTagKey generated", func(t *testing.T) {
+	t.Run("Given a scenario with 1 integration, the correct files should be in the AgentDir", func(t *testing.T) {
 		sut := NewAgent(settings)
 		require.NotEmpty(t, sut)
 
