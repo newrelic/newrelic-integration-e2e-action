@@ -1,12 +1,13 @@
 package runtime
 
 import (
+	"io/ioutil"
+	"testing"
+
 	"github.com/newrelic/newrelic-integration-e2e-action/newrelic-integration-e2e/internal/spec"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"io/ioutil"
-	"testing"
 )
 
 func TestMetricsTester_Test(t *testing.T) {
@@ -75,7 +76,7 @@ func TestMetricsTester_checkMetrics(t *testing.T) {
 			numberOfErrorsExpected: 0,
 		},
 		{
-			name: "when a metric is not returned tut it's excluded it shouldn't return errors",
+			name: "when a metric is not returned but it's excluded it shouldn't return errors",
 			testMetrics: spec.TestMetrics{
 				Source:         "",
 				ExceptEntities: []string{},
