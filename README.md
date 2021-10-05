@@ -2,7 +2,29 @@
 
 # newrelic-integration-e2e-action
 
-End to end testing for newrelic integrations. 
+End to end testing for newrelic integrations to ensure the integrations are correctly executed by the agent, and the service metrics and entities are correctly sent to NROne.
+
+New Relic has two kinds of integrations:
+- Custom made integrations (e2e testing still not supported)
+- Integrations based on prometheus exporters
+
+## Steps the of the e2e action
+
+- It reads the e2e test descriptor file/s that must be passed as an argument to the action.
+- For each scenario present on the descriptor:  
+    - It installs the infrastructure agent & the required packages.
+    - Launch services dependencies (e.g. a docker-compose ) if they’re required.
+    - It verifies that required services are up & running
+    - It creates a config file with the details in the descriptor. 
+    - Adds a custom-attribute to the config:
+        - Composed by the current commit sha + a new 10 alphanumeric-random digit on each scenario.
+        - The tests will look for this label to fetch the metrics and the entities from the New Relic backend.
+    - The runner executes the tests one by one, checking that metrics &/or entities are being created correctly. and if fails retries after n seconds.
+    - If the test fails, it's retried after the `retry_seconds` (default 30s) and up to the `retry_attempts` (default 10) defined for the action. 
+    - It stops & removes the services (if they are required).
+    - If `verbose` is true it logs the agent logs with other debug information.
+- The action is completed.
+
 
 ## Usage
 
@@ -35,6 +57,57 @@ jobs:
           api_key: ${{ secrets.API_KEY }}
           license_key: ${{ secrets.LICENSE_KEY }} 
 ```
+
+## Spec file for the e2e 
+Example:
+```yaml
+description: |
+  End-to-end tests for PowerDNS integration
+
+agent:
+  integrations:
+    nri-prometheus:  bin/nri-prometheus
+
+scenarios:
+  - description: |
+      This scenario will verify that metrics froms PDNS authoritative
+      are correcly collected.
+    before:
+      - docker-compose -f "deps/docker-compose.yml" up -d
+    after:
+      - docker-compose -f "deps/docker-compose.yml" up -d
+    integrations:
+      - name: nri-powerdns
+        binary_path: bin/nri-powerdns
+        exporter_binary_path: bin/nri-powerdns-exporter
+        config:
+          powerdns_url: http://localhost:8081/api/v1/
+          exporter_port: 9121
+          api_key: authoritative-secret
+    tests:
+      nrqls:
+        - query: "SELECT average(powerdns_authoritative_queries_total) FROM Metric"
+      entities:
+        - type: "POWERDNS_AUTHORITATIVE"
+          data_type: "Metric"
+          metric_name: "powerdns_authoritative_up"
+        - type: "POWERDNS_RECURSOR"
+          data_type: "Metric"
+          metric_name: "powerdns_recursor_up"
+      metrics:
+        - source: "powerdns.yml"
+          except_entities:
+            - POWERDNS_AUTHORITATIVE
+          except_metrics:
+            - powerdns_authoritative_answers_bytes_total
+            - powerdns_recursor_cache_lookups_total
+          # additionals: ""
+```
+
+## Types of test
+- ENTITIES
+- METRICS
+- NRQL
 
 ## Support
 
