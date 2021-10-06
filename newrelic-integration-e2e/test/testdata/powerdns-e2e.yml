@@ -31,7 +31,7 @@ scenarios:
       metrics:
         - source: "powerdns.yml"
           except_entities:
-            - POWERDNS_AUTHORITATIVE
+            - POWERDNS_RECURSOR
           except_metrics:
             - powerdns_authoritative_answers_bytes_total
           # additionals: ""
@@ -54,15 +54,15 @@ scenarios:
       nrqls:
         - query: "SELECT average(powerdns_authoritative_queries_total) FROM Metric"
       entities:
-        - type: "POWERDNS_AUTHORITATIVE"
+        - type: "POWERDNS_RECURSOR"
           data_type: "Metric"
-          metric_name: "powerdns_authoritative_up"
+          metric_name: "powerdns_recursor_up"
       metrics:
         - source: "powerdns.yml"
           except_entities:
             - POWERDNS_AUTHORITATIVE
           except_metrics:
-            - powerdns_authoritative_answers_bytes_total
+            - powerdns_recursor_cache_lookups_total
           # additionals: ""
   - description: |
       This scenario will verify that metrics from both PDNS authoritative & PDNS recursor
