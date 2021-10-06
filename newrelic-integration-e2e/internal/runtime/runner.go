@@ -13,10 +13,8 @@ import (
 )
 
 const (
-	dmTableName         = "Metric"
-	retryNumberAttempts = 10
-	retryAfter          = 30 * time.Second
-	scenarioTagRuneNr   = 10
+	dmTableName       = "Metric"
+	scenarioTagRuneNr = 10
 )
 
 var letterRunes = []rune("abcdefghijklmnopqrstuvwxyz")
@@ -32,11 +30,23 @@ type Runner struct {
 	spec          *spec.Definition
 	specParentDir string
 	customTagKey  string
+	retryAttempts int
+	retryAfter    time.Duration
 	commitSha     string
 }
 
 func NewRunner(agent agent.Agent, testers []Tester, settings e2e.Settings) *Runner {
 	rand.Seed(time.Now().UnixNano())
+
+	var retryAttempts int
+	if settings.RetryAttempts() > 0 {
+		retryAttempts = settings.RetryAttempts()
+	}
+
+	var retryAfter time.Duration
+	if settings.RetrySeconds() > 0 {
+		retryAfter = time.Duration(settings.RetrySeconds()) * time.Second
+	}
 
 	return &Runner{
 		agent:         agent,
@@ -44,6 +54,8 @@ func NewRunner(agent agent.Agent, testers []Tester, settings e2e.Settings) *Runn
 		logger:        settings.Logger(),
 		spec:          settings.SpecDefinition(),
 		specParentDir: settings.SpecParentDir(),
+		retryAttempts: retryAttempts,
+		retryAfter:    retryAfter,
 		customTagKey:  settings.CustomTagKey(),
 		commitSha:     settings.CommitSha(),
 	}
@@ -100,7 +112,7 @@ func (r *Runner) executeOSCommands(statements []string) error {
 
 func (r *Runner) executeTests(tests spec.Tests, scenarioTag string) error {
 	for _, tester := range r.testers {
-		err := retrier.Retry(r.logger, retryNumberAttempts, retryAfter, func() []error {
+		err := retrier.Retry(r.logger, r.retryAttempts, r.retryAfter, func() []error {
 			return tester.Test(tests, r.customTagKey, scenarioTag)
 		})
 		if err != nil {

@@ -23,6 +23,8 @@ type settingOptions struct {
 	rootDir       string
 	accountID     int
 	apiKey        string
+	retryAttempts int
+	retrySeconds  int
 	commitSha     string
 }
 
@@ -71,6 +73,18 @@ func SettingsWithApiKey(apiKey string) SettingOption {
 	}
 }
 
+func SettingsWithRetryAttempts(retryAttempts int) SettingOption {
+	return func(o *settingOptions) {
+		o.retryAttempts = retryAttempts
+	}
+}
+
+func SettingsWithRetrySeconds(retrySeconds int) SettingOption {
+	return func(o *settingOptions) {
+		o.retrySeconds = retrySeconds
+	}
+}
+
 func SettingsWithCommitSha(commitSha string) SettingOption {
 	return func(o *settingOptions) {
 		o.commitSha = commitSha
@@ -87,6 +101,8 @@ type Settings interface {
 	ApiKey() string
 	AccountID() int
 	CustomTagKey() string
+	RetryAttempts() int
+	RetrySeconds() int
 	CommitSha() string
 }
 
@@ -99,6 +115,8 @@ type settings struct {
 	licenseKey     string
 	accountID      int
 	apiKey         string
+	retryAttempts  int
+	retrySeconds   int
 	commitSha      string
 }
 
@@ -138,6 +156,14 @@ func (s *settings) CustomTagKey() string {
 	return customTagKey
 }
 
+func (s *settings) RetryAttempts() int {
+	return s.retryAttempts
+}
+
+func (s *settings) RetrySeconds() int {
+	return s.retrySeconds
+}
+
 func (s *settings) CommitSha() string {
 	return s.commitSha
 }
@@ -170,6 +196,8 @@ func NewSettings(
 		licenseKey:     options.licenseKey,
 		apiKey:         options.apiKey,
 		accountID:      options.accountID,
+		retryAttempts:  options.retryAttempts,
+		retrySeconds:   options.retrySeconds,
 		commitSha:      options.commitSha,
 	}, nil
 }

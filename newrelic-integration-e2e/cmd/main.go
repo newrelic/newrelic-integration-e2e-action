@@ -14,17 +14,19 @@ import (
 )
 
 const (
-	flagSpecPath    = "spec_path"
-	flagVerboseMode = "verbose_mode"
-	flagApiKey      = "api_key"
-	flagAccountID   = "account_id"
-	flagLicenseKey  = "license_key"
-	flagAgentDir    = "agent_dir"
-	flagRootDir     = "root_dir"
-	flagCommitSha   = "commit_sha"
+	flagSpecPath      = "spec_path"
+	flagVerboseMode   = "verbose_mode"
+	flagApiKey        = "api_key"
+	flagAccountID     = "account_id"
+	flagLicenseKey    = "license_key"
+	flagAgentDir      = "agent_dir"
+	flagRootDir       = "root_dir"
+	flagRetryAttempts = "retry_attempts"
+	flagRetrySecons   = "retry_seconds"
+	flagCommitSha     = "commit_sha"
 )
 
-func processCliArgs() (string, string, string, string, string, int, string, logrus.Level) {
+func processCliArgs() (string, string, string, string, string, int, int, int, string, logrus.Level) {
 	specsPath := flag.String(flagSpecPath, "", "Relative path to the spec file")
 	licenseKey := flag.String(flagLicenseKey, "", "New Relic License Key")
 	agentDir := flag.String(flagAgentDir, "", "Directory used to deploy the agent")
@@ -32,6 +34,8 @@ func processCliArgs() (string, string, string, string, string, int, string, logr
 	verboseMode := flag.Bool(flagVerboseMode, false, "If true the debug level is enabled")
 	apiKey := flag.String(flagApiKey, "", "New Relic Api Key")
 	accountID := flag.Int(flagAccountID, 0, "New Relic accountID to be used")
+	retryAttempts := flag.Int(flagRetryAttempts, 10, "Number of attempts to retry a test")
+	retrySeconds := flag.Int(flagRetrySecons, 30, "Number of seconds before retrying a test")
 	commitSha := flag.String(flagCommitSha, "", "Current commit sha")
 	flag.Parse()
 
@@ -55,14 +59,14 @@ func processCliArgs() (string, string, string, string, string, int, string, logr
 	if *verboseMode {
 		logLevel = logrus.DebugLevel
 	}
-	return *licenseKey, *specsPath, *rootDir, *agentDir, *apiKey, *accountID, *commitSha, logLevel
+	return *licenseKey, *specsPath, *rootDir, *agentDir, *apiKey, *accountID, *retryAttempts, *retrySeconds, *commitSha, logLevel
 
 }
 
 func main() {
 	logrus.Info("running e2e")
 
-	licenseKey, specsPath, rootDir, agentDir, apiKey, accountID, commitSha, logLevel := processCliArgs()
+	licenseKey, specsPath, rootDir, agentDir, apiKey, accountID, retryAttempts, retrySeconds, commitSha, logLevel := processCliArgs()
 	s, err := e2e.NewSettings(
 		e2e.SettingsWithSpecPath(specsPath),
 		e2e.SettingsWithLogLevel(logLevel),
@@ -71,6 +75,8 @@ func main() {
 		e2e.SettingsWithRootDir(rootDir),
 		e2e.SettingsWithApiKey(apiKey),
 		e2e.SettingsWithAccountID(accountID),
+		e2e.SettingsWithRetryAttempts(retryAttempts),
+		e2e.SettingsWithRetrySeconds(retrySeconds),
 		e2e.SettingsWithCommitSha(commitSha),
 	)
 	if err != nil {

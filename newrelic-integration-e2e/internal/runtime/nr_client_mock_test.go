@@ -2,6 +2,7 @@ package runtime
 
 import (
 	"errors"
+
 	"github.com/newrelic/newrelic-client-go/pkg/entities"
 )
 
