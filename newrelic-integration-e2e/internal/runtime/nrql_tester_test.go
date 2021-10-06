@@ -1,11 +1,12 @@
 package runtime
 
 import (
+	"io/ioutil"
+	"testing"
+
 	"github.com/newrelic/newrelic-integration-e2e-action/newrelic-integration-e2e/internal/spec"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
-	"io/ioutil"
-	"testing"
 )
 
 func TestNRQLTester_Test(t *testing.T) {
