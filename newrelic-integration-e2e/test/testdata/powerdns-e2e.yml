@@ -33,7 +33,11 @@ scenarios:
           except_entities:
             - POWERDNS_RECURSOR
           except_metrics:
-            - powerdns_authoritative_answers_bytes_total
+            - powerdns_authoritative_response_sizes
+            - powerdns_authoritative_queries
+            - powerdns_authoritative_response_rcodes-
+            - powerdns_authoritative_remote_queries_unauth
+            - powerdns_authoritative_remote_queries
           # additionals: ""
   - description: |
       This scenario will verify that metrics froms PDNS recursor
