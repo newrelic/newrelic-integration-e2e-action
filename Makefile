@@ -18,7 +18,7 @@ test:
 snyk-test:
 	@docker run --rm -t \
 			--name "newrelic-integration-e2e-snyk-test" \
-			-v $(CURDIR):/go/src/github.com/newrelic/newrelic-integration-e2e-action/newrelic-integration-e2e \
+			-v $(CURDIR):/go/src/github.com/newrelic/newrelic-integration-e2e-action \
 			-w /go/src/github.com/newrelic/newrelic-integration-e2e-action/newrelic-integration-e2e \
 			-e SNYK_TOKEN \
 			-e GO111MODULE=auto \
