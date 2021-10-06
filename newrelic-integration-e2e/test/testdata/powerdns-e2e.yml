@@ -28,16 +28,12 @@ scenarios:
         - type: "POWERDNS_AUTHORITATIVE"
           data_type: "Metric"
           metric_name: "powerdns_authoritative_up"
-        - type: "POWERDNS_RECURSOR"
-          data_type: "Metric"
-          metric_name: "powerdns_recursor_up"
       metrics:
         - source: "powerdns.yml"
           except_entities:
             - POWERDNS_AUTHORITATIVE
           except_metrics:
             - powerdns_authoritative_answers_bytes_total
-            - powerdns_recursor_cache_lookups_total
           # additionals: ""
   - description: |
       This scenario will verify that metrics froms PDNS recursor
