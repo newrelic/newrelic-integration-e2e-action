@@ -35,8 +35,9 @@ scenarios:
           except_metrics:
             - powerdns_authoritative_response_sizes
             - powerdns_authoritative_queries
-            - powerdns_authoritative_response_rcodes-
+            - powerdns_authoritative_response_rcodes
             - powerdns_authoritative_remote_queries_unauth
+            - powerdns_authoritative_queries_unauth
             - powerdns_authoritative_remote_queries
           # additionals: ""
   - description: |
