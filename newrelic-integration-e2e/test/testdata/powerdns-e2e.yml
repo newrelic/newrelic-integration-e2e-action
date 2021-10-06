@@ -12,7 +12,7 @@ scenarios:
     before:
       - docker-compose -f "deps/docker-compose.yml" up -d
     after:
-      - docker-compose -f "deps/docker-compose.yml" up -d
+      - docker-compose -f "deps/docker-compose.yml" down -d
     integrations:
       - name: nri-powerdns
         binary_path: bin/nri-powerdns

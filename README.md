@@ -2,7 +2,10 @@
 
 # newrelic-integration-e2e-action
 
-End to end testing for newrelic integrations to ensure the integrations are correctly executed by the agent, and the service metrics and entities are correctly sent to NROne.
+End to end testing action for New Relic integrations to ensure that:
+
+- The integrations are correctly executed by the agent.
+- The service metrics and entities are correctly sent to NROne.
 
 New Relic has two kinds of integrations:
 - Custom made integrations (e2e testing still not supported)
@@ -13,9 +16,9 @@ New Relic has two kinds of integrations:
 ## Steps executed by the e2e action
 
 - It reads the e2e test descriptor file/s that must be passed as an argument to the action.
-- For each scenario present on the descriptor:  
+- For each scenario present in the descriptor:  
     - It installs the infrastructure agent & the required packages.
-    - It Launches services dependencies (e.g. a docker-compose ) if they’re required.
+    - It launches services dependencies (e.g. a docker-compose ) if specified in the before step.
     - It verifies that the required services are up & running
     - It creates a config file with the details in the descriptor. 
     - Adds a custom-attribute to the config:
@@ -23,7 +26,7 @@ New Relic has two kinds of integrations:
         - The tests will look for this label to fetch the metrics and the entities from the New Relic backend.
     - The runner executes the tests one by one, checking that metrics &/or entities are being created correctly. 
     - If the test fails, it's retried after the `retry_seconds` (default 30s) and up to the `retry_attempts` (default 10) defined for the action. 
-    - It stops & removes the services (if they are required).
+    - It stops & removes the services if specified in the after step.
     - If `verbose` is true it logs the agent logs with other debug information.
 - The action is completed.
 
@@ -68,7 +71,7 @@ The required fields are:
 - `api_key` required by the NR Api.
 - `license_key` required by the agent.
 
-Optional parameters (The retry seconds are attempt, it's only good to modify for testing purposes):
+Optional parameters:
 - `retry_seconds` it's the number of seconds to wait after retrying a test. default: 30.
 - `retry_attempts` it's the number of attempts a failed test can be retried. default: 10.
 - `verbose` if set to to true the agent logs and other useful debug logs will be printed. default: false.
@@ -86,7 +89,7 @@ The spec file for the e2e needs to be a yaml file with the following structure:
 
 `scenarios`: Array of scenarios, each one is an independent run for the e2e.
 - `decription` : Description of the scenario.
-- `before` : Array of shell commands that will be executed by the e2e runner before the next steps. (Here is where the docker-compose commands need to be put to setup the environment)
+- `before` : Array of shell commands that will be executed by the e2e runner before the next steps of the scenario. (Here is where the docker-compose commands need to be put to setup the environment)
 - `after` : Array of shell commands that will be executed by the e2e runner as the last step of the scenario.
 - `integrations` : Array with the integrations running in this scenario.
   - `name` : Name of the integration under test.
@@ -120,7 +123,7 @@ scenarios:
     before:
       - docker-compose -f "deps/docker-compose.yml" up -d
     after:
-      - docker-compose -f "deps/docker-compose.yml" up -d
+      - docker-compose -f "deps/docker-compose.yml" down -d
     integrations:
       - name: nri-powerdns
         binary_path: bin/nri-powerdns
@@ -150,7 +153,7 @@ scenarios:
 ```
 
 ## Types of test
-All the queries done to NROne are done with and extra WHERE condition that is `WHERE testKey = 'COMMMITSHA + 10 Digit alphanumeric'` a custom attribute added to the agent. This attribute is decorated in all the emitted metrics. 
+All the queries done to NROne are done with an extra WHERE condition that is `WHERE testKey = 'COMMMITSHA + 10 Digit alphanumeric'` a custom attribute added to the agent. This attribute is decorated in all the emitted metrics. 
 
 In this way we ensure that every returned metric/entity is really the emitted by the current e2e scenario.
 
