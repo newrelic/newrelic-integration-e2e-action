@@ -1,10 +1,6 @@
 description: |
   End-to-end tests for PowerDNS integration
 
-agent:
-  integrations:
-    nri-prometheus:  bin/nri-prometheus
-
 scenarios:
   - description: |
       This scenario will verify that metrics froms PDNS authoritative

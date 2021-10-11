@@ -124,10 +124,12 @@ func (a *agent) SetUp(scenario spec.Scenario) error {
 	if err := a.addIntegrationsConfigFile(integrations); err != nil {
 		return err
 	}
-	for k, v := range a.overrides.Integrations {
-		source := filepath.Join(a.specParentDir, v)
-		destination := filepath.Join(a.binsDir, k)
-		return oshelper.CopyFile(source, destination)
+	if a.overrides != nil {
+		for k, v := range a.overrides.Integrations {
+			source := filepath.Join(a.specParentDir, v)
+			destination := filepath.Join(a.binsDir, k)
+			return oshelper.CopyFile(source, destination)
+		}
 	}
 	return nil
 }

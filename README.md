@@ -84,8 +84,7 @@ The spec file for the e2e needs to be a yaml file with the following structure:
 
 `decription` : Description for the e2e test. 
 
-`agent.integrations` : An additional integration needed for the e2e. In the case of the prometheus based integrations there should always be the nri-prometheus. The format is:
-  - Name of the integration for key and relative binary path for value. 
+`agent.integrations` : An additional integration needed for the e2e. 
 
 `scenarios`: Array of scenarios, each one is an independent run for the e2e.
 - `decription` : Description of the scenario.
@@ -114,7 +113,7 @@ description: |
 
 agent:
   integrations:
-    nri-prometheus:  bin/nri-prometheus
+    nri-prometheus:  bin/nri-prometheus # nri-prometheus is added with the agent by default, but we added here as an example
 
 scenarios:
   - description: |
