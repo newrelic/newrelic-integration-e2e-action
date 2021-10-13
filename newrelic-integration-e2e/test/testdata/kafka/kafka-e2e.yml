@@ -1,0 +1,23 @@
+description: |
+  End-to-end tests for Kafka integration
+
+agent:
+  nrjmx: 1.5.3
+
+scenarios:
+  - description: |
+      This scenario will verify that metrics from a Kafka Cluster
+      are correcly collected.
+    before:
+      - docker-compose -f "deps/docker-compose.yml" up -d
+    after:
+      - docker-compose -f "deps/docker-compose.yml" down -d
+    integrations:
+      - name: nri-kafka
+        binary_path: bin/nri-kafka
+        config:
+
+    tests:
+      nrqls: []
+      entities: []
+      metrics: []

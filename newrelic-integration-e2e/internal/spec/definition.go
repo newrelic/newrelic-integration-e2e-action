@@ -3,9 +3,9 @@ package spec
 import yaml "gopkg.in/yaml.v3"
 
 type Definition struct {
-	Description    string     `yaml:"description"`
-	Scenarios      []Scenario `yaml:"scenarios"`
-	AgentOverrides *Agent     `yaml:"agent"`
+	Description     string     `yaml:"description"`
+	Scenarios       []Scenario `yaml:"scenarios"`
+	AgentExtensions *Agent     `yaml:"agent"`
 }
 
 func (def *Definition) Validate() error {
@@ -19,6 +19,7 @@ func (def *Definition) Validate() error {
 
 type Agent struct {
 	Integrations map[string]string `yaml:"integrations"`
+	NRJMX        string            `yaml:"nrjmx"`
 }
 
 type Scenario struct {

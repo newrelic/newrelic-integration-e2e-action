@@ -20,7 +20,8 @@ const (
 	integrationsBinDir = "bin"
 	dockerCompose      = "docker-compose.yml"
 	defConfigFile      = "nri-config.yml"
-	containerName      = "agent"
+	container          = "agent"
+	containerWithNRJMX = "agent-nrjmx"
 	infraAgentDir      = "newrelic-infra-agent"
 )
 
@@ -34,6 +35,7 @@ type agent struct {
 	scenario          spec.Scenario
 	agentDir          string
 	configsDir        string
+	containerName     string
 	exportersDir      string
 	binsDir           string
 	licenseKey        string
@@ -41,15 +43,17 @@ type agent struct {
 	specParentDir     string
 	dockerComposePath string
 	logger            *logrus.Logger
-	overrides         *spec.Agent
+	ExtraIntegrations map[string]string
+	NRJMX             string
 	customTagKey      string
 }
 
 func NewAgent(settings e2e.Settings) *agent {
 	agentDir := settings.AgentDir()
 
-	return &agent{
+	a := agent{
 		specParentDir:     settings.SpecParentDir(),
+		containerName:     container,
 		agentDir:          agentDir,
 		configsDir:        filepath.Join(agentDir, infraAgentDir, integrationsCfgDir),
 		exportersDir:      filepath.Join(agentDir, infraAgentDir, exportersDir),
@@ -58,9 +62,18 @@ func NewAgent(settings e2e.Settings) *agent {
 		dockerComposePath: filepath.Join(agentDir, dockerCompose),
 		licenseKey:        settings.LicenseKey(),
 		logger:            settings.Logger(),
-		overrides:         settings.SpecDefinition().AgentOverrides,
 		customTagKey:      settings.CustomTagKey(),
 	}
+
+	if settings.SpecDefinition().AgentExtensions != nil {
+		a.ExtraIntegrations = settings.SpecDefinition().AgentExtensions.Integrations
+		a.NRJMX = settings.SpecDefinition().AgentExtensions.NRJMX
+		if a.NRJMX != "" {
+			a.containerName = containerWithNRJMX
+		}
+	}
+
+	return &a
 }
 
 func (a *agent) initialize() error {
@@ -124,27 +137,26 @@ func (a *agent) SetUp(scenario spec.Scenario) error {
 	if err := a.addIntegrationsConfigFile(integrations); err != nil {
 		return err
 	}
-	if a.overrides != nil {
-		for k, v := range a.overrides.Integrations {
-			source := filepath.Join(a.specParentDir, v)
-			destination := filepath.Join(a.binsDir, k)
-			return oshelper.CopyFile(source, destination)
-		}
+	for k, v := range a.ExtraIntegrations {
+		source := filepath.Join(a.specParentDir, v)
+		destination := filepath.Join(a.binsDir, k)
+		return oshelper.CopyFile(source, destination)
 	}
 	return nil
 }
 
 func (a *agent) Run(scenarioTag string) error {
-	return dockercompose.Run(a.dockerComposePath, containerName, map[string]string{
+	return dockercompose.Run(a.dockerComposePath, a.containerName, map[string]string{
 		"NRIA_VERBOSE":           "1",
 		"NRIA_LICENSE_KEY":       a.licenseKey,
 		"NRIA_CUSTOM_ATTRIBUTES": fmt.Sprintf(`{"%s":"%s"}`, a.customTagKey, scenarioTag),
+		"NRJMX_VERSION":          a.NRJMX,
 	})
 }
 
 func (a *agent) Stop() error {
 	if a.logger.GetLevel() == logrus.DebugLevel {
-		a.logger.Debug(dockercompose.Logs(a.dockerComposePath, containerName))
+		a.logger.Debug(dockercompose.Logs(a.dockerComposePath, a.containerName))
 	}
 	return dockercompose.Down(a.dockerComposePath)
 }

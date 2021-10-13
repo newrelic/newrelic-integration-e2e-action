@@ -3,7 +3,7 @@ description: |
 
 scenarios:
   - description: |
-      This scenario will verify that metrics froms PDNS authoritative
+      This scenario will verify that metrics from PDNS authoritative
       are correcly collected.
     before:
       - docker-compose -f "deps/docker-compose.yml" up -d
@@ -37,7 +37,7 @@ scenarios:
             - powerdns_authoritative_remote_queries
           # additionals: ""
   - description: |
-      This scenario will verify that metrics froms PDNS recursor
+      This scenario will verify that metrics from PDNS recursor
       are correcly collected.
     before:
       - docker-compose -f "deps/docker-compose.yml" up -d
