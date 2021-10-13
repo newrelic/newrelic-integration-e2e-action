@@ -11,13 +11,23 @@ scenarios:
     before:
       - docker-compose -f "deps/docker-compose.yml" up -d
     after:
-      - docker-compose -f "deps/docker-compose.yml" down -d
+      - docker-compose -f "deps/docker-compose.yml" down
     integrations:
       - name: nri-kafka
         binary_path: bin/nri-kafka
-        config:
-
+        env:
+          CLUSTER_NAME: e2e-kfk-cluster
+          AUTODISCOVER_STRATEGY: bootstrap
+          BOOTSTRAP_BROKER_HOST: kafka
+          BOOTSTRAP_BROKER_KAFKA_PORT: 9092
+          BOOTSTRAP_BROKER_KAFKA_PROTOCOL: PLAINTEXT
+          BOOTSTRAP_BROKER_JMX_PORT: 1099
+          COLLECT_BROKER_TOPIC_DATA:
+          TOPIC_MODE: all
     tests:
       nrqls: []
-      entities: []
+      entities:
+        - type: "KafkaBroker"
+          data_type: "Metric"
+          metric_name: "kafka.broker.ioInPerSecond"
       metrics: []

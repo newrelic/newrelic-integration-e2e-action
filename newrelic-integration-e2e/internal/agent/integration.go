@@ -7,6 +7,7 @@ import (
 type integration struct {
 	Name   string                 `yaml:"name"`
 	Config map[string]interface{} `yaml:"config"`
+	Env    map[string]interface{} `yaml:"env"`
 }
 type integrationList struct {
 	Integrations []integration `yaml:"integrations"`
@@ -20,6 +21,7 @@ func getIntegrationList(integrations []spec.Integration) *integrationList {
 		out.Integrations[index] = integration{
 			Name:   in.Name,
 			Config: in.Config,
+			Env:    in.Env,
 		}
 	}
 	return out

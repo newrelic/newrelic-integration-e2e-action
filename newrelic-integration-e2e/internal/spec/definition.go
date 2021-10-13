@@ -44,6 +44,7 @@ type Integration struct {
 	BinaryPath         string                 `yaml:"binary_path"`
 	ExporterBinaryPath string                 `yaml:"exporter_binary_path"`
 	Config             map[string]interface{} `yaml:"config"`
+	Env                map[string]interface{} `yaml:"env"`
 }
 
 type Tests struct {

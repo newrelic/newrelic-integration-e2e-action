@@ -7,5 +7,5 @@ ADD bin/* /var/db/newrelic-infra/newrelic-integrations/bin/
 ADD exporters/* /usr/local/prometheus-exporters/bin/
 
 
-RUN chmod +x /var/db/newrelic-infra/newrelic-integrations/bin/*
-RUN chmod +x /usr/local/prometheus-exporters/bin/*
+RUN chmod +x /var/db/newrelic-infra/newrelic-integrations/bin/* || true
+RUN chmod +x /usr/local/prometheus-exporters/bin/* || true
