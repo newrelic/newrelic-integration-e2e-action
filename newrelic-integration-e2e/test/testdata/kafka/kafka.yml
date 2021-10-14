@@ -1,3 +1,4 @@
+# https://source.datanerd.us/infrastructure/infra-integration-specs/blob/master/specs/kafka.yml
 specVersion: '1'
 owningTeam: integrations
 integrationName: kafka
