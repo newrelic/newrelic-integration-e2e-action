@@ -14,7 +14,7 @@ scenarios:
         binary_path: bin/nri-powerdns
         exporter_binary_path: bin/nri-powerdns-exporter
         config:
-          powerdns_url: http://localhost:8081/api/v1/
+          powerdns_url: http://pdns-authoritative:8081/api/v1/
           exporter_port: 9121
           api_key: authoritative-secret
     tests:
@@ -48,7 +48,7 @@ scenarios:
         binary_path: bin/nri-powerdns
         exporter_binary_path: bin/nri-powerdns-exporter
         config:
-          powerdns_url: http://localhost:8082/api/v1/
+          powerdns_url: http://pdns-recursor:8081/api/v1/
           exporter_port: 9122
           api_key: recursor-secret
     tests:
@@ -77,14 +77,14 @@ scenarios:
         binary_path: bin/nri-powerdns
         exporter_binary_path: bin/nri-powerdns-exporter
         config:
-          powerdns_url: http://localhost:8081/api/v1/
+          powerdns_url: http://pdns-authoritative:8081/api/v1/
           exporter_port: 9121
           api_key: authoritative-secret
       - name: nri-powerdns
         binary_path: bin/nri-powerdns
         exporter_binary_path: bin/nri-powerdns-exporter
         config:
-          powerdns_url: http://localhost:8082/api/v1/
+          powerdns_url: http://pdns-recursor:8081/api/v1/
           exporter_port: 9122
           api_key: recursor-secret
     tests:

@@ -16,7 +16,9 @@ import (
 const (
 	dmTableName       = "Metric"
 	scenarioTagRuneNr = 10
-	e2eDockerNetwork  = "e2e"
+	e2eNetwork        = "e2e"
+	e2eNetworkSubnet  = "10.5.0.0/16"
+	e2eNetworkGateway = "10.5.0.1"
 )
 
 var letterRunes = []rune("abcdefghijklmnopqrstuvwxyz")
@@ -133,7 +135,11 @@ func (r *Runner) executeTests(tests spec.Tests, scenarioTag string) error {
 
 func (r *Runner) createDockerE2ENetwork() {
 	r.logger.Debugf("creating docker e2e network")
-	cmd := exec.Command("bash", "-c", fmt.Sprintf("docker network create %s", e2eDockerNetwork))
+	cmd := exec.Command(
+		"bash",
+		"-c",
+		fmt.Sprintf("docker network create %s --subnet %s --gateway %s", e2eNetwork, e2eNetworkSubnet, e2eNetworkGateway),
+	)
 	cmd.Dir = r.specParentDir
 	stdout, _ := cmd.Output()
 	logrus.Debug(stdout)
@@ -141,7 +147,7 @@ func (r *Runner) createDockerE2ENetwork() {
 
 func (r *Runner) removeDockerE2ENetwork() {
 	r.logger.Debugf("removing docker e2e network")
-	cmd := exec.Command("bash", "-c", fmt.Sprintf("docker network remove %s", e2eDockerNetwork))
+	cmd := exec.Command("bash", "-c", fmt.Sprintf("docker network remove %s", e2eNetwork))
 	cmd.Dir = r.specParentDir
 	stdout, _ := cmd.Output()
 	logrus.Debug(stdout)
