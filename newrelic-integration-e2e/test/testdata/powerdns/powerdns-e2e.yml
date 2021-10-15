@@ -1,6 +1,7 @@
 description: |
   End-to-end tests for PowerDNS integration
 
+
 scenarios:
   - description: |
       This scenario will verify that metrics from PDNS authoritative
@@ -12,9 +13,9 @@ scenarios:
     integrations:
       - name: nri-powerdns
         binary_path: bin/nri-powerdns
-        exporter_binary_path: bin/nri-powerdns-exporter
+        exporter_binary_path: bin/powerdns-exporter
         config:
-          powerdns_url: http://pdns-authoritative:8081/api/v1/
+          powerdns_url: http://localhost:8081/api/v1/
           exporter_port: 9121
           api_key: authoritative-secret
     tests:
@@ -24,6 +25,7 @@ scenarios:
         - type: "POWERDNS_AUTHORITATIVE"
           data_type: "Metric"
           metric_name: "powerdns_authoritative_up"
+          expected_number: 1
       metrics:
         - source: "powerdns.yml"
           except_entities:
@@ -35,6 +37,7 @@ scenarios:
             - powerdns_authoritative_remote_queries_unauth
             - powerdns_authoritative_queries_unauth
             - powerdns_authoritative_remote_queries
+          expected_number: 1
           # additionals: ""
   - description: |
       This scenario will verify that metrics from PDNS recursor
@@ -46,9 +49,9 @@ scenarios:
     integrations:
       - name: nri-powerdns
         binary_path: bin/nri-powerdns
-        exporter_binary_path: bin/nri-powerdns-exporter
+        exporter_binary_path: bin/powerdns-exporter
         config:
-          powerdns_url: http://pdns-recursor:8081/api/v1/
+          powerdns_url: http://localhost:8082/api/v1/
           exporter_port: 9122
           api_key: recursor-secret
     tests:
@@ -58,6 +61,7 @@ scenarios:
         - type: "POWERDNS_RECURSOR"
           data_type: "Metric"
           metric_name: "powerdns_recursor_up"
+          expected_number: 1
       metrics:
         - source: "powerdns.yml"
           except_entities:
@@ -75,16 +79,16 @@ scenarios:
     integrations:
       - name: nri-powerdns
         binary_path: bin/nri-powerdns
-        exporter_binary_path: bin/nri-powerdns-exporter
+        exporter_binary_path: bin/powerdns-exporter
         config:
-          powerdns_url: http://pdns-authoritative:8081/api/v1/
+          powerdns_url: http://localhost:8081/api/v1/
           exporter_port: 9121
           api_key: authoritative-secret
       - name: nri-powerdns
         binary_path: bin/nri-powerdns
-        exporter_binary_path: bin/nri-powerdns-exporter
+        exporter_binary_path: bin/powerdns-exporter
         config:
-          powerdns_url: http://pdns-recursor:8081/api/v1/
+          powerdns_url: http://localhost:8082/api/v1/
           exporter_port: 9122
           api_key: recursor-secret
     tests:
@@ -94,9 +98,11 @@ scenarios:
         - type: "POWERDNS_AUTHORITATIVE"
           data_type: "Metric"
           metric_name: "powerdns_authoritative_up"
+          expected_number: 1
         - type: "POWERDNS_RECURSOR"
           data_type: "Metric"
           metric_name: "powerdns_recursor_up"
+          expected_number: 1
       metrics:
         - source: "powerdns.yml"
           except_entities:

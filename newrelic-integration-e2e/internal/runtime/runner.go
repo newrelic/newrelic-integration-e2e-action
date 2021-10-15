@@ -1,7 +1,6 @@
 package runtime
 
 import (
-	"fmt"
 	"math/rand"
 	"os/exec"
 	"time"
@@ -16,9 +15,6 @@ import (
 const (
 	dmTableName       = "Metric"
 	scenarioTagRuneNr = 10
-	e2eNetwork        = "e2e"
-	e2eNetworkSubnet  = "10.5.0.0/16"
-	e2eNetworkGateway = "10.5.0.1"
 )
 
 var letterRunes = []rune("abcdefghijklmnopqrstuvwxyz")
@@ -66,9 +62,6 @@ func NewRunner(agent agent.Agent, testers []Tester, settings e2e.Settings) *Runn
 }
 
 func (r *Runner) Run() error {
-	r.createDockerE2ENetwork()
-	defer r.removeDockerE2ENetwork()
-
 	for _, scenario := range r.spec.Scenarios {
 		scenarioTag := r.generateScenarioTag()
 		r.logger.Debugf("[scenario]: %s, [Tag]: %s", scenario.Description, scenarioTag)
@@ -131,26 +124,6 @@ func (r *Runner) executeTests(tests spec.Tests, scenarioTag string) error {
 		}
 	}
 	return nil
-}
-
-func (r *Runner) createDockerE2ENetwork() {
-	r.logger.Debugf("creating docker e2e network")
-	cmd := exec.Command(
-		"bash",
-		"-c",
-		fmt.Sprintf("docker network create %s --subnet %s --gateway %s", e2eNetwork, e2eNetworkSubnet, e2eNetworkGateway),
-	)
-	cmd.Dir = r.specParentDir
-	stdout, _ := cmd.Output()
-	logrus.Debug(stdout)
-}
-
-func (r *Runner) removeDockerE2ENetwork() {
-	r.logger.Debugf("removing docker e2e network")
-	cmd := exec.Command("bash", "-c", fmt.Sprintf("docker network remove %s", e2eNetwork))
-	cmd.Dir = r.specParentDir
-	stdout, _ := cmd.Output()
-	logrus.Debug(stdout)
 }
 
 func (r *Runner) generateScenarioTag() string {

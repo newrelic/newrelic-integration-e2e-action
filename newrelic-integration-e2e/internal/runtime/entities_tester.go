@@ -24,20 +24,23 @@ func NewEntitiesTester(nrClient newrelic.Client, logger *logrus.Logger) Entities
 func (et EntitiesTester) Test(tests spec.Tests, customTagKey, customTagValue string) []error {
 	var errors []error
 	for _, en := range tests.Entities {
-		guid, err := et.nrClient.FindEntityGUID(en.DataType, en.MetricName, customTagKey, customTagValue)
+		guids, err := et.nrClient.FindEntityGUIDs(en.DataType, en.MetricName, customTagKey, customTagValue, en.ExpectedNumber)
 		if err != nil {
 			errors = append(errors, fmt.Errorf("finding entity guid: %w", err))
 			continue
 		}
-		entity, err := et.nrClient.FindEntityByGUID(guid)
-		if err != nil {
-			errors = append(errors, fmt.Errorf("finding entity guid: %w", err))
-			continue
-		}
+		for _, guid := range guids {
+			entity, err := et.nrClient.FindEntityByGUID(&guid)
+			if err != nil {
+				errors = append(errors, fmt.Errorf("finding entity guid: %w", err))
+				continue
+			}
 
-		if entity.GetType() != en.Type {
-			errors = append(errors, fmt.Errorf("entity type is not matching: %s!=%s", entity.GetType(), en.Type))
-			continue
+			// Some entity GUIDs (from sample shimming) don't return any object, if it's the case we don't fail the test
+			if entity != nil && entity.GetType() != en.Type {
+				errors = append(errors, fmt.Errorf("entity type is not matching: %s!=%s", entity.GetType(), en.Type))
+				continue
+			}
 		}
 	}
 	return errors

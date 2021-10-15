@@ -11,17 +11,18 @@ import (
 )
 
 type Client interface {
-	FindEntityGUID(sample, metricName, customTagKey, entityTag string) (*entities.EntityGUID, error)
+	FindEntityGUIDs(sample, metricName, customTagKey, entityTag string, expectedNumber int) ([]entities.EntityGUID, error)
 	FindEntityByGUID(guid *entities.EntityGUID) (entities.EntityInterface, error)
 	FindEntityMetrics(sample, customTagKey, entityTag string) ([]string, error)
 	NRQLQuery(query, customTagKey, entityTag string) error
 }
 
 var (
-	ErrNilEntity = errors.New("nil entity, impossible to dereference")
-	ErrNilGUID   = errors.New("GUID is nil, impossible to find entity")
-	ErrNoResult  = errors.New("query did not return any result")
-	ErrNotValid  = errors.New("query did not return a valid result")
+	ErrNilEntity    = errors.New("nil entity, impossible to dereference")
+	ErrNilGUID      = errors.New("GUID is nil, impossible to find entity")
+	ErrNoResult     = errors.New("query did not return any result")
+	ErrResultNumber = errors.New("query did not return expected number of results")
+	ErrNotValid     = errors.New("query did not return a valid result")
 )
 
 type nrClient struct {
@@ -42,23 +43,29 @@ func NewNrClient(apiKey string, accountID int) *nrClient {
 	}
 }
 
-func (nrc *nrClient) FindEntityGUID(sample, metricName, customTagKey, entityTag string) (*entities.EntityGUID, error) {
-	query := fmt.Sprintf("SELECT * from %s where metricName = '%s' where %s = '%s' limit 1", sample, metricName, customTagKey, entityTag)
+func (nrc *nrClient) FindEntityGUIDs(sample, metricName, customTagKey, entityTag string, expectedNumber int) ([]entities.EntityGUID, error) {
+	var entityGuids []entities.EntityGUID
+	query := fmt.Sprintf("SELECT uniques(entity.guid) from %s where metricName = '%s' where %s = '%s' limit 1", sample, metricName, customTagKey, entityTag)
 
 	a, err := nrc.client.Query(nrc.accountID, query)
 	if err != nil {
-		return nil, fmt.Errorf("executing query to fetch entity GUID %s, %w", query, err)
-	}
-	if len(a.Results) == 0 {
-		return nil, fmt.Errorf("%w: %s", ErrNoResult, query)
-	}
-	firstResult := a.Results[0]
-	if firstResult["entity.guid"] == nil {
-		return nil, ErrNilGUID
+		return nil, fmt.Errorf("executing query to fetch entity GUIDs %s, %w", query, err)
 	}
 
-	guid := entities.EntityGUID(fmt.Sprintf("%+v", firstResult["entity.guid"]))
-	return &guid, nil
+	if a.Results[0]["uniques.entity.guid"] == nil {
+		return nil, ErrNoResult
+	}
+
+	if len(a.Results[0]["uniques.entity.guid"].([]interface{})) < expectedNumber {
+		return nil, fmt.Errorf("%w: %s", ErrResultNumber, query)
+	}
+
+	for _, g := range a.Results[0]["uniques.entity.guid"].([]interface{}) {
+		guid := entities.EntityGUID(fmt.Sprintf("%v", g))
+		entityGuids = append(entityGuids, guid)
+	}
+
+	return entityGuids, nil
 }
 
 func (nrc *nrClient) FindEntityByGUID(guid *entities.EntityGUID) (entities.EntityInterface, error) {

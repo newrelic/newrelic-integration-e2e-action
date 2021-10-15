@@ -19,7 +19,7 @@ func (def *Definition) Validate() error {
 
 type Agent struct {
 	Integrations map[string]string `yaml:"integrations"`
-	NRJMX        string            `yaml:"nrjmx"`
+	EnvVars      map[string]string `yaml:"env_vars"`
 }
 
 type Scenario struct {
@@ -58,15 +58,17 @@ type TestNRQL struct {
 }
 
 type TestEntity struct {
-	Type       string `yaml:"type"`
-	DataType   string `yaml:"data_type"`
-	MetricName string `yaml:"metric_name"`
+	Type           string `yaml:"type"`
+	DataType       string `yaml:"data_type"`
+	MetricName     string `yaml:"metric_name"`
+	ExpectedNumber int    `yaml:"expected_number"`
 }
 
 type TestMetrics struct {
-	Source         string   `yaml:"source"`
-	ExceptEntities []string `yaml:"except_entities"`
-	ExceptMetrics  []string `yaml:"except_metrics"`
+	Source                 string   `yaml:"source"`
+	ExceptEntities         []string `yaml:"except_entities"`
+	ExceptMetrics          []string `yaml:"except_metrics"`
+	ExpectedEntitiesNumber int      `yaml:"expected_entities_number"`
 }
 
 func (i *Integration) validate() error {

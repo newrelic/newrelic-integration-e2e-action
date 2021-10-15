@@ -21,7 +21,6 @@ const (
 	dockerCompose      = "docker-compose.yml"
 	defConfigFile      = "nri-config.yml"
 	container          = "agent"
-	containerWithNRJMX = "agent-nrjmx"
 	infraAgentDir      = "newrelic-infra-agent"
 )
 
@@ -44,7 +43,7 @@ type agent struct {
 	dockerComposePath string
 	logger            *logrus.Logger
 	ExtraIntegrations map[string]string
-	NRJMX             string
+	ExtraEnvVars      map[string]string
 	customTagKey      string
 }
 
@@ -67,10 +66,7 @@ func NewAgent(settings e2e.Settings) *agent {
 
 	if settings.SpecDefinition().AgentExtensions != nil {
 		a.ExtraIntegrations = settings.SpecDefinition().AgentExtensions.Integrations
-		a.NRJMX = settings.SpecDefinition().AgentExtensions.NRJMX
-		if a.NRJMX != "" {
-			a.containerName = containerWithNRJMX
-		}
+		a.ExtraEnvVars = settings.SpecDefinition().AgentExtensions.EnvVars
 	}
 
 	return &a
@@ -146,12 +142,17 @@ func (a *agent) SetUp(scenario spec.Scenario) error {
 }
 
 func (a *agent) Run(scenarioTag string) error {
-	return dockercompose.Run(a.dockerComposePath, a.containerName, map[string]string{
+	var envVars = map[string]string{
 		"NRIA_VERBOSE":           "1",
 		"NRIA_LICENSE_KEY":       a.licenseKey,
 		"NRIA_CUSTOM_ATTRIBUTES": fmt.Sprintf(`{"%s":"%s"}`, a.customTagKey, scenarioTag),
-		"NRJMX_VERSION":          a.NRJMX,
-	})
+	}
+
+	for envKey, envValue := range a.ExtraEnvVars {
+		envVars[envKey] = envValue
+	}
+
+	return dockercompose.Run(a.dockerComposePath, a.containerName, envVars)
 }
 
 func (a *agent) Stop() error {

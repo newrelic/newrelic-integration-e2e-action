@@ -81,7 +81,7 @@ func (a apiClientMock) GetEntity(guid *entities.EntityGUID) (*entities.EntityInt
 	return &entity, nil
 }
 
-func TestNrClient_FindEntityGUID(t *testing.T) {
+func TestNrClient_FindEntityGUIDs(t *testing.T) {
 	correctEntity := entities.EntityGUID(fmt.Sprintf("%+v", entityGUIDA))
 
 	tests := []struct {
@@ -98,7 +98,7 @@ func TestNrClient_FindEntityGUID(t *testing.T) {
 		{
 			name:          "when the client returns no results it should return ErrNoResult",
 			metricName:    emptyMetricName,
-			errorExpected: ErrNoResult,
+			errorExpected: ErrResultNumber,
 		},
 		{
 			name:          "when the client returns an entity without guid it should return ErrNilEntity",
@@ -117,12 +117,12 @@ func TestNrClient_FindEntityGUID(t *testing.T) {
 			nrClient := nrClient{
 				client: apiClientMock{},
 			}
-			guid, err := nrClient.FindEntityGUID(sample, tt.metricName, customTagKey, entityTag)
+			guid, err := nrClient.FindEntityGUIDs(sample, tt.metricName, customTagKey, entityTag, 1)
 			if !errors.Is(err, tt.errorExpected) {
 				t.Errorf("Error returned is not: %w", tt.errorExpected)
 			}
-			if guid != nil && *guid != *tt.entityGUID {
-				t.Errorf("Expected: %v, got: %v", *tt.entityGUID, *guid)
+			if guid != nil && guid[0] != *tt.entityGUID {
+				t.Errorf("Expected: %v, got: %v", *tt.entityGUID, guid[0])
 			}
 		})
 	}

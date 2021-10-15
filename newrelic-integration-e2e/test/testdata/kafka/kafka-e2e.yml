@@ -2,7 +2,8 @@ description: |
   End-to-end tests for Kafka integration
 
 agent:
-  nrjmx: 1.5.3
+  env_vars:
+    NRJMX_VERSION: "1.5.3"
 
 scenarios:
   - description: |
@@ -27,7 +28,19 @@ scenarios:
     tests:
       nrqls: []
       entities:
-        - type: "KafkaBroker"
+        - type: "KAFKABROKER"
           data_type: "Metric"
-          metric_name: "kafka.broker.ioInPerSecond"
-      metrics: []
+          metric_name: "kafka.broker.ioOutPerSecond"
+          expected_number: 3
+        - type: "KAFKATOPIC"
+          data_type: "Metric"
+          metric_name: "kafka.topic.partitionsWithNonPreferredLeader"
+          expected_number: 3
+      metrics:
+        - source: "powerdns.yml"
+          except_entities:
+            - KafkaConsumer
+            - KafkaProducer
+            - KafkaConsumerGroup
+          except_metrics:
+          expected_entities_number: 3

@@ -1,0 +1,23 @@
+version: '3.5'
+
+services:
+  agent:
+    build:
+      context: newrelic-infra-agent
+      args:
+        - NRJMX_VERSION=${NRJMX_VERSION}
+    cap_add:
+      - SYS_PTRACE
+    pid: host
+    privileged: true
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "/:/host:ro"
+    restart: unless-stopped
+    networks:
+      - agent
+
+networks:
+  agent:
+    external:
+      name: e2e
