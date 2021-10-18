@@ -52,7 +52,7 @@ func (nrc *nrClient) FindEntityGUIDs(sample, metricName, customTagKey, entityTag
 		return nil, fmt.Errorf("executing query to fetch entity GUIDs %s, %w", query, err)
 	}
 
-	if a.Results[0]["uniques.entity.guid"] == nil {
+	if len(a.Results) < 1 || a.Results[0]["uniques.entity.guid"] == nil {
 		return nil, ErrNoResult
 	}
 
