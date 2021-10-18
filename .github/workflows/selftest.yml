@@ -30,6 +30,8 @@ jobs:
           api_key: ${{ secrets.API_KEY }}
           license_key: ${{ secrets.LICENSE_KEY }}
           agent_dir: newrelic-integration-e2e/test/testdata/kafka/agent_dir
+          retry_attempts: 4
+          verbose: true
       - name: Run action for PowerDNS (exporter based)
         uses: ./
         with:
