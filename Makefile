@@ -3,10 +3,10 @@ VERBOSE ?= false
 RETRY_ATTEMPTS ?= 10
 RETRY_SECONDS ?= 30
 
-ifndef AGENT_DIR
-    AGENT_DIR_COMPOSED = $(CURDIR)/agent_dir;
-else
+ifneq ($(strip $(AGENT_DIR)),)
     AGENT_DIR_COMPOSED = $(ROOT_DIR)/$(AGENT_DIR)
+else
+    AGENT_DIR_COMPOSED = $(CURDIR)/agent_dir;
 endif
 
 all: validate test snyk-test
