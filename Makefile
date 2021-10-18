@@ -2,7 +2,13 @@
 VERBOSE ?= false
 RETRY_ATTEMPTS ?= 10
 RETRY_SECONDS ?= 30
-AGENT_DIR ?= $(CURDIR)/agent_dir
+
+ifndef AGENT_DIR
+    $(info $$AGENT_DIR is [${AGENT_DIR}])
+    AGENT_DIR_COMPOSED = $(CURDIR)/agent_dir;
+else
+    AGENT_DIR_COMPOSED = $(ROOT_DIR)/$(AGENT_DIR)
+endif
 
 all: validate test snyk-test
 
@@ -29,4 +35,4 @@ run:
 	@printf "=== newrelic-integration-e2e === [ run / $* ]: running the binary \n"
 	@cd newrelic-integration-e2e; go run $(CURDIR)/newrelic-integration-e2e/cmd/main.go \
 	 --commit_sha=$(COMMIT_SHA) --root_dir=$(ROOT_DIR) --retry_attempts=$(RETRY_ATTEMPTS) --retry_seconds=$(RETRY_SECONDS) \
-	 --agent_dir=$(AGENT_DIR) --account_id=$(ACCOUNT_ID) --api_key=$(API_KEY) --license_key=$(LICENSE_KEY) --spec_path=$(ROOT_DIR)/$(SPEC_PATH) --verbose_mode=$(VERBOSE)
+	 --agent_dir=$(AGENT_DIR_COMPOSED) --account_id=$(ACCOUNT_ID) --api_key=$(API_KEY) --license_key=$(LICENSE_KEY) --spec_path=$(ROOT_DIR)/$(SPEC_PATH) --verbose_mode=$(VERBOSE)
