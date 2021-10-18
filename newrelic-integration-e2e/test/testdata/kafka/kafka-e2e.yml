@@ -59,4 +59,3 @@ scenarios:
             - kafka.topic.bytesOutPerSec
             - kafka.topic.messagesInPerSec
             - kafka.topic.retentionBytesOrTime
-          expected_entities_number: 3
