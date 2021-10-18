@@ -14,8 +14,8 @@ description: |
 agent:
   integrations:
     nri-prometheus:  bin/nri-prometheus
-  nrjmx: 2.4.5
-
+  env_vars:
+    NRJMX_VERSION: "1.5.3"
 scenarios:
   - description: |
       Scenario Description.
@@ -48,7 +48,9 @@ scenarios:
 		Integrations: map[string]string{
 			"nri-prometheus": "bin/nri-prometheus",
 		},
-		NRJMX: "2.4.5",
+		EnvVars: map[string]string{
+			"NRJMX_VERSION": "1.5.3",
+		},
 	}
 	assert.Equal(t, &expecedAgentExtensions, spec.AgentExtensions)
 

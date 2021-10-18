@@ -60,6 +60,7 @@ jobs:
           account_id: ${{ secrets.ACCOUNT_ID }}
           api_key: ${{ secrets.API_KEY }}
           license_key: ${{ secrets.LICENSE_KEY }}
+          agent_dir: exporters/powerdns/e2e/agent_dir
           retry_seconds: 30
           retry_attempts: 10
           verbose: false
@@ -72,6 +73,7 @@ The required fields are:
 - `license_key` required by the agent.
 
 Optional parameters:
+- `agent_dir` path for a custom agent_dir for the specific e2e with a docker-compose and Dockerfile in it. By default, the one in this action will be used.
 - `retry_seconds` it's the number of seconds to wait after retrying a test. default: 30.
 - `retry_attempts` it's the number of attempts a failed test can be retried. default: 10.
 - `verbose` if set to to true the agent logs and other useful debug logs will be printed. default: false.
@@ -84,7 +86,9 @@ The spec file for the e2e needs to be a yaml file with the following structure:
 
 `decription` : Description for the e2e test. 
 
-`agent.integrations` : An additional integration needed for the e2e. 
+`agent` `: Extra environment variables and/or integrations required for the e2e.
+- `integrations` : Additional integrations needed for the e2e.
+- `env_vars` : Additional EnvVars for the agent execution.
 
 `scenarios`: Array of scenarios, each one is an independent run for the e2e.
 - `decription` : Description of the scenario.
@@ -114,6 +118,8 @@ description: |
 agent:
   integrations:
     nri-prometheus:  bin/nri-prometheus # nri-prometheus is added with the agent by default, but we added here as an example
+  env_vars:
+    NRJMX_VERSION: "1.5.3"
 
 scenarios:
   - description: |
