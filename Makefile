@@ -4,7 +4,6 @@ RETRY_ATTEMPTS ?= 10
 RETRY_SECONDS ?= 30
 
 ifndef AGENT_DIR
-    $(info $$AGENT_DIR is [${AGENT_DIR}])
     AGENT_DIR_COMPOSED = $(CURDIR)/agent_dir;
 else
     AGENT_DIR_COMPOSED = $(ROOT_DIR)/$(AGENT_DIR)

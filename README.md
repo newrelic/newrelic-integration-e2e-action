@@ -73,7 +73,7 @@ The required fields are:
 - `license_key` required by the agent.
 
 Optional parameters:
-- `agent_dir` path for a custom agent_dir for the specific e2e with a docker-compose and Dockerfile in it. By default, the one in this action will be used.
+- `agent_dir` path to a custom agent_dir in a specific e2e with a docker-compose and Dockerfile in it. If not set the one from the action will be used.
 - `retry_seconds` it's the number of seconds to wait after retrying a test. default: 30.
 - `retry_attempts` it's the number of attempts a failed test can be retried. default: 10.
 - `verbose` if set to to true the agent logs and other useful debug logs will be printed. default: false.
@@ -165,7 +165,7 @@ In this way we ensure that every returned metric/entity is really the emitted by
 Example:
 `SELECT * from Metric where metricName = 'powerdns_authoritative_up' where testKey = '35e32b6a00dec02ae7d7c45c6b7106779a124685sneniedzku' limit 1`
 ### Entities
-This test is to ensure that the list of entites specified on the array have been created in NRone.
+This test is to ensure that the list of entities specified on the array have been created in NROne, and also to see there exactly the expected number for each type.
 ### Metrics
 This test is to check if the metrics specified in the spec file added to the pipeline's e2e source attribute are present on NROne. The current approach is to copy this spec file in the e2e path.
 
