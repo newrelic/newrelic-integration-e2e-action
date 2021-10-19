@@ -1,0 +1,61 @@
+description: |
+  End-to-end tests for Kafka integration
+
+agent:
+  env_vars:
+    NRJMX_VERSION: "1.5.3"
+
+scenarios:
+  - description: |
+      This scenario will verify that metrics from a Kafka Cluster
+      are correcly collected.
+    before:
+      - docker-compose -f "deps/docker-compose.yml" up -d
+    after:
+      - docker-compose -f "deps/docker-compose.yml" down -v
+    integrations:
+      - name: nri-kafka
+        binary_path: bin/nri-kafka
+        env:
+          CLUSTER_NAME: e2e-kfk-cluster
+          AUTODISCOVER_STRATEGY: bootstrap
+          BOOTSTRAP_BROKER_HOST: kafka
+          BOOTSTRAP_BROKER_KAFKA_PORT: 9092
+          BOOTSTRAP_BROKER_KAFKA_PROTOCOL: PLAINTEXT
+          BOOTSTRAP_BROKER_JMX_PORT: 1099
+          COLLECT_BROKER_TOPIC_DATA:
+          TOPIC_MODE: all
+    tests:
+      nrqls: []
+      entities:
+        - type: "KAFKABROKER"
+          data_type: "Metric"
+          metric_name: "kafka.broker.ioOutPerSecond"
+          expected_number: 3
+        - type: "KAFKATOPIC"
+          data_type: "Metric"
+          metric_name: "kafka.topic.partitionsWithNonPreferredLeader"
+          expected_number: 3
+      metrics:
+        - source: "kafka.yml"
+          except_entities:
+            - KafkaConsumer
+            - KafkaProducer
+            - KafkaConsumerGroup
+          except_metrics:
+            - kafka.broker.bytesWrittenToTopicPerSecond
+            - kafka.broker.logFlushPerSecond
+            - kafka.broker.consumer.requestsExpiredPerSecond
+            - kafka.broker.follower.requestExpirationPerSecond
+            - kafka.broker.request.avgTimeOffset
+            - kafka.broker.request.avgTimeOffset99Percentile
+            - kafka.broker.request.fetchConsumerRequestsPerSecond
+            - kafka.broker.request.fetchFollowerRequestsPerSecond
+            - kafka.broker.request.listGroupsRequestsPerSecond
+            - kafka.broker.request.offsetCommitRequestsPerSecond
+            - kafka.broker.request.produceRequestsPerSecond
+            - kafka.broker.topic.diskSize
+            - kafka.topic.bytesInPerSec
+            - kafka.topic.bytesOutPerSec
+            - kafka.topic.messagesInPerSec
+            - kafka.topic.retentionBytesOrTime

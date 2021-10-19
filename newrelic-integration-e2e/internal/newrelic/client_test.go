@@ -3,6 +3,7 @@ package newrelic
 import (
 	"errors"
 	"fmt"
+	"reflect"
 	"testing"
 
 	"github.com/newrelic/newrelic-client-go/pkg/entities"
@@ -26,15 +27,15 @@ type apiClientMock struct{}
 
 func (a apiClientMock) Query(_ int, query string) (*nrdb.NRDBResultContainer, error) {
 	errorQuery := fmt.Sprintf(
-		"SELECT * from %s where metricName = '%s' where %s = '%s' limit 1",
+		"SELECT uniques(entity.guid) from %s where metricName = '%s' where %s = '%s' limit 1",
 		sample, errorMetricName, customTagKey, entityTag,
 	)
 	emptyQuery := fmt.Sprintf(
-		"SELECT * from %s where metricName = '%s' where %s = '%s' limit 1",
+		"SELECT uniques(entity.guid) from %s where metricName = '%s' where %s = '%s' limit 1",
 		sample, emptyMetricName, customTagKey, entityTag,
 	)
 	withoutGUIDQuery := fmt.Sprintf(
-		"SELECT * from %s where metricName = '%s' where %s = '%s' limit 1",
+		"SELECT uniques(entity.guid) from %s where metricName = '%s' where %s = '%s' limit 1",
 		sample, withoutGUIDMetricName, customTagKey, entityTag,
 	)
 
@@ -60,7 +61,7 @@ func (a apiClientMock) Query(_ int, query string) (*nrdb.NRDBResultContainer, er
 		Results: []nrdb.NRDBResult{
 			map[string]interface{}{
 				"newrelic.agentVersion": "1.20.2",
-				"entity.guid":           entityGUIDA,
+				"uniques.entity.guid":   []interface{}{entityGUIDA, entityGUIDB},
 				"testKey":               "gyzsteszda",
 			},
 		},
@@ -81,34 +82,46 @@ func (a apiClientMock) GetEntity(guid *entities.EntityGUID) (*entities.EntityInt
 	return &entity, nil
 }
 
-func TestNrClient_FindEntityGUID(t *testing.T) {
-	correctEntity := entities.EntityGUID(fmt.Sprintf("%+v", entityGUIDA))
+func TestNrClient_FindEntityGUIDs(t *testing.T) {
+	correctEntityA := entities.EntityGUID(fmt.Sprintf("%+v", entityGUIDA))
+	correctEntityB := entities.EntityGUID(fmt.Sprintf("%+v", entityGUIDB))
 
 	tests := []struct {
-		name          string
-		metricName    string
-		entityGUID    *entities.EntityGUID
-		errorExpected error
+		name           string
+		metricName     string
+		entityGUIDs    []entities.EntityGUID
+		expectedNumber int
+		errorExpected  error
 	}{
 		{
-			name:          "when the client call returns an error it should return it",
-			metricName:    errorMetricName,
-			errorExpected: randomError,
+			name:           "when the client call returns an error it should return it",
+			metricName:     errorMetricName,
+			expectedNumber: 2,
+			errorExpected:  randomError,
 		},
 		{
-			name:          "when the client returns no results it should return ErrNoResult",
-			metricName:    emptyMetricName,
-			errorExpected: ErrNoResult,
+			name:           "when the client returns no results it should return ErrNoResult",
+			metricName:     emptyMetricName,
+			expectedNumber: 2,
+			errorExpected:  ErrNoResult,
 		},
 		{
-			name:          "when the client returns an entity without guid it should return ErrNilEntity",
-			metricName:    withoutGUIDMetricName,
-			errorExpected: ErrNilGUID,
+			name:           "when the client returns no results it should return ErrNoResult",
+			metricName:     emptyMetricName,
+			expectedNumber: 2,
+			errorExpected:  ErrNoResult,
 		},
 		{
-			name:       "when the client returns an entity with guid it should return it",
-			metricName: "random-existing-metric-name",
-			entityGUID: &correctEntity,
+			name:           "when the client returns uniques.entity.guid smaller than expected number it should return ErrResultNumber",
+			metricName:     "random-existing-metric-name",
+			expectedNumber: 3,
+			errorExpected:  ErrResultNumber,
+		},
+		{
+			name:           "when the client returns uniques.entity.guid equal to expected it should return the array",
+			metricName:     "random-existing-metric-name",
+			expectedNumber: 2,
+			entityGUIDs:    []entities.EntityGUID{correctEntityA, correctEntityB},
 		},
 	}
 
@@ -117,12 +130,12 @@ func TestNrClient_FindEntityGUID(t *testing.T) {
 			nrClient := nrClient{
 				client: apiClientMock{},
 			}
-			guid, err := nrClient.FindEntityGUID(sample, tt.metricName, customTagKey, entityTag)
+			guid, err := nrClient.FindEntityGUIDs(sample, tt.metricName, customTagKey, entityTag, tt.expectedNumber)
 			if !errors.Is(err, tt.errorExpected) {
-				t.Errorf("Error returned is not: %w", tt.errorExpected)
+				t.Errorf("Error expected: %v, error returned: %v", tt.errorExpected, err)
 			}
-			if guid != nil && *guid != *tt.entityGUID {
-				t.Errorf("Expected: %v, got: %v", *tt.entityGUID, *guid)
+			if guid != nil && !reflect.DeepEqual(guid, tt.entityGUIDs) {
+				t.Errorf("Expected: %v, got: %v", tt.entityGUIDs, tt.entityGUIDs)
 			}
 		})
 	}

@@ -1,0 +1,4828 @@
+# https://source.datanerd.us/infrastructure/infra-integration-specs/blob/master/specs/kafka.yml
+specVersion: '1'
+owningTeam: integrations
+integrationName: kafka
+humanReadableIntegrationName: Kafka
+entities:
+  - entityType: KafkaBroker
+    metrics:
+      - name: kafka.broker.ioInPerSecond
+        type: gauge
+        defaultResolution: 15
+        unit: bytesPerSecond
+        migrationInformation:
+          legacyEventType: KafkaBrokerSample
+          legacyNames:
+            - broker.IOInPerSecond
+      - name: kafka.broker.ioOutPerSecond
+        type: gauge
+        defaultResolution: 15
+        unit: bytesPerSecond
+        migrationInformation:
+          legacyEventType: KafkaBrokerSample
+          legacyNames:
+            - broker.IOOutPerSecond
+      - name: kafka.broker.bytesWrittenToTopicPerSecond
+        type: gauge
+        defaultResolution: 15
+        unit: bytesPerSecond
+        migrationInformation:
+          legacyEventType: KafkaBrokerSample
+          legacyNames:
+            - broker.bytesWrittenToTopicPerSecond
+            - topic.bytesWritten
+        dimensions:
+          - name: kafka.topic
+            type: string
+            migrationInformation:
+              legacyNames:
+                - topic
+              legacyEventTypes:
+                - KafkaBrokerSample
+      - name: kafka.broker.logFlushPerSecond
+        type: gauge
+        defaultResolution: 15
+        unit: countPerSecond
+        migrationInformation:
+          legacyEventType: KafkaBrokerSample
+          legacyNames:
+            - broker.logFlushPerSecond
+      - name: kafka.broker.messagesInPerSecond
+        type: gauge
+        defaultResolution: 15
+        unit: countPerSecond
+        migrationInformation:
+          legacyEventType: KafkaBrokerSample
+          legacyNames:
+            - broker.messagesInPerSecond
+      - name: kafka.broker.consumer.requestsExpiredPerSecond
+        type: gauge
+        defaultResolution: 15
+        unit: countPerSecond
+        migrationInformation:
+          legacyEventType: KafkaBrokerSample
+          legacyNames:
+            - consumer.requestsExpiredPerSecond
+      - name: kafka.broker.follower.requestExpirationPerSecond
+        type: gauge
+        defaultResolution: 15
+        unit: countPerSecond
+        migrationInformation:
+          legacyEventType: KafkaBrokerSample
+          legacyNames:
+            - follower.requestExpirationPerSecond
+      - name: kafka.broker.net.bytesRejectedPerSecond
+        type: gauge
+        defaultResolution: 15
+        unit: bytesPerSecond
+        migrationInformation:
+          legacyEventType: KafkaBrokerSample
+          legacyNames:
+            - net.bytesRejectedPerSecond
+      - name: kafka.broker.replication.isrExpandsPerSecond
+        type: gauge
+        defaultResolution: 15
+        unit: countPerSecond
+        migrationInformation:
+          legacyEventType: KafkaBrokerSample
+          legacyNames:
+            - replication.isrExpandsPerSecond
+      - name: kafka.broker.replication.isrShrinksPerSecond
+        type: gauge
+        defaultResolution: 15
+        unit: countPerSecond
+        migrationInformation:
+          legacyEventType: KafkaBrokerSample
+          legacyNames:
+            - replication.isrShrinksPerSecond
+      - name: kafka.broker.replication.leaderElectionPerSecond
+        type: gauge
+        defaultResolution: 15
+        unit: countPerSecond
+        migrationInformation:
+          legacyEventType: KafkaBrokerSample
+          legacyNames:
+            - replication.leaderElectionPerSecond
+      - name: kafka.broker.replication.uncleanLeaderElectionPerSecond
+        type: gauge
+        defaultResolution: 15
+        unit: countPerSecond
+        migrationInformation:
+          legacyEventType: KafkaBrokerSample
+          legacyNames:
+            - replication.uncleanLeaderElectionPerSecond
+      - name: kafka.broker.replication.unreplicatedPartitions
+        type: gauge
+        defaultResolution: 15
+        unit: count
+        migrationInformation:
+          legacyEventType: KafkaBrokerSample
+          legacyNames:
+            - replication.unreplicatedPartitions
+      - name: kafka.broker.request.avgTimeFetch
+        type: gauge
+        defaultResolution: 15
+        unit: milliseconds
+        migrationInformation:
+          legacyEventType: KafkaBrokerSample
+          legacyNames:
+            - request.avgTimeFetch
+      - name: kafka.broker.request.avgTimeMetadata
+        type: gauge
+        defaultResolution: 15
+        unit: milliseconds
+        migrationInformation:
+          legacyEventType: KafkaBrokerSample
+          legacyNames:
+            - request.avgTimeMetadata
+      - name: kafka.broker.request.avgTimeMetadata99Percentile
+        type: gauge
+        defaultResolution: 15
+        unit: milliseconds
+        migrationInformation:
+          legacyEventType: KafkaBrokerSample
+          legacyNames:
+            - request.avgTimeMetadata99Percentile
+      - name: kafka.broker.request.avgTimeOffset
+        type: gauge
+        defaultResolution: 15
+        unit: milliseconds
+        migrationInformation:
+          legacyEventType: KafkaBrokerSample
+          legacyNames:
+            - request.avgTimeOffset
+      - name: kafka.broker.request.avgTimeOffset99Percentile
+        type: gauge
+        defaultResolution: 15
+        unit: milliseconds
+        migrationInformation:
+          legacyEventType: KafkaBrokerSample
+          legacyNames:
+            - request.avgTimeOffset99Percentile
+      - name: kafka.broker.request.avgTimeProduceRequest
+        type: gauge
+        defaultResolution: 15
+        unit: milliseconds
+        migrationInformation:
+          legacyEventType: KafkaBrokerSample
+          legacyNames:
+            - request.avgTimeProduceRequest
+      - name: kafka.broker.request.avgTimeUpdateMetadata
+        type: gauge
+        defaultResolution: 15
+        unit: milliseconds
+        migrationInformation:
+          legacyEventType: KafkaBrokerSample
+          legacyNames:
+            - request.avgTimeUpdateMetadata
+      - name: kafka.broker.request.avgTimeUpdateMetadata99Percentile
+        type: gauge
+        defaultResolution: 15
+        unit: milliseconds
+        migrationInformation:
+          legacyEventType: KafkaBrokerSample
+          legacyNames:
+            - request.avgTimeUpdateMetadata99Percentile
+      - name: kafka.broker.request.clientFetchesFailedPerSecond
+        type: gauge
+        defaultResolution: 15
+        unit: countPerSecond
+        migrationInformation:
+          legacyEventType: KafkaBrokerSample
+          legacyNames:
+            - request.clientFetchesFailedPerSecond
+      - name: kafka.broker.request.fetchConsumerRequestsPerSecond
+        type: gauge
+        defaultResolution: 15
+        unit: countPerSecond
+        migrationInformation:
+          legacyEventType: KafkaBrokerSample
+          legacyNames:
+            - request.fetchConsumerRequestsPerSecond
+      - name: kafka.broker.request.fetchFollowerRequestsPerSecond
+        type: gauge
+        defaultResolution: 15
+        unit: countPerSecond
+        migrationInformation:
+          legacyEventType: KafkaBrokerSample
+          legacyNames:
+            - request.fetchFollowerRequestsPerSecond
+      - name: kafka.broker.request.fetchTime99Percentile
+        type: gauge
+        defaultResolution: 15
+        unit: milliseconds
+        migrationInformation:
+          legacyEventType: KafkaBrokerSample
+          legacyNames:
+            - request.fetchTime99Percentile
+      - name: kafka.broker.request.handlerIdle
+        type: gauge
+        defaultResolution: 15
+        unit: percent
+        migrationInformation:
+          legacyEventType: KafkaBrokerSample
+          legacyNames:
+            - request.handlerIdle
+      - name: kafka.broker.request.listGroupsRequestsPerSecond
+        type: gauge
+        defaultResolution: 15
+        unit: countPerSecond
+        migrationInformation:
+          legacyEventType: KafkaBrokerSample
+          legacyNames:
+            - request.listGroupsRequestsPerSecond
+      - name: kafka.broker.request.metadataRequestsPerSecond
+        type: gauge
+        defaultResolution: 15
+        unit: countPerSecond
+        migrationInformation:
+          legacyEventType: KafkaBrokerSample
+          legacyNames:
+            - request.metadataRequestsPerSecond
+      - name: kafka.broker.request.offsetCommitRequestsPerSecond
+        type: gauge
+        defaultResolution: 15
+        unit: countPerSecond
+        migrationInformation:
+          legacyEventType: KafkaBrokerSample
+          legacyNames:
+            - request.offsetCommitRequestsPerSecond
+      - name: kafka.broker.request.produceRequestsFailedPerSecond
+        type: gauge
+        defaultResolution: 15
+        unit: countPerSecond
+        migrationInformation:
+          legacyEventType: KafkaBrokerSample
+          legacyNames:
+            - request.produceRequestsFailedPerSecond
+      - name: kafka.broker.request.produceRequestsPerSecond
+        type: gauge
+        defaultResolution: 15
+        unit: countPerSecond
+        migrationInformation:
+          legacyEventType: KafkaBrokerSample
+          legacyNames:
+            - request.produceRequestsPerSecond
+      - name: kafka.broker.request.produceTime99Percentile
+        type: gauge
+        defaultResolution: 15
+        unit: milliseconds
+        migrationInformation:
+          legacyEventType: KafkaBrokerSample
+          legacyNames:
+            - request.produceTime99Percentile
+      - name: kafka.broker.topic.diskSize
+        type: gauge
+        defaultResolution: 15
+        unit: bytes
+        migrationInformation:
+          legacyEventType: KafkaBrokerSample
+          legacyNames:
+            - topic.diskSize
+    tags:
+      - name: kafka.clusterName
+        type: string
+        migrationInformation:
+          legacyNames:
+            - clusterName
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: kafka.brokerId
+        type: string
+        migrationInformation:
+          legacyNames:
+            - brokerID
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: k8s.containerImage
+        type: string
+        description: >-
+          This attribute is added by nri-kubernetes if this integration is
+          running in a instrumented K8s cluster.
+        migrationInformation:
+          legacyNames:
+            - containerImage
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: k8s.containerName
+        type: string
+        description: >-
+          This attribute is added by nri-kubernetes if this integration is
+          running in a instrumented K8s cluster.
+        migrationInformation:
+          legacyNames:
+            - containerName
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: k8s.deploymentName
+        type: string
+        description: >-
+          This attribute is added by nri-kubernetes if this integration is
+          running in a instrumented K8s cluster.
+        migrationInformation:
+          legacyNames:
+            - deploymentName
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: k8s.namespaceName
+        type: string
+        description: >-
+          This attribute is added by nri-kubernetes if this integration is
+          running in a instrumented K8s cluster.
+        migrationInformation:
+          legacyNames:
+            - namespaceName
+            - namespace
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: k8s.nodeName
+        type: string
+        description: >-
+          This attribute is added by nri-kubernetes if this integration is
+          running in a instrumented K8s cluster.
+        migrationInformation:
+          legacyNames:
+            - nodeName
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: k8s.podName
+        type: string
+        description: >-
+          This attribute is added by nri-kubernetes if this integration is
+          running in a instrumented K8s cluster.
+        migrationInformation:
+          legacyNames:
+            - podName
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: entity.guid
+        type: string
+        description: >-
+          This is an attribute that defines the entity, which is added in the
+          ingestion pipeline.
+        migrationInformation:
+          legacyNames:
+            - entityGuid
+            - nr.entityGuid
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: entity.name
+        type: string
+        description: >-
+          This is an attribute that defines the entity, which is added in the
+          ingestion pipeline.
+        migrationInformation:
+          legacyNames:
+            - entityName
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: entity.id
+        type: string
+        description: >-
+          This is an attribute that defines the entity, which is added in the
+          ingestion pipeline.
+        migrationInformation:
+          legacyNames:
+            - entityId
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: tags.*
+        type: string
+        description: >-
+          These are user-defined tags (* matches any value configured by the
+          customer)
+        migrationInformation:
+          legacyNames:
+            - label.*
+            - ec2Tag_*
+            - provider.ec2Tag_*
+            - tag_*
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: tags.container.*
+        type: string
+        description: >-
+          These are user-defined tags (* matches any value configured by the
+          customer)
+        migrationInformation:
+          legacyNames:
+            - containerLabel_*
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: host.kernelVersion
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - kernelVersion
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: host.linuxDistribution
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - linuxDistribution
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: host.operatingSystem
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - operatingSystem
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: host.windowsFamily
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - windowsFamily
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: host.windowsPlatform
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - windowsPlatform
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: host.windowsVersion
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - windowsVersion
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: host.instanceType
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - instanceType
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: host.hostname
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - hostname
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: host.fullHostname
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - fullHostname
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: aws.region
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - awsRegion
+            - provider.awsRegion
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: aws.accountId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - awsAccountId
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: aws.availabilityZone
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - awsAvailabilityZone
+            - provider.awsAvailabilityZone
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: aws.ec2.InstanceId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2InstanceId
+            - provider.ec2InstanceId
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: aws.ec2.publicDnsName
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2PublicDnsName
+            - provider.ec2PublicDnsName
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: aws.ec2.state
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2State
+            - provider.ec2State
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: aws.ec2.ebsOptimized
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2EbsOptimized
+            - provider.ec2EbsOptimized
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: aws.ec2.publicIpAddress
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2PublicIpAddress
+            - provider.ec2PublicIpAddress
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: aws.ec2.privateIpAddress
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2PrivateIpAddress
+            - provider.ec2PrivateIpAddress
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: aws.vpcId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2VpcId
+            - provider.ec2VpcId
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: aws.ec2.amiId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2AmiId
+            - provider.ec2AmiId
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: aws.ec2.privateDnsName
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2PrivateDnsName
+            - provider.ec2PrivateDnsName
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: aws.ec2.keyName
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2KeyName
+            - provider.ec2KeyName
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: aws.ec2.subnetId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2SubnetId
+            - provider.ec2SubnetId
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: aws.ec2.instanceType
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2InstanceType
+            - provider.ec2InstanceType
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: aws.ec2.hypervisor
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2Hypervisor
+            - provider.ec2Hypervisor
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: aws.ec2.architecture
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2Architecture
+            - provider.ec2Architecture
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: aws.ec2.rootDeviceType
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2RootDeviceType
+            - provider.ec2RootDeviceType
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: aws.ec2.rootDeviceName
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2RootDeviceName
+            - provider.ec2RootDeviceName
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: aws.ec2.virtualizationType
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2VirtualizationType
+            - provider.ec2VirtualizationType
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: aws.ec2.placementGroupName
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2PlacementGroupName
+            - provider.ec2PlacementGroupName
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: aws.ec2.placementGroupTenancy
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2PlacementGroupTenancy
+            - provider.ec2PlacementGroupTenancy
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: aws.arn
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - aws.arn
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: azure.subscriptionId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - subscriptionId
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: azure.compute.virtualmachines.vmId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - vmId
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: azure.compute.virtualmachines.vmSize
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - vmSize
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: azure.compute.virtualmachines.image
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - image
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: azure.compute.virtualmachines.availabilitySet
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - availabilitySet
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: azure.resourceType
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - type
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: azure.region
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - regionName
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: azure.resourceGroup
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - resourceGroupName
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: gcp.compute.status
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - status
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: gcp.compute.machineType
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - machineType
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: gcp.compute.isPreemptible
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - isPreemptible
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: gcp.projectId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - projectId
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: gcp.zone
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - zone
+          legacyEventTypes:
+            - KafkaBrokerSample
+    internalAttributes:
+      - name: newrelic.integrationName
+        type: string
+        migrationInformation:
+          legacyNames:
+            - integrationName
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: newrelic.integrationVersion
+        type: string
+        migrationInformation:
+          legacyNames:
+            - integrationVersion
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: newrelic.agentVersion
+        type: string
+        migrationInformation:
+          legacyNames:
+            - agentVersion
+          legacyEventTypes:
+            - KafkaBrokerSample
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+      - name: newrelic.reportingAgent
+        type: string
+        migrationInformation:
+          legacyNames:
+            - reportingAgent
+          legacyEventTypes:
+            - KafkaBrokerSample
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+      - name: newrelic.reportingEndpoint
+        type: string
+        migrationInformation:
+          legacyNames:
+            - reportingEndpoint
+          legacyEventTypes:
+            - KafkaBrokerSample
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+      - name: newrelic.reportingEntityKey
+        type: string
+        migrationInformation:
+          legacyNames:
+            - reportingEntityKey
+          legacyEventTypes:
+            - KafkaBrokerSample
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+      - name: newrelic.hostId
+        type: string
+        migrationInformation:
+          legacyNames:
+            - hostID
+          legacyEventTypes:
+            - KafkaBrokerSample
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+      - name: newrelic.countersSource
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - countersSource
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: newrelic.entityAndPid
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - entityAndPid
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: newrelic.entityAndMountPoint
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - entityAndMountPoint
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: newrelic.entityAndInterface
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - entityAndInterface
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: newrelic.cloudIntegrations.integrationId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - dataSourceId
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: newrelic.cloudIntegrations.integrationName
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - dataSourceName
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: newrelic.cloudIntegrations.providerAccountId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - providerAccountId
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: newrelic.cloudIntegrations.providerAccountName
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - providerAccountName
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: newrelic.cloudIntegrations.providerExternalId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - providerExternalId
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: nr.cloudVmType
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - nr.cloudVmType
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: nr.performanceMetricsEnabled
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - nr.performanceMetricsEnabled
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: newrelic.apmApplicationNames
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - apmApplicationNames
+          legacyEventTypes:
+            - KafkaBrokerSample
+      - name: newrelic.apmApplicationIds
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - apmApplicationIds
+          legacyEventTypes:
+            - KafkaBrokerSample
+    ignoredAttributes:
+      - agentName
+      - coreCount
+      - processorCount
+      - systemMemoryBytes
+      - entityKey
+      - externalKey
+      - warningViolationCount
+      - criticalViolationCount
+      - displayName
+      - event_type
+      - provider
+      - networkTag.*
+  - entityType: KafkaTopic
+    metrics:
+      - name: kafka.topic.bytesInPerSec
+        type: gauge
+        defaultResolution: 15
+        unit: bytesPerSecond
+        migrationInformation:
+          legacyEventType: KafkaTopicSample
+          legacyNames:
+            - topic.BytesInPerSec
+      - name: kafka.topic.bytesOutPerSec
+        type: gauge
+        defaultResolution: 15
+        unit: bytesPerSecond
+        migrationInformation:
+          legacyEventType: KafkaTopicSample
+          legacyNames:
+            - topic.BytesOutPerSec
+      - name: kafka.topic.messagesInPerSec
+        type: gauge
+        defaultResolution: 15
+        unit: countPerSecond
+        migrationInformation:
+          legacyEventType: KafkaTopicSample
+          legacyNames:
+            - topic.MessagesInPerSec
+      - name: kafka.topic.partitionsWithNonPreferredLeader
+        type: gauge
+        defaultResolution: 15
+        unit: count
+        migrationInformation:
+          legacyEventType: KafkaTopicSample
+          legacyNames:
+            - topic.partitionsWithNonPreferredLeader
+      - name: kafka.topic.respondsToMetadataRequests
+        type: gauge
+        defaultResolution: 15
+        unit: count
+        migrationInformation:
+          legacyEventType: KafkaTopicSample
+          legacyNames:
+            - topic.respondsToMetadataRequests
+      - name: kafka.topic.retentionBytesOrTime
+        type: gauge
+        defaultResolution: 15
+        unit: count
+        migrationInformation:
+          legacyEventType: KafkaTopicSample
+          legacyNames:
+            - topic.retentionBytesOrTime
+      - name: kafka.topic.underReplicatedPartitions
+        type: gauge
+        defaultResolution: 15
+        unit: count
+        migrationInformation:
+          legacyEventType: KafkaTopicSample
+          legacyNames:
+            - topic.underReplicatedPartitions
+    tags:
+      - name: kafka.clusterName
+        type: string
+        migrationInformation:
+          legacyNames:
+            - clusterName
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: kafka.topic
+        type: string
+        migrationInformation:
+          legacyNames:
+            - topic
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: k8s.containerImage
+        type: string
+        description: >-
+          This attribute is added by nri-kubernetes if this integration is
+          running in a instrumented K8s cluster.
+        migrationInformation:
+          legacyNames:
+            - containerImage
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: k8s.containerName
+        type: string
+        description: >-
+          This attribute is added by nri-kubernetes if this integration is
+          running in a instrumented K8s cluster.
+        migrationInformation:
+          legacyNames:
+            - containerName
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: k8s.deploymentName
+        type: string
+        description: >-
+          This attribute is added by nri-kubernetes if this integration is
+          running in a instrumented K8s cluster.
+        migrationInformation:
+          legacyNames:
+            - deploymentName
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: k8s.namespaceName
+        type: string
+        description: >-
+          This attribute is added by nri-kubernetes if this integration is
+          running in a instrumented K8s cluster.
+        migrationInformation:
+          legacyNames:
+            - namespaceName
+            - namespace
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: k8s.nodeName
+        type: string
+        description: >-
+          This attribute is added by nri-kubernetes if this integration is
+          running in a instrumented K8s cluster.
+        migrationInformation:
+          legacyNames:
+            - nodeName
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: k8s.podName
+        type: string
+        description: >-
+          This attribute is added by nri-kubernetes if this integration is
+          running in a instrumented K8s cluster.
+        migrationInformation:
+          legacyNames:
+            - podName
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: entity.guid
+        type: string
+        description: >-
+          This is an attribute that defines the entity, which is added in the
+          ingestion pipeline.
+        migrationInformation:
+          legacyNames:
+            - entityGuid
+            - nr.entityGuid
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: entity.name
+        type: string
+        description: >-
+          This is an attribute that defines the entity, which is added in the
+          ingestion pipeline.
+        migrationInformation:
+          legacyNames:
+            - entityName
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: entity.id
+        type: string
+        description: >-
+          This is an attribute that defines the entity, which is added in the
+          ingestion pipeline.
+        migrationInformation:
+          legacyNames:
+            - entityId
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: tags.*
+        type: string
+        description: >-
+          These are user-defined tags (* matches any value configured by the
+          customer)
+        migrationInformation:
+          legacyNames:
+            - label.*
+            - ec2Tag_*
+            - provider.ec2Tag_*
+            - tag_*
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: tags.container.*
+        type: string
+        description: >-
+          These are user-defined tags (* matches any value configured by the
+          customer)
+        migrationInformation:
+          legacyNames:
+            - containerLabel_*
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: host.kernelVersion
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - kernelVersion
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: host.linuxDistribution
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - linuxDistribution
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: host.operatingSystem
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - operatingSystem
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: host.windowsFamily
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - windowsFamily
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: host.windowsPlatform
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - windowsPlatform
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: host.windowsVersion
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - windowsVersion
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: host.instanceType
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - instanceType
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: host.hostname
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - hostname
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: host.fullHostname
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - fullHostname
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: aws.region
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - awsRegion
+            - provider.awsRegion
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: aws.accountId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - awsAccountId
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: aws.availabilityZone
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - awsAvailabilityZone
+            - provider.awsAvailabilityZone
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: aws.ec2.InstanceId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2InstanceId
+            - provider.ec2InstanceId
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: aws.ec2.publicDnsName
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2PublicDnsName
+            - provider.ec2PublicDnsName
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: aws.ec2.state
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2State
+            - provider.ec2State
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: aws.ec2.ebsOptimized
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2EbsOptimized
+            - provider.ec2EbsOptimized
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: aws.ec2.publicIpAddress
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2PublicIpAddress
+            - provider.ec2PublicIpAddress
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: aws.ec2.privateIpAddress
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2PrivateIpAddress
+            - provider.ec2PrivateIpAddress
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: aws.vpcId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2VpcId
+            - provider.ec2VpcId
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: aws.ec2.amiId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2AmiId
+            - provider.ec2AmiId
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: aws.ec2.privateDnsName
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2PrivateDnsName
+            - provider.ec2PrivateDnsName
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: aws.ec2.keyName
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2KeyName
+            - provider.ec2KeyName
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: aws.ec2.subnetId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2SubnetId
+            - provider.ec2SubnetId
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: aws.ec2.instanceType
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2InstanceType
+            - provider.ec2InstanceType
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: aws.ec2.hypervisor
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2Hypervisor
+            - provider.ec2Hypervisor
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: aws.ec2.architecture
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2Architecture
+            - provider.ec2Architecture
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: aws.ec2.rootDeviceType
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2RootDeviceType
+            - provider.ec2RootDeviceType
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: aws.ec2.rootDeviceName
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2RootDeviceName
+            - provider.ec2RootDeviceName
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: aws.ec2.virtualizationType
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2VirtualizationType
+            - provider.ec2VirtualizationType
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: aws.ec2.placementGroupName
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2PlacementGroupName
+            - provider.ec2PlacementGroupName
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: aws.ec2.placementGroupTenancy
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2PlacementGroupTenancy
+            - provider.ec2PlacementGroupTenancy
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: aws.arn
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - aws.arn
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: azure.subscriptionId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - subscriptionId
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: azure.compute.virtualmachines.vmId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - vmId
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: azure.compute.virtualmachines.vmSize
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - vmSize
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: azure.compute.virtualmachines.image
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - image
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: azure.compute.virtualmachines.availabilitySet
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - availabilitySet
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: azure.resourceType
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - type
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: azure.region
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - regionName
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: azure.resourceGroup
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - resourceGroupName
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: gcp.compute.status
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - status
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: gcp.compute.machineType
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - machineType
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: gcp.compute.isPreemptible
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - isPreemptible
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: gcp.projectId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - projectId
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: gcp.zone
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - zone
+          legacyEventTypes:
+            - KafkaTopicSample
+    internalAttributes:
+      - name: newrelic.integrationName
+        type: string
+        migrationInformation:
+          legacyNames:
+            - integrationName
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: newrelic.integrationVersion
+        type: string
+        migrationInformation:
+          legacyNames:
+            - integrationVersion
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: newrelic.agentVersion
+        type: string
+        migrationInformation:
+          legacyNames:
+            - agentVersion
+          legacyEventTypes:
+            - KafkaTopicSample
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+      - name: newrelic.reportingAgent
+        type: string
+        migrationInformation:
+          legacyNames:
+            - reportingAgent
+          legacyEventTypes:
+            - KafkaTopicSample
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+      - name: newrelic.reportingEndpoint
+        type: string
+        migrationInformation:
+          legacyNames:
+            - reportingEndpoint
+          legacyEventTypes:
+            - KafkaTopicSample
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+      - name: newrelic.reportingEntityKey
+        type: string
+        migrationInformation:
+          legacyNames:
+            - reportingEntityKey
+          legacyEventTypes:
+            - KafkaTopicSample
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+      - name: newrelic.hostId
+        type: string
+        migrationInformation:
+          legacyNames:
+            - hostID
+          legacyEventTypes:
+            - KafkaTopicSample
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+      - name: newrelic.countersSource
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - countersSource
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: newrelic.entityAndPid
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - entityAndPid
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: newrelic.entityAndMountPoint
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - entityAndMountPoint
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: newrelic.entityAndInterface
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - entityAndInterface
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: newrelic.cloudIntegrations.integrationId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - dataSourceId
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: newrelic.cloudIntegrations.integrationName
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - dataSourceName
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: newrelic.cloudIntegrations.providerAccountId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - providerAccountId
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: newrelic.cloudIntegrations.providerAccountName
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - providerAccountName
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: newrelic.cloudIntegrations.providerExternalId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - providerExternalId
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: nr.cloudVmType
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - nr.cloudVmType
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: nr.performanceMetricsEnabled
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - nr.performanceMetricsEnabled
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: newrelic.apmApplicationNames
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - apmApplicationNames
+          legacyEventTypes:
+            - KafkaTopicSample
+      - name: newrelic.apmApplicationIds
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - apmApplicationIds
+          legacyEventTypes:
+            - KafkaTopicSample
+    ignoredAttributes:
+      - agentName
+      - coreCount
+      - processorCount
+      - systemMemoryBytes
+      - entityKey
+      - externalKey
+      - warningViolationCount
+      - criticalViolationCount
+      - displayName
+      - event_type
+      - provider
+      - networkTag.*
+  - entityType: KafkaProducer
+    metrics:
+      - name: kafka.producer.ageMetadataUsedInMilliseconds
+        type: gauge
+        defaultResolution: 15
+        unit: milliseconds
+        migrationInformation:
+          legacyEventType: KafkaProducerSample
+          legacyNames:
+            - producer.ageMetadataUsedInMilliseconds
+      - name: kafka.producer.availableBufferInBytes
+        type: gauge
+        defaultResolution: 15
+        unit: bytes
+        migrationInformation:
+          legacyEventType: KafkaProducerSample
+          legacyNames:
+            - producer.availableBufferInBytes
+      - name: kafka.producer.avgBytesSentPerRequestInBytes
+        type: gauge
+        defaultResolution: 15
+        unit: bytes
+        migrationInformation:
+          legacyEventType: KafkaProducerSample
+          legacyNames:
+            - producer.avgBytesSentPerRequestInBytes
+      - name: kafka.producer.avgCompressionRateRecordBatches
+        type: gauge
+        defaultResolution: 15
+        unit: ratio
+        migrationInformation:
+          legacyEventType: KafkaProducerSample
+          legacyNames:
+            - producer.avgCompressionRateRecordBatches
+      - name: kafka.producer.avgRecordAccumulatorsInMilliseconds
+        type: gauge
+        defaultResolution: 15
+        unit: milliseconds
+        migrationInformation:
+          legacyEventType: KafkaProducerSample
+          legacyNames:
+            - producer.avgRecordAccumulatorsInMilliseconds
+      - name: kafka.producer.avgRecordSizeInBytes
+        type: gauge
+        defaultResolution: 15
+        unit: bytes
+        migrationInformation:
+          legacyEventType: KafkaProducerSample
+          legacyNames:
+            - producer.avgRecordSizeInBytes
+      - name: kafka.producer.avgRecordsSentPerSecond
+        type: gauge
+        defaultResolution: 15
+        unit: countPerSecond
+        migrationInformation:
+          legacyEventType: KafkaProducerSample
+          legacyNames:
+            - producer.avgRecordsSentPerSecond
+      - name: kafka.producer.avgRecordsSentPerTopicPerSecond
+        type: gauge
+        defaultResolution: 15
+        unit: countPerSecond
+        migrationInformation:
+          legacyEventType: KafkaProducerSample
+          legacyNames:
+            - producer.avgRecordsSentPerTopicPerSecond
+        dimensions:
+          - name: kafka.topic
+            type: string
+            migrationInformation:
+              legacyNames:
+                - topic
+              legacyEventTypes:
+                - KafkaProducerSample
+      - name: kafka.producer.avgRequestLatency
+        type: gauge
+        defaultResolution: 15
+        unit: milliseconds
+        migrationInformation:
+          legacyEventType: KafkaProducerSample
+          legacyNames:
+            - producer.avgRequestLatencyPerSecond
+      - name: kafka.producer.avgThrottleTime
+        type: gauge
+        defaultResolution: 15
+        unit: milliseconds
+        migrationInformation:
+          legacyEventType: KafkaProducerSample
+          legacyNames:
+            - producer.avgThrottleTime
+      - name: kafka.producer.bufferMemoryAvailableInBytes
+        type: gauge
+        defaultResolution: 15
+        unit: bytes
+        migrationInformation:
+          legacyEventType: KafkaProducerSample
+          legacyNames:
+            - producer.bufferMemoryAvailableInBytes
+      - name: kafka.producer.bufferpoolWaitTime
+        type: gauge
+        defaultResolution: 15
+        unit: milliseconds
+        migrationInformation:
+          legacyEventType: KafkaProducerSample
+          legacyNames:
+            - producer.bufferpoolWaitTime
+      - name: kafka.producer.bytesOutPerSecond
+        type: gauge
+        defaultResolution: 15
+        unit: bytesPerSecond
+        migrationInformation:
+          legacyEventType: KafkaProducerSample
+          legacyNames:
+            - producer.bytesOutPerSecond
+      - name: kafka.producer.compressionRateRecordBatches
+        type: gauge
+        defaultResolution: 15
+        unit: ratio
+        migrationInformation:
+          legacyEventType: KafkaProducerSample
+          legacyNames:
+            - producer.compressionRateRecordBatches
+      - name: kafka.producer.ioWaitTime
+        type: gauge
+        defaultResolution: 15
+        unit: nanoseconds
+        migrationInformation:
+          legacyEventType: KafkaProducerSample
+          legacyNames:
+            - producer.ioWaitTime
+      - name: kafka.producer.maxBytesSentPerRequestInBytes
+        type: gauge
+        defaultResolution: 15
+        unit: bytes
+        migrationInformation:
+          legacyEventType: KafkaProducerSample
+          legacyNames:
+            - producer.maxBytesSentPerRequestInBytes
+      - name: kafka.producer.maxRecordSizeInBytes
+        type: gauge
+        defaultResolution: 15
+        unit: bytes
+        migrationInformation:
+          legacyEventType: KafkaProducerSample
+          legacyNames:
+            - producer.maxRecordSizeInBytes
+      - name: kafka.producer.maxRequestLatencyInMilliseconds
+        type: gauge
+        defaultResolution: 15
+        unit: milliseconds
+        migrationInformation:
+          legacyEventType: KafkaProducerSample
+          legacyNames:
+            - producer.maxRequestLatencyInMilliseconds
+      - name: kafka.producer.maxThrottleTime
+        type: gauge
+        defaultResolution: 15
+        unit: milliseconds
+        migrationInformation:
+          legacyEventType: KafkaProducerSample
+          legacyNames:
+            - producer.maxThrottleTime
+      - name: kafka.producer.requestPerSecond
+        type: gauge
+        defaultResolution: 15
+        unit: countPerSecond
+        migrationInformation:
+          legacyEventType: KafkaProducerSample
+          legacyNames:
+            - producer.requestPerSecond
+      - name: kafka.producer.requestsWaitingResponse
+        type: gauge
+        defaultResolution: 15
+        unit: count
+        migrationInformation:
+          legacyEventType: KafkaProducerSample
+          legacyNames:
+            - producer.requestsWaitingResponse
+      - name: kafka.producer.responsePerSecond
+        type: gauge
+        defaultResolution: 15
+        unit: countPerSecond
+        migrationInformation:
+          legacyEventType: KafkaProducerSample
+          legacyNames:
+            - producer.responsePerSecond
+      - name: kafka.producer.threadsWaiting
+        type: gauge
+        defaultResolution: 15
+        unit: count
+        migrationInformation:
+          legacyEventType: KafkaProducerSample
+          legacyNames:
+            - producer.threadsWaiting
+    tags:
+      - name: kafka.clusterName
+        type: string
+        migrationInformation:
+          legacyNames:
+            - clusterName
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: k8s.containerImage
+        type: string
+        description: >-
+          This attribute is added by nri-kubernetes if this integration is
+          running in a instrumented K8s cluster.
+        migrationInformation:
+          legacyNames:
+            - containerImage
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: k8s.containerName
+        type: string
+        description: >-
+          This attribute is added by nri-kubernetes if this integration is
+          running in a instrumented K8s cluster.
+        migrationInformation:
+          legacyNames:
+            - containerName
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: k8s.deploymentName
+        type: string
+        description: >-
+          This attribute is added by nri-kubernetes if this integration is
+          running in a instrumented K8s cluster.
+        migrationInformation:
+          legacyNames:
+            - deploymentName
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: k8s.namespaceName
+        type: string
+        description: >-
+          This attribute is added by nri-kubernetes if this integration is
+          running in a instrumented K8s cluster.
+        migrationInformation:
+          legacyNames:
+            - namespaceName
+            - namespace
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: k8s.nodeName
+        type: string
+        description: >-
+          This attribute is added by nri-kubernetes if this integration is
+          running in a instrumented K8s cluster.
+        migrationInformation:
+          legacyNames:
+            - nodeName
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: k8s.podName
+        type: string
+        description: >-
+          This attribute is added by nri-kubernetes if this integration is
+          running in a instrumented K8s cluster.
+        migrationInformation:
+          legacyNames:
+            - podName
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: entity.guid
+        type: string
+        description: >-
+          This is an attribute that defines the entity, which is added in the
+          ingestion pipeline.
+        migrationInformation:
+          legacyNames:
+            - entityGuid
+            - nr.entityGuid
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: entity.name
+        type: string
+        description: >-
+          This is an attribute that defines the entity, which is added in the
+          ingestion pipeline.
+        migrationInformation:
+          legacyNames:
+            - entityName
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: entity.id
+        type: string
+        description: >-
+          This is an attribute that defines the entity, which is added in the
+          ingestion pipeline.
+        migrationInformation:
+          legacyNames:
+            - entityId
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: tags.*
+        type: string
+        description: >-
+          These are user-defined tags (* matches any value configured by the
+          customer)
+        migrationInformation:
+          legacyNames:
+            - label.*
+            - ec2Tag_*
+            - provider.ec2Tag_*
+            - tag_*
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: tags.container.*
+        type: string
+        description: >-
+          These are user-defined tags (* matches any value configured by the
+          customer)
+        migrationInformation:
+          legacyNames:
+            - containerLabel_*
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: host.kernelVersion
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - kernelVersion
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: host.linuxDistribution
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - linuxDistribution
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: host.operatingSystem
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - operatingSystem
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: host.windowsFamily
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - windowsFamily
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: host.windowsPlatform
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - windowsPlatform
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: host.windowsVersion
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - windowsVersion
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: host.instanceType
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - instanceType
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: host.hostname
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - hostname
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: host.fullHostname
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - fullHostname
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: aws.region
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - awsRegion
+            - provider.awsRegion
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: aws.accountId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - awsAccountId
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: aws.availabilityZone
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - awsAvailabilityZone
+            - provider.awsAvailabilityZone
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: aws.ec2.InstanceId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2InstanceId
+            - provider.ec2InstanceId
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: aws.ec2.publicDnsName
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2PublicDnsName
+            - provider.ec2PublicDnsName
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: aws.ec2.state
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2State
+            - provider.ec2State
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: aws.ec2.ebsOptimized
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2EbsOptimized
+            - provider.ec2EbsOptimized
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: aws.ec2.publicIpAddress
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2PublicIpAddress
+            - provider.ec2PublicIpAddress
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: aws.ec2.privateIpAddress
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2PrivateIpAddress
+            - provider.ec2PrivateIpAddress
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: aws.vpcId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2VpcId
+            - provider.ec2VpcId
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: aws.ec2.amiId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2AmiId
+            - provider.ec2AmiId
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: aws.ec2.privateDnsName
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2PrivateDnsName
+            - provider.ec2PrivateDnsName
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: aws.ec2.keyName
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2KeyName
+            - provider.ec2KeyName
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: aws.ec2.subnetId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2SubnetId
+            - provider.ec2SubnetId
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: aws.ec2.instanceType
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2InstanceType
+            - provider.ec2InstanceType
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: aws.ec2.hypervisor
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2Hypervisor
+            - provider.ec2Hypervisor
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: aws.ec2.architecture
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2Architecture
+            - provider.ec2Architecture
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: aws.ec2.rootDeviceType
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2RootDeviceType
+            - provider.ec2RootDeviceType
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: aws.ec2.rootDeviceName
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2RootDeviceName
+            - provider.ec2RootDeviceName
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: aws.ec2.virtualizationType
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2VirtualizationType
+            - provider.ec2VirtualizationType
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: aws.ec2.placementGroupName
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2PlacementGroupName
+            - provider.ec2PlacementGroupName
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: aws.ec2.placementGroupTenancy
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2PlacementGroupTenancy
+            - provider.ec2PlacementGroupTenancy
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: aws.arn
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - aws.arn
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: azure.subscriptionId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - subscriptionId
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: azure.compute.virtualmachines.vmId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - vmId
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: azure.compute.virtualmachines.vmSize
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - vmSize
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: azure.compute.virtualmachines.image
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - image
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: azure.compute.virtualmachines.availabilitySet
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - availabilitySet
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: azure.resourceType
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - type
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: azure.region
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - regionName
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: azure.resourceGroup
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - resourceGroupName
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: gcp.compute.status
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - status
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: gcp.compute.machineType
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - machineType
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: gcp.compute.isPreemptible
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - isPreemptible
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: gcp.projectId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - projectId
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: gcp.zone
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - zone
+          legacyEventTypes:
+            - KafkaProducerSample
+    internalAttributes:
+      - name: newrelic.integrationName
+        type: string
+        migrationInformation:
+          legacyNames:
+            - integrationName
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: newrelic.integrationVersion
+        type: string
+        migrationInformation:
+          legacyNames:
+            - integrationVersion
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: newrelic.agentVersion
+        type: string
+        migrationInformation:
+          legacyNames:
+            - agentVersion
+          legacyEventTypes:
+            - KafkaProducerSample
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+      - name: newrelic.reportingAgent
+        type: string
+        migrationInformation:
+          legacyNames:
+            - reportingAgent
+          legacyEventTypes:
+            - KafkaProducerSample
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+      - name: newrelic.reportingEndpoint
+        type: string
+        migrationInformation:
+          legacyNames:
+            - reportingEndpoint
+          legacyEventTypes:
+            - KafkaProducerSample
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+      - name: newrelic.reportingEntityKey
+        type: string
+        migrationInformation:
+          legacyNames:
+            - reportingEntityKey
+          legacyEventTypes:
+            - KafkaProducerSample
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+      - name: newrelic.hostId
+        type: string
+        migrationInformation:
+          legacyNames:
+            - hostID
+          legacyEventTypes:
+            - KafkaProducerSample
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+      - name: newrelic.countersSource
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - countersSource
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: newrelic.entityAndPid
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - entityAndPid
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: newrelic.entityAndMountPoint
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - entityAndMountPoint
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: newrelic.entityAndInterface
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - entityAndInterface
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: newrelic.cloudIntegrations.integrationId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - dataSourceId
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: newrelic.cloudIntegrations.integrationName
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - dataSourceName
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: newrelic.cloudIntegrations.providerAccountId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - providerAccountId
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: newrelic.cloudIntegrations.providerAccountName
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - providerAccountName
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: newrelic.cloudIntegrations.providerExternalId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - providerExternalId
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: nr.cloudVmType
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - nr.cloudVmType
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: nr.performanceMetricsEnabled
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - nr.performanceMetricsEnabled
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: newrelic.apmApplicationNames
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - apmApplicationNames
+          legacyEventTypes:
+            - KafkaProducerSample
+      - name: newrelic.apmApplicationIds
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - apmApplicationIds
+          legacyEventTypes:
+            - KafkaProducerSample
+    ignoredAttributes:
+      - agentName
+      - coreCount
+      - processorCount
+      - systemMemoryBytes
+      - entityKey
+      - externalKey
+      - warningViolationCount
+      - criticalViolationCount
+      - displayName
+      - event_type
+      - provider
+      - networkTag.*
+  - entityType: KafkaConsumer
+    metrics:
+      - name: kafka.consumer.avgFetchSizeInBytes
+        type: gauge
+        defaultResolution: 15
+        unit: bytes
+        migrationInformation:
+          legacyEventType: KafkaConsumerSample
+          legacyNames:
+            - consumer.avgFetchSizeInBytes
+      - name: kafka.consumer.avgRecordConsumedPerTopic
+        type: gauge
+        defaultResolution: 15
+        unit: count
+        migrationInformation:
+          legacyEventType: KafkaConsumerSample
+          legacyNames:
+            - consumer.avgRecordConsumedPerTopic
+      - name: kafka.consumer.avgRecordConsumedPerTopicPerSecond
+        type: gauge
+        defaultResolution: 15
+        unit: countPerSecond
+        migrationInformation:
+          legacyEventType: KafkaConsumerSample
+          legacyNames:
+            - consumer.avgRecordConsumedPerTopicPerSecond
+        dimensions:
+          - name: kafka.topic
+            type: string
+            migrationInformation:
+              legacyNames:
+                - topic
+              legacyEventTypes:
+                - KafkaConsumerSample
+      - name: kafka.consumer.bytesInPerSecond
+        type: gauge
+        defaultResolution: 15
+        unit: bytesPerSecond
+        migrationInformation:
+          legacyEventType: KafkaConsumerSample
+          legacyNames:
+            - consumer.bytesInPerSecond
+      - name: kafka.consumer.fetchPerSecond
+        type: gauge
+        defaultResolution: 15
+        unit: countPerSecond
+        migrationInformation:
+          legacyEventType: KafkaConsumerSample
+          legacyNames:
+            - consumer.fetchPerSecond
+      - name: kafka.consumer.maxFetchSizeInBytes
+        type: gauge
+        defaultResolution: 15
+        unit: bytes
+        migrationInformation:
+          legacyEventType: KafkaConsumerSample
+          legacyNames:
+            - consumer.maxFetchSizeInBytes
+      - name: kafka.consumer.maxLag
+        type: gauge
+        defaultResolution: 15
+        unit: count
+        migrationInformation:
+          legacyEventType: KafkaConsumerSample
+          legacyNames:
+            - consumer.maxLag
+      - name: kafka.consumer.messageConsumptionPerSecond
+        type: gauge
+        defaultResolution: 15
+        unit: countPerSecond
+        migrationInformation:
+          legacyEventType: KafkaConsumerSample
+          legacyNames:
+            - consumer.messageConsumptionPerSecond
+      - name: kafka.consumer.hwm
+        type: gauge
+        defaultResolution: 15
+        unit: count
+        migrationInformation:
+          legacyEventType: KafkaOffsetSample
+          legacyNames:
+            - consumer.hwm
+        dimensions:
+          - name: kafka.partition
+            type: string
+            migrationInformation:
+              legacyNames:
+                - partition
+              legacyEventTypes:
+                - KafkaOffsetSample
+          - name: kafka.topic
+            type: string
+            migrationInformation:
+              legacyNames:
+                - topic
+              legacyEventTypes:
+                - KafkaOffsetSample
+      - name: kafka.consumer.lag
+        type: gauge
+        defaultResolution: 15
+        unit: count
+        migrationInformation:
+          legacyEventType: KafkaOffsetSample
+          legacyNames:
+            - consumer.lag
+        dimensions:
+          - name: kafka.partition
+            type: string
+            migrationInformation:
+              legacyNames:
+                - partition
+              legacyEventTypes:
+                - KafkaOffsetSample
+          - name: kafka.topic
+            type: string
+            migrationInformation:
+              legacyNames:
+                - topic
+              legacyEventTypes:
+                - KafkaOffsetSample
+      - name: kafka.consumer.offset
+        type: gauge
+        defaultResolution: 15
+        unit: count
+        migrationInformation:
+          legacyEventType: KafkaOffsetSample
+          legacyNames:
+            - consumer.offset
+        dimensions:
+          - name: kafka.partition
+            type: string
+            migrationInformation:
+              legacyNames:
+                - partition
+              legacyEventTypes:
+                - KafkaOffsetSample
+          - name: kafka.topic
+            type: string
+            migrationInformation:
+              legacyNames:
+                - topic
+              legacyEventTypes:
+                - KafkaOffsetSample
+      - name: kafka.consumer.totalLag
+        type: gauge
+        defaultResolution: 15
+        unit: count
+        migrationInformation:
+          legacyEventType: KafkaOffsetSample
+          legacyNames:
+            - consumer.totalLag
+    tags:
+      - name: kafka.host
+        type: string
+        migrationInformation:
+          legacyNames:
+            - host
+          legacyEventTypes:
+            - KafkaConsumerSample
+      - name: kafka.clientHost
+        type: string
+        migrationInformation:
+          legacyNames:
+            - clientHost
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: kafka.clientId
+        type: string
+        migrationInformation:
+          legacyNames:
+            - clientID
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: kafka.consumerGroup
+        type: string
+        migrationInformation:
+          legacyNames:
+            - consumerGroup
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: k8s.containerImage
+        type: string
+        description: >-
+          This attribute is added by nri-kubernetes if this integration is
+          running in a instrumented K8s cluster.
+        migrationInformation:
+          legacyNames:
+            - containerImage
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: k8s.containerName
+        type: string
+        description: >-
+          This attribute is added by nri-kubernetes if this integration is
+          running in a instrumented K8s cluster.
+        migrationInformation:
+          legacyNames:
+            - containerName
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: k8s.deploymentName
+        type: string
+        description: >-
+          This attribute is added by nri-kubernetes if this integration is
+          running in a instrumented K8s cluster.
+        migrationInformation:
+          legacyNames:
+            - deploymentName
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: k8s.namespaceName
+        type: string
+        description: >-
+          This attribute is added by nri-kubernetes if this integration is
+          running in a instrumented K8s cluster.
+        migrationInformation:
+          legacyNames:
+            - namespaceName
+            - namespace
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: k8s.nodeName
+        type: string
+        description: >-
+          This attribute is added by nri-kubernetes if this integration is
+          running in a instrumented K8s cluster.
+        migrationInformation:
+          legacyNames:
+            - nodeName
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: k8s.podName
+        type: string
+        description: >-
+          This attribute is added by nri-kubernetes if this integration is
+          running in a instrumented K8s cluster.
+        migrationInformation:
+          legacyNames:
+            - podName
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: entity.guid
+        type: string
+        description: >-
+          This is an attribute that defines the entity, which is added in the
+          ingestion pipeline.
+        migrationInformation:
+          legacyNames:
+            - entityGuid
+            - nr.entityGuid
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: entity.name
+        type: string
+        description: >-
+          This is an attribute that defines the entity, which is added in the
+          ingestion pipeline.
+        migrationInformation:
+          legacyNames:
+            - entityName
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: entity.id
+        type: string
+        description: >-
+          This is an attribute that defines the entity, which is added in the
+          ingestion pipeline.
+        migrationInformation:
+          legacyNames:
+            - entityId
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: tags.*
+        type: string
+        description: >-
+          These are user-defined tags (* matches any value configured by the
+          customer)
+        migrationInformation:
+          legacyNames:
+            - label.*
+            - ec2Tag_*
+            - provider.ec2Tag_*
+            - tag_*
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: tags.container.*
+        type: string
+        description: >-
+          These are user-defined tags (* matches any value configured by the
+          customer)
+        migrationInformation:
+          legacyNames:
+            - containerLabel_*
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: host.kernelVersion
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - kernelVersion
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: host.linuxDistribution
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - linuxDistribution
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: host.operatingSystem
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - operatingSystem
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: host.windowsFamily
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - windowsFamily
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: host.windowsPlatform
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - windowsPlatform
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: host.windowsVersion
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - windowsVersion
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: host.instanceType
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - instanceType
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: host.hostname
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - hostname
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: host.fullHostname
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - fullHostname
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: aws.region
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - awsRegion
+            - provider.awsRegion
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: aws.accountId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - awsAccountId
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: aws.availabilityZone
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - awsAvailabilityZone
+            - provider.awsAvailabilityZone
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: aws.ec2.InstanceId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2InstanceId
+            - provider.ec2InstanceId
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: aws.ec2.publicDnsName
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2PublicDnsName
+            - provider.ec2PublicDnsName
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: aws.ec2.state
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2State
+            - provider.ec2State
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: aws.ec2.ebsOptimized
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2EbsOptimized
+            - provider.ec2EbsOptimized
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: aws.ec2.publicIpAddress
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2PublicIpAddress
+            - provider.ec2PublicIpAddress
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: aws.ec2.privateIpAddress
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2PrivateIpAddress
+            - provider.ec2PrivateIpAddress
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: aws.vpcId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2VpcId
+            - provider.ec2VpcId
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: aws.ec2.amiId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2AmiId
+            - provider.ec2AmiId
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: aws.ec2.privateDnsName
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2PrivateDnsName
+            - provider.ec2PrivateDnsName
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: aws.ec2.keyName
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2KeyName
+            - provider.ec2KeyName
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: aws.ec2.subnetId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2SubnetId
+            - provider.ec2SubnetId
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: aws.ec2.instanceType
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2InstanceType
+            - provider.ec2InstanceType
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: aws.ec2.hypervisor
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2Hypervisor
+            - provider.ec2Hypervisor
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: aws.ec2.architecture
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2Architecture
+            - provider.ec2Architecture
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: aws.ec2.rootDeviceType
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2RootDeviceType
+            - provider.ec2RootDeviceType
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: aws.ec2.rootDeviceName
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2RootDeviceName
+            - provider.ec2RootDeviceName
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: aws.ec2.virtualizationType
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2VirtualizationType
+            - provider.ec2VirtualizationType
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: aws.ec2.placementGroupName
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2PlacementGroupName
+            - provider.ec2PlacementGroupName
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: aws.ec2.placementGroupTenancy
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2PlacementGroupTenancy
+            - provider.ec2PlacementGroupTenancy
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: aws.arn
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - aws.arn
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: azure.subscriptionId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - subscriptionId
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: azure.compute.virtualmachines.vmId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - vmId
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: azure.compute.virtualmachines.vmSize
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - vmSize
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: azure.compute.virtualmachines.image
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - image
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: azure.compute.virtualmachines.availabilitySet
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - availabilitySet
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: azure.resourceType
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - type
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: azure.region
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - regionName
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: azure.resourceGroup
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - resourceGroupName
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: gcp.compute.status
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - status
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: gcp.compute.machineType
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - machineType
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: gcp.compute.isPreemptible
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - isPreemptible
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: gcp.projectId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - projectId
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: gcp.zone
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - zone
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+    internalAttributes:
+      - name: newrelic.integrationName
+        type: string
+        migrationInformation:
+          legacyNames:
+            - integrationName
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: newrelic.integrationVersion
+        type: string
+        migrationInformation:
+          legacyNames:
+            - integrationVersion
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: newrelic.agentVersion
+        type: string
+        migrationInformation:
+          legacyNames:
+            - agentVersion
+          legacyEventTypes:
+            - KafkaOffsetSample
+            - KafkaConsumerSample
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+      - name: newrelic.reportingAgent
+        type: string
+        migrationInformation:
+          legacyNames:
+            - reportingAgent
+          legacyEventTypes:
+            - KafkaOffsetSample
+            - KafkaConsumerSample
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+      - name: newrelic.reportingEndpoint
+        type: string
+        migrationInformation:
+          legacyNames:
+            - reportingEndpoint
+          legacyEventTypes:
+            - KafkaOffsetSample
+            - KafkaConsumerSample
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+      - name: newrelic.reportingEntityKey
+        type: string
+        migrationInformation:
+          legacyNames:
+            - reportingEntityKey
+          legacyEventTypes:
+            - KafkaOffsetSample
+            - KafkaConsumerSample
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+      - name: newrelic.hostId
+        type: string
+        migrationInformation:
+          legacyNames:
+            - hostID
+          legacyEventTypes:
+            - KafkaOffsetSample
+            - KafkaConsumerSample
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+      - name: newrelic.countersSource
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - countersSource
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: newrelic.entityAndPid
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - entityAndPid
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: newrelic.entityAndMountPoint
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - entityAndMountPoint
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: newrelic.entityAndInterface
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - entityAndInterface
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: newrelic.cloudIntegrations.integrationId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - dataSourceId
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: newrelic.cloudIntegrations.integrationName
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - dataSourceName
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: newrelic.cloudIntegrations.providerAccountId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - providerAccountId
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: newrelic.cloudIntegrations.providerAccountName
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - providerAccountName
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: newrelic.cloudIntegrations.providerExternalId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - providerExternalId
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: nr.cloudVmType
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - nr.cloudVmType
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: nr.performanceMetricsEnabled
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - nr.performanceMetricsEnabled
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: newrelic.apmApplicationNames
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - apmApplicationNames
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+      - name: newrelic.apmApplicationIds
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - apmApplicationIds
+          legacyEventTypes:
+            - KafkaConsumerSample
+            - KafkaOffsetSample
+    ignoredAttributes:
+      - agentName
+      - coreCount
+      - processorCount
+      - systemMemoryBytes
+      - entityKey
+      - externalKey
+      - warningViolationCount
+      - criticalViolationCount
+      - displayName
+      - event_type
+      - provider
+      - networkTag.*
+  - entityType: KafkaConsumerGroup
+    metrics:
+      - name: kafka.consumerGroup.maxLag
+        type: gauge
+        defaultResolution: 15
+        unit: count
+        migrationInformation:
+          legacyEventType: KafkaOffsetSample
+          legacyNames:
+            - consumerGroup.maxLag
+      - name: kafka.consumerGroup.totalLag
+        type: gauge
+        defaultResolution: 15
+        unit: count
+        migrationInformation:
+          legacyEventType: KafkaOffsetSample
+          legacyNames:
+            - consumerGroup.totalLag
+    tags:
+      - name: kafka.clusterName
+        type: string
+        migrationInformation:
+          legacyNames:
+            - clusterName
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: kafka.consumerGroup
+        type: string
+        migrationInformation:
+          legacyNames:
+            - consumerGroup
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: k8s.containerImage
+        type: string
+        description: >-
+          This attribute is added by nri-kubernetes if this integration is
+          running in a instrumented K8s cluster.
+        migrationInformation:
+          legacyNames:
+            - containerImage
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: k8s.containerName
+        type: string
+        description: >-
+          This attribute is added by nri-kubernetes if this integration is
+          running in a instrumented K8s cluster.
+        migrationInformation:
+          legacyNames:
+            - containerName
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: k8s.deploymentName
+        type: string
+        description: >-
+          This attribute is added by nri-kubernetes if this integration is
+          running in a instrumented K8s cluster.
+        migrationInformation:
+          legacyNames:
+            - deploymentName
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: k8s.namespaceName
+        type: string
+        description: >-
+          This attribute is added by nri-kubernetes if this integration is
+          running in a instrumented K8s cluster.
+        migrationInformation:
+          legacyNames:
+            - namespaceName
+            - namespace
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: k8s.nodeName
+        type: string
+        description: >-
+          This attribute is added by nri-kubernetes if this integration is
+          running in a instrumented K8s cluster.
+        migrationInformation:
+          legacyNames:
+            - nodeName
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: k8s.podName
+        type: string
+        description: >-
+          This attribute is added by nri-kubernetes if this integration is
+          running in a instrumented K8s cluster.
+        migrationInformation:
+          legacyNames:
+            - podName
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: entity.guid
+        type: string
+        description: >-
+          This is an attribute that defines the entity, which is added in the
+          ingestion pipeline.
+        migrationInformation:
+          legacyNames:
+            - entityGuid
+            - nr.entityGuid
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: entity.name
+        type: string
+        description: >-
+          This is an attribute that defines the entity, which is added in the
+          ingestion pipeline.
+        migrationInformation:
+          legacyNames:
+            - entityName
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: entity.id
+        type: string
+        description: >-
+          This is an attribute that defines the entity, which is added in the
+          ingestion pipeline.
+        migrationInformation:
+          legacyNames:
+            - entityId
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: tags.*
+        type: string
+        description: >-
+          These are user-defined tags (* matches any value configured by the
+          customer)
+        migrationInformation:
+          legacyNames:
+            - label.*
+            - ec2Tag_*
+            - provider.ec2Tag_*
+            - tag_*
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: tags.container.*
+        type: string
+        description: >-
+          These are user-defined tags (* matches any value configured by the
+          customer)
+        migrationInformation:
+          legacyNames:
+            - containerLabel_*
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: host.kernelVersion
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - kernelVersion
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: host.linuxDistribution
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - linuxDistribution
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: host.operatingSystem
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - operatingSystem
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: host.windowsFamily
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - windowsFamily
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: host.windowsPlatform
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - windowsPlatform
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: host.windowsVersion
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - windowsVersion
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: host.instanceType
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - instanceType
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: host.hostname
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - hostname
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: host.fullHostname
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - fullHostname
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: aws.region
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - awsRegion
+            - provider.awsRegion
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: aws.accountId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - awsAccountId
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: aws.availabilityZone
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - awsAvailabilityZone
+            - provider.awsAvailabilityZone
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: aws.ec2.InstanceId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2InstanceId
+            - provider.ec2InstanceId
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: aws.ec2.publicDnsName
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2PublicDnsName
+            - provider.ec2PublicDnsName
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: aws.ec2.state
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2State
+            - provider.ec2State
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: aws.ec2.ebsOptimized
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2EbsOptimized
+            - provider.ec2EbsOptimized
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: aws.ec2.publicIpAddress
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2PublicIpAddress
+            - provider.ec2PublicIpAddress
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: aws.ec2.privateIpAddress
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2PrivateIpAddress
+            - provider.ec2PrivateIpAddress
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: aws.vpcId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2VpcId
+            - provider.ec2VpcId
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: aws.ec2.amiId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2AmiId
+            - provider.ec2AmiId
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: aws.ec2.privateDnsName
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2PrivateDnsName
+            - provider.ec2PrivateDnsName
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: aws.ec2.keyName
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2KeyName
+            - provider.ec2KeyName
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: aws.ec2.subnetId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2SubnetId
+            - provider.ec2SubnetId
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: aws.ec2.instanceType
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2InstanceType
+            - provider.ec2InstanceType
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: aws.ec2.hypervisor
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2Hypervisor
+            - provider.ec2Hypervisor
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: aws.ec2.architecture
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2Architecture
+            - provider.ec2Architecture
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: aws.ec2.rootDeviceType
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2RootDeviceType
+            - provider.ec2RootDeviceType
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: aws.ec2.rootDeviceName
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2RootDeviceName
+            - provider.ec2RootDeviceName
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: aws.ec2.virtualizationType
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2VirtualizationType
+            - provider.ec2VirtualizationType
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: aws.ec2.placementGroupName
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2PlacementGroupName
+            - provider.ec2PlacementGroupName
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: aws.ec2.placementGroupTenancy
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - ec2PlacementGroupTenancy
+            - provider.ec2PlacementGroupTenancy
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: aws.arn
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - aws.arn
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: azure.subscriptionId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - subscriptionId
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: azure.compute.virtualmachines.vmId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - vmId
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: azure.compute.virtualmachines.vmSize
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - vmSize
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: azure.compute.virtualmachines.image
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - image
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: azure.compute.virtualmachines.availabilitySet
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - availabilitySet
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: azure.resourceType
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - type
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: azure.region
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - regionName
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: azure.resourceGroup
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - resourceGroupName
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: gcp.compute.status
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - status
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: gcp.compute.machineType
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - machineType
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: gcp.compute.isPreemptible
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - isPreemptible
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: gcp.projectId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - projectId
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: gcp.zone
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - zone
+          legacyEventTypes:
+            - KafkaOffsetSample
+    internalAttributes:
+      - name: newrelic.integrationName
+        type: string
+        migrationInformation:
+          legacyNames:
+            - integrationName
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: newrelic.integrationVersion
+        type: string
+        migrationInformation:
+          legacyNames:
+            - integrationVersion
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: newrelic.agentVersion
+        type: string
+        migrationInformation:
+          legacyNames:
+            - agentVersion
+          legacyEventTypes:
+            - KafkaOffsetSample
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+      - name: newrelic.reportingAgent
+        type: string
+        migrationInformation:
+          legacyNames:
+            - reportingAgent
+          legacyEventTypes:
+            - KafkaOffsetSample
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+      - name: newrelic.reportingEndpoint
+        type: string
+        migrationInformation:
+          legacyNames:
+            - reportingEndpoint
+          legacyEventTypes:
+            - KafkaOffsetSample
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+      - name: newrelic.reportingEntityKey
+        type: string
+        migrationInformation:
+          legacyNames:
+            - reportingEntityKey
+          legacyEventTypes:
+            - KafkaOffsetSample
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+      - name: newrelic.hostId
+        type: string
+        migrationInformation:
+          legacyNames:
+            - hostID
+          legacyEventTypes:
+            - KafkaOffsetSample
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+      - name: newrelic.countersSource
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - countersSource
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: newrelic.entityAndPid
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - entityAndPid
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: newrelic.entityAndMountPoint
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - entityAndMountPoint
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: newrelic.entityAndInterface
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - entityAndInterface
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: newrelic.cloudIntegrations.integrationId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - dataSourceId
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: newrelic.cloudIntegrations.integrationName
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - dataSourceName
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: newrelic.cloudIntegrations.providerAccountId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - providerAccountId
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: newrelic.cloudIntegrations.providerAccountName
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - providerAccountName
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: newrelic.cloudIntegrations.providerExternalId
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - providerExternalId
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: nr.cloudVmType
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - nr.cloudVmType
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: nr.performanceMetricsEnabled
+        type: string
+        description: >-
+          This is an attribute which comes from Cloud VMs integrations (AWS EC2,
+          Azure VMs, GCP VMs) if they are enabled.
+        migrationInformation:
+          legacyNames:
+            - nr.performanceMetricsEnabled
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: newrelic.apmApplicationNames
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - apmApplicationNames
+          legacyEventTypes:
+            - KafkaOffsetSample
+      - name: newrelic.apmApplicationIds
+        type: string
+        description: >-
+          This is an attribute which comes from the host that is reporting the
+          entity.
+        migrationInformation:
+          legacyNames:
+            - apmApplicationIds
+          legacyEventTypes:
+            - KafkaOffsetSample
+    ignoredAttributes:
+      - agentName
+      - coreCount
+      - processorCount
+      - systemMemoryBytes
+      - entityKey
+      - externalKey
+      - warningViolationCount
+      - criticalViolationCount
+      - displayName
+      - event_type
+      - provider
+      - networkTag.*

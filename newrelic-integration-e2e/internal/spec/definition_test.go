@@ -14,7 +14,8 @@ description: |
 agent:
   integrations:
     nri-prometheus:  bin/nri-prometheus
-
+  env_vars:
+    NRJMX_VERSION: "1.5.3"
 scenarios:
   - description: |
       Scenario Description.
@@ -43,12 +44,15 @@ scenarios:
 	assert.Nil(t, err)
 	assert.Equal(t, "End-to-end tests for PowerDNS integration\n", spec.Description)
 
-	expecedAgentOverrides := Agent{
+	expectedAgentExtensions := Agent{
 		Integrations: map[string]string{
 			"nri-prometheus": "bin/nri-prometheus",
 		},
+		EnvVars: map[string]string{
+			"NRJMX_VERSION": "1.5.3",
+		},
 	}
-	assert.Equal(t, &expecedAgentOverrides, spec.AgentOverrides)
+	assert.Equal(t, &expectedAgentExtensions, spec.AgentExtensions)
 
 	expectedScenarios := []Scenario{
 		{

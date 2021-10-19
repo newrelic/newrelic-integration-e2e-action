@@ -49,7 +49,7 @@ func TestRunner_Run(t *testing.T) {
 				Tests:        spec.Tests{},
 			},
 		},
-		AgentOverrides: nil,
+		AgentExtensions: nil,
 	}
 
 	runner := Runner{

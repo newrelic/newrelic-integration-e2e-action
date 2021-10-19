@@ -13,7 +13,7 @@ const (
 )
 
 func Run(path string, container string, envVars map[string]string) error {
-	if err := Build(path, container); err != nil {
+	if err := Build(path, container, envVars); err != nil {
 		return err
 	}
 	args := []string{"-f", path, "run"}
@@ -36,8 +36,12 @@ func Down(path string) error {
 	return cmd.Run()
 }
 
-func Build(path, container string) error {
-	args := []string{"-f", path, "build", "--no-cache", container}
+func Build(path, container string, envVars map[string]string) error {
+	args := []string{"-f", path, "build", "--no-cache"}
+	for k, v := range envVars {
+		args = append(args, "--build-arg", fmt.Sprintf("%s=%s", k, v))
+	}
+	args = append(args, container)
 	fmt.Println(strings.Join(args, " "))
 	cmd := exec.Command(dockerComposeBin, args...)
 	cmd.Stdout = os.Stdout

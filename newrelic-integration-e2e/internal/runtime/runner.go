@@ -66,6 +66,10 @@ func (r *Runner) Run() error {
 		scenarioTag := r.generateScenarioTag()
 		r.logger.Debugf("[scenario]: %s, [Tag]: %s", scenario.Description, scenarioTag)
 
+		if err := r.executeOSCommands(scenario.Before); err != nil {
+			return err
+		}
+
 		if err := r.agent.SetUp(scenario); err != nil {
 			return err
 		}

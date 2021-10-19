@@ -15,17 +15,17 @@ const (
 
 type clientMock struct{}
 
-func (c clientMock) FindEntityGUID(sample, metricName, customTagKey, entityTag string) (*entities.EntityGUID, error) {
+func (c clientMock) FindEntityGUIDs(sample, metricName, customTagKey, entityTag string, expectedNumber int) ([]entities.EntityGUID, error) {
 	switch sample {
 	case errFindEntityGUID:
 		return nil, errors.New("an-error")
 	case errFindEntityByGUID:
 		guid := entities.EntityGUID(errFindEntityByGUID)
-		return &guid, nil
+		return []entities.EntityGUID{guid}, nil
 	}
 
 	guid := entities.EntityGUID("AAAA")
-	return &guid, nil
+	return []entities.EntityGUID{guid}, nil
 }
 
 func (c clientMock) FindEntityByGUID(guid *entities.EntityGUID) (entities.EntityInterface, error) {
