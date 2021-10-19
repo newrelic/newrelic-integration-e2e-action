@@ -24,6 +24,10 @@ func NewEntitiesTester(nrClient newrelic.Client, logger *logrus.Logger) Entities
 func (et EntitiesTester) Test(tests spec.Tests, customTagKey, customTagValue string) []error {
 	var errors []error
 	for _, en := range tests.Entities {
+		// By default if not notified, we set expectedNumber to 1
+		if en.ExpectedNumber == 0 {
+			en.ExpectedNumber = 1
+		}
 		guids, err := et.nrClient.FindEntityGUIDs(en.DataType, en.MetricName, customTagKey, customTagValue, en.ExpectedNumber)
 		if err != nil {
 			errors = append(errors, fmt.Errorf("finding entity guid: %w", err))
