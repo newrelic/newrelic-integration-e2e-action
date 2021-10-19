@@ -8,7 +8,7 @@ End to end testing action for New Relic integrations to ensure that:
 - The service metrics and entities are correctly sent to NROne.
 
 New Relic has two kinds of integrations:
-- Custom made integrations (e2e testing still not supported)
+- Custom made integrations
 - Integrations based on prometheus exporters
 
 ![diagram](e2e.jpg)
