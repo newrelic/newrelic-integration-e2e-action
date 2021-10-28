@@ -2,19 +2,13 @@ package spec
 
 import yaml "gopkg.in/yaml.v3"
 
+const defaultCustomTagKey = "testKey"
+
 type Definition struct {
 	Description     string     `yaml:"description"`
 	Scenarios       []Scenario `yaml:"scenarios"`
 	AgentExtensions *Agent     `yaml:"agent"`
-}
-
-func (def *Definition) Validate() error {
-	for i := range def.Scenarios {
-		if err := def.Scenarios[i].validate(); err != nil {
-			return err
-		}
-	}
-	return nil
+	CustomTestKey   string     `yaml:"custom_test_key"`
 }
 
 type Agent struct {
@@ -28,15 +22,6 @@ type Scenario struct {
 	Before       []string      `yaml:"before"`
 	After        []string      `yaml:"after"`
 	Tests        Tests         `yaml:"tests"`
-}
-
-func (s *Scenario) validate() error {
-	for i := range s.Integrations {
-		if err := s.Integrations[i].validate(); err != nil {
-			return err
-		}
-	}
-	return nil
 }
 
 type Integration struct {
@@ -71,14 +56,15 @@ type TestMetrics struct {
 	ExpectedEntitiesNumber int      `yaml:"expected_entities_number"`
 }
 
-func (i *Integration) validate() error {
-	return nil
-}
-
 func ParseDefinitionFile(content []byte) (*Definition, error) {
 	specDefinition := &Definition{}
 	if err := yaml.Unmarshal(content, specDefinition); err != nil {
 		return nil, err
 	}
+
+	if specDefinition.CustomTestKey == "" {
+		specDefinition.CustomTestKey = defaultCustomTagKey
+	}
+
 	return specDefinition, nil
 }

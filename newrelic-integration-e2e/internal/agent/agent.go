@@ -61,7 +61,7 @@ func NewAgent(settings e2e.Settings) *agent {
 		dockerComposePath: filepath.Join(agentDir, dockerCompose),
 		licenseKey:        settings.LicenseKey(),
 		logger:            settings.Logger(),
-		customTagKey:      settings.CustomTagKey(),
+		customTagKey:      settings.SpecDefinition().CustomTestKey,
 	}
 
 	if settings.SpecDefinition().AgentExtensions != nil {

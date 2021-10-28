@@ -8,8 +8,6 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-const customTagKey = "testKey"
-
 var defaultSettingsOptions = settingOptions{
 	logLevel: logrus.InfoLevel,
 }
@@ -20,6 +18,7 @@ type settingOptions struct {
 	specParentDir string
 	licenseKey    string
 	agentDir      string
+	agentEnabled  bool
 	rootDir       string
 	accountID     int
 	apiKey        string
@@ -91,16 +90,22 @@ func SettingsWithCommitSha(commitSha string) SettingOption {
 	}
 }
 
+func SettingsWithAgentEnabled(agentEnabled bool) SettingOption {
+	return func(o *settingOptions) {
+		o.agentEnabled = agentEnabled
+	}
+}
+
 type Settings interface {
 	Logger() *logrus.Logger
 	SpecDefinition() *spec.Definition
+	AgentEnabled() bool
 	AgentDir() string
 	RootDir() string
 	SpecParentDir() string
 	LicenseKey() string
 	ApiKey() string
 	AccountID() int
-	CustomTagKey() string
 	RetryAttempts() int
 	RetrySeconds() int
 	CommitSha() string
@@ -109,6 +114,7 @@ type Settings interface {
 type settings struct {
 	logger         *logrus.Logger
 	specDefinition *spec.Definition
+	agentEnabled   bool
 	specParentDir  string
 	rootDir        string
 	agentDir       string
@@ -136,6 +142,10 @@ func (s *settings) AgentDir() string {
 	return s.agentDir
 }
 
+func (s *settings) AgentEnabled() bool {
+	return s.agentEnabled
+}
+
 func (s *settings) RootDir() string {
 	return s.rootDir
 }
@@ -150,10 +160,6 @@ func (s *settings) ApiKey() string {
 
 func (s *settings) AccountID() int {
 	return s.accountID
-}
-
-func (s *settings) CustomTagKey() string {
-	return customTagKey
 }
 
 func (s *settings) RetryAttempts() int {
@@ -187,10 +193,12 @@ func NewSettings(
 		return nil, err
 	}
 	logger.Debug("return with settings")
+
 	return &settings{
 		logger:         logger,
 		specDefinition: s,
 		agentDir:       options.agentDir,
+		agentEnabled:   options.agentEnabled,
 		specParentDir:  options.specParentDir,
 		rootDir:        options.rootDir,
 		licenseKey:     options.licenseKey,

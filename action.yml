@@ -24,16 +24,20 @@ inputs:
   agent_dir:
     description: Custom agent dir
     required: false
+  agent_enabled:
+    description: Enable the agent execution
+    required: false
+    default: "true"
   verbose:
     description: Verbose mode enabled
     required: false
-    default: "false"
+    default: "true"
 
 runs:
   using: "composite"
   steps:
     - id: run-spec
-      run: make -C ${{ github.action_path }} COMMIT_SHA=${{ github.sha }} ROOT_DIR=${{ github.workspace }} AGENT_DIR=${{ inputs.agent_dir }} ACCOUNT_ID=${{ inputs.account_id }} API_KEY=${{ inputs.api_key }} LICENSE_KEY=${{ inputs.license_key }} SPEC_PATH=${{ inputs.spec_path }} RETRY_ATTEMPTS=${{ inputs.retry_attempts }} RETRY_SECONDS=${{ inputs.retry_seconds }} VERBOSE=${{ inputs.verbose }} run
+      run: make -C ${{ github.action_path }} COMMIT_SHA=${{ github.sha }} AGENT_ENABLED=${{ inputs.agent_enabled }} ROOT_DIR=${{ github.workspace }} AGENT_DIR=${{ inputs.agent_dir }} ACCOUNT_ID=${{ inputs.account_id }} API_KEY=${{ inputs.api_key }} LICENSE_KEY=${{ inputs.license_key }} SPEC_PATH=${{ inputs.spec_path }} RETRY_ATTEMPTS=${{ inputs.retry_attempts }} RETRY_SECONDS=${{ inputs.retry_seconds }} VERBOSE=${{ inputs.verbose }} run
       shell: bash
 
 
