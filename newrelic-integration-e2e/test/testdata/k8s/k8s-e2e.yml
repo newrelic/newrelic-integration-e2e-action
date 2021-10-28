@@ -7,9 +7,9 @@ scenarios:
   - description: |
       This scenario will verify that metrics from a k8s Cluster are correcly collected.
     before:
-      - helm upgrade --install e2e-${SCENARIO_TAG} newrelic/nri-bundle --set global.licenseKey=${LICENSE_KEY} --set global.cluster=${SCENARIO_TAG} --set ksm.enabled=true --set webhook.enabled=false
+      - helm upgrade --install ${SCENARIO_TAG} newrelic/nri-bundle --set global.licenseKey=${LICENSE_KEY} --set global.cluster=${SCENARIO_TAG} --set ksm.enabled=true --set webhook.enabled=false
     after:
-      - helm delete e2e-${SCENARIO_TAG}
+      - helm delete ${SCENARIO_TAG}
     tests:
       nrqls: []
       entities:

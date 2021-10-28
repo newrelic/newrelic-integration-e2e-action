@@ -139,5 +139,12 @@ func (r *Runner) generateScenarioTag() string {
 	for i := range b {
 		b[i] = letterRunes[rand.Intn(len(letterRunes))]
 	}
-	return r.commitSha + string(b)
+
+	// This unless we are running tests locally should always be true
+	if len(r.commitSha) < 7 {
+		r.commitSha = r.commitSha + "0000000"
+	}
+
+	//retrieving the short-sha of the commit
+	return "e2e-" + r.commitSha[:7] + "-" + string(b)
 }
