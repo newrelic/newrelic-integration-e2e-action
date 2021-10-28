@@ -77,6 +77,7 @@ Optional parameters:
 - `retry_seconds` it's the number of seconds to wait after retrying a test. default: 30.
 - `retry_attempts` it's the number of attempts a failed test can be retried. default: 10.
 - `verbose` if set to to true the agent logs and other useful debug logs will be printed. default: false.
+- `agent_enabled` if set to false then the agent will not be spawned and its lifecycle will be up to the user of the action. Useful when testing K8s like integrations
 
 ## Spec file for the e2e 
 
@@ -86,7 +87,9 @@ The spec file for the e2e needs to be a yaml file with the following structure:
 
 `decription` : Description for the e2e test. 
 
-`agent` `: Extra environment variables and/or integrations required for the e2e.
+`custom_test_key`: (Optional) Key of the custom attribute to test. Useful in case you cannot control the keyName. 
+
+`agent`: Extra environment variables and/or integrations required for the e2e.
 - `integrations` : Additional integrations needed for the e2e.
 - `env_vars` : Additional EnvVars for the agent execution.
 
@@ -114,7 +117,7 @@ Example:
 ```yaml
 description: |
   End-to-end tests for PowerDNS integration
-
+  
 agent:
   integrations:
     nri-prometheus:  bin/nri-prometheus # nri-prometheus is added with the agent by default, but we added here as an example
