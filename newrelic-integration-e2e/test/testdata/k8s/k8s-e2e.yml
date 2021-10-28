@@ -17,4 +17,23 @@ scenarios:
           data_type: "Metric"
           metric_name: "k8s.deployment.podsTotal"
           expected_number: 2
-      metrics: []
+      metrics:
+        - source: "k8s.yml"
+          except_entities:
+            - K8sVolume
+            - K8sHpaSample
+            - K8sStatefulset
+            - K8sCluster # all metrics are related to controlPlane
+          except_metrics:
+            - k8s.container.cpuCoresUtilization
+            - k8s.container.cpuLimitCores
+            - k8s.container.cpuCfsPeriodsDelta
+            - k8s.container.cpuCfsThrottledPeriodsDelta
+            - k8s.container.cpuCfsThrottledSecondsDelta
+            - k8s.container.cpuCfsPeriodsTotal
+            - k8s.container.cpuCfsThrottledPeriodsTotal
+            - k8s.container.cpuCfsThrottledSecondsTotal
+            - k8s.node.allocatableHugepages*
+            - k8s.node.capacity*
+            - k8s.node.capacityAttachableVolumes*
+            - k8s.node.allocatableAttachableVolumes*
