@@ -26,7 +26,6 @@ type Tester interface {
 
 type Runner struct {
 	agent         agent.Agent
-	agentEnabled  bool
 	testers       []Tester
 	logger        *logrus.Logger
 	spec          *spec.Definition
@@ -56,7 +55,6 @@ func NewRunner(testers []Tester, settings e2e.Settings) *Runner {
 
 	return &Runner{
 		agent:         agentInstance,
-		agentEnabled:  settings.AgentEnabled(),
 		testers:       testers,
 		logger:        settings.Logger(),
 		spec:          settings.SpecDefinition(),
@@ -76,7 +74,7 @@ func (r *Runner) Run() error {
 			return err
 		}
 
-		if r.agentEnabled {
+		if r.agent != nil {
 			if err := r.agent.SetUp(scenario); err != nil {
 				return err
 			}
@@ -92,7 +90,7 @@ func (r *Runner) Run() error {
 			r.logger.Error(err)
 		}
 
-		if r.agentEnabled {
+		if r.agent != nil {
 			if err := r.agent.Stop(); err != nil {
 				return err
 			}
