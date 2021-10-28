@@ -19,18 +19,16 @@ const (
 	flagLicenseKey    = "license_key"
 	flagAgentDir      = "agent_dir"
 	flagAgentEnabled  = "agent_enabled"
-	flagRootDir       = "root_dir"
 	flagRetryAttempts = "retry_attempts"
 	flagRetrySecons   = "retry_seconds"
 	flagCommitSha     = "commit_sha"
 )
 
-func processCliArgs() (string, string, string, string, bool, string, int, int, int, string, logrus.Level) {
+func processCliArgs() (string, string, string, bool, string, int, int, int, string, logrus.Level) {
 	specsPath := flag.String(flagSpecPath, "", "Relative path to the spec file")
 	licenseKey := flag.String(flagLicenseKey, "", "New Relic License Key")
 	agentDir := flag.String(flagAgentDir, "", "Directory used to deploy the agent")
 	agentEnabled := flag.Bool(flagAgentEnabled, true, "If false the agent is not run")
-	rootDir := flag.String(flagRootDir, "", "workspace directory")
 	verboseMode := flag.Bool(flagVerboseMode, false, "If true the debug level is enabled")
 	apiKey := flag.String(flagApiKey, "", "New Relic Api Key")
 	accountID := flag.Int(flagAccountID, 0, "New Relic accountID to be used")
@@ -45,9 +43,6 @@ func processCliArgs() (string, string, string, string, bool, string, int, int, i
 	if *specsPath == "" {
 		logrus.Fatalf("missing required spec_path")
 	}
-	if *rootDir == "" {
-		logrus.Fatalf("missing required root_dir")
-	}
 	if *accountID == 0 {
 		logrus.Fatalf("missing required accountID")
 	}
@@ -59,21 +54,20 @@ func processCliArgs() (string, string, string, string, bool, string, int, int, i
 	if *verboseMode {
 		logLevel = logrus.DebugLevel
 	}
-	return *licenseKey, *specsPath, *rootDir, *agentDir, *agentEnabled, *apiKey, *accountID, *retryAttempts, *retrySeconds, *commitSha, logLevel
+	return *licenseKey, *specsPath, *agentDir, *agentEnabled, *apiKey, *accountID, *retryAttempts, *retrySeconds, *commitSha, logLevel
 
 }
 
 func main() {
 	logrus.Info("running e2e")
 
-	licenseKey, specsPath, rootDir, agentDir, agentEnabled, apiKey, accountID, retryAttempts, retrySeconds, commitSha, logLevel := processCliArgs()
+	licenseKey, specsPath, agentDir, agentEnabled, apiKey, accountID, retryAttempts, retrySeconds, commitSha, logLevel := processCliArgs()
 	s, err := e2e.NewSettings(
 		e2e.SettingsWithSpecPath(specsPath),
 		e2e.SettingsWithLogLevel(logLevel),
 		e2e.SettingsWithLicenseKey(licenseKey),
 		e2e.SettingsWithAgentEnabled(agentEnabled),
 		e2e.SettingsWithAgentDir(agentDir),
-		e2e.SettingsWithRootDir(rootDir),
 		e2e.SettingsWithApiKey(apiKey),
 		e2e.SettingsWithAccountID(accountID),
 		e2e.SettingsWithRetryAttempts(retryAttempts),
