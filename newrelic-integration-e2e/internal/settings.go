@@ -19,7 +19,6 @@ type settingOptions struct {
 	licenseKey    string
 	agentDir      string
 	agentEnabled  bool
-	rootDir       string
 	accountID     int
 	apiKey        string
 	retryAttempts int
@@ -51,12 +50,6 @@ func SettingsWithLicenseKey(licenseKey string) SettingOption {
 func SettingsWithAgentDir(agentDir string) SettingOption {
 	return func(o *settingOptions) {
 		o.agentDir = agentDir
-	}
-}
-
-func SettingsWithRootDir(rootDir string) SettingOption {
-	return func(o *settingOptions) {
-		o.rootDir = rootDir
 	}
 }
 
@@ -101,7 +94,6 @@ type Settings interface {
 	SpecDefinition() *spec.Definition
 	AgentEnabled() bool
 	AgentDir() string
-	RootDir() string
 	SpecParentDir() string
 	LicenseKey() string
 	ApiKey() string
@@ -116,7 +108,6 @@ type settings struct {
 	specDefinition *spec.Definition
 	agentEnabled   bool
 	specParentDir  string
-	rootDir        string
 	agentDir       string
 	licenseKey     string
 	accountID      int
@@ -144,10 +135,6 @@ func (s *settings) AgentDir() string {
 
 func (s *settings) AgentEnabled() bool {
 	return s.agentEnabled
-}
-
-func (s *settings) RootDir() string {
-	return s.rootDir
 }
 
 func (s *settings) SpecParentDir() string {
@@ -200,7 +187,6 @@ func NewSettings(
 		agentDir:       options.agentDir,
 		agentEnabled:   options.agentEnabled,
 		specParentDir:  options.specParentDir,
-		rootDir:        options.rootDir,
 		licenseKey:     options.licenseKey,
 		apiKey:         options.apiKey,
 		accountID:      options.accountID,
