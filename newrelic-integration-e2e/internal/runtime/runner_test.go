@@ -33,7 +33,7 @@ func (a *agentMock) Stop() error {
 }
 
 func TestRunner_Run(t *testing.T) {
-	const commitSha = "a-commit-sha"
+	const commitSha = "1234567A-long-commit-sha"
 
 	log := logrus.New()
 	log.SetOutput(ioutil.Discard)
@@ -68,6 +68,6 @@ func TestRunner_Run(t *testing.T) {
 	require.Equal(t, 1, runner.agent.(*agentMock).SetupCalls)
 	require.Equal(t, 1, runner.agent.(*agentMock).RunCalls)
 	require.Equal(t, 1, runner.agent.(*agentMock).StopCalls)
-	require.Contains(t, runner.agent.(*agentMock).ScenrarioTag, commitSha)
-	require.Equal(t, len(commitSha)+scenarioTagRuneNr, len(runner.agent.(*agentMock).ScenrarioTag))
+	require.Contains(t, runner.agent.(*agentMock).ScenrarioTag, "e2e-1234567-")
+	require.Equal(t, 12+scenarioTagRuneNr, len(runner.agent.(*agentMock).ScenrarioTag))
 }
