@@ -58,7 +58,7 @@ func TestRunner_Run(t *testing.T) {
 		logger:        log,
 		spec:          &specDefinition,
 		specParentDir: "parent-dir",
-		customTagKey:  "tag-key",
+		agentEnabled:  true,
 		commitSha:     commitSha,
 	}
 

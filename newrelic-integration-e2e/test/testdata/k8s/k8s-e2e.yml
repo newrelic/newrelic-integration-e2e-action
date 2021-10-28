@@ -1,0 +1,20 @@
+description: |
+  End-to-end tests for k8s integration
+
+custom_test_key: k8s.clusterName
+
+scenarios:
+  - description: |
+      This scenario will verify that metrics from a k8s Cluster are correcly collected.
+    before:
+      - helm upgrade --install e2e-${SCENARIO_TAG} newrelic/nri-bundle --set global.licenseKey=${LICENSE_KEY} --set global.cluster=${SCENARIO_TAG} --set ksm.enabled=true --set webhook.enabled=false
+    after:
+      - helm delete e2e-${SCENARIO_TAG}
+    tests:
+      nrqls: []
+      entities:
+        - type: "KUBERNETES_DEPLOYMENT"
+          data_type: "Metric"
+          metric_name: "k8s.deployment.podsTotal"
+          expected_number: 2
+      metrics: []

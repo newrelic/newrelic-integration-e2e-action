@@ -3,9 +3,7 @@ package main
 import (
 	_ "embed"
 	"flag"
-	"fmt"
 
-	"github.com/newrelic/newrelic-integration-e2e-action/newrelic-integration-e2e/internal/agent"
 	"github.com/newrelic/newrelic-integration-e2e-action/newrelic-integration-e2e/internal/newrelic"
 	"github.com/newrelic/newrelic-integration-e2e-action/newrelic-integration-e2e/internal/runtime"
 
@@ -20,16 +18,18 @@ const (
 	flagAccountID     = "account_id"
 	flagLicenseKey    = "license_key"
 	flagAgentDir      = "agent_dir"
+	flagAgentEnabled  = "agent_enabled"
 	flagRootDir       = "root_dir"
 	flagRetryAttempts = "retry_attempts"
 	flagRetrySecons   = "retry_seconds"
 	flagCommitSha     = "commit_sha"
 )
 
-func processCliArgs() (string, string, string, string, string, int, int, int, string, logrus.Level) {
+func processCliArgs() (string, string, string, string, bool, string, int, int, int, string, logrus.Level) {
 	specsPath := flag.String(flagSpecPath, "", "Relative path to the spec file")
 	licenseKey := flag.String(flagLicenseKey, "", "New Relic License Key")
 	agentDir := flag.String(flagAgentDir, "", "Directory used to deploy the agent")
+	agentEnabled := flag.Bool(flagAgentEnabled, true, "If false the agent is not run")
 	rootDir := flag.String(flagRootDir, "", "workspace directory")
 	verboseMode := flag.Bool(flagVerboseMode, false, "If true the debug level is enabled")
 	apiKey := flag.String(flagApiKey, "", "New Relic Api Key")
@@ -59,18 +59,19 @@ func processCliArgs() (string, string, string, string, string, int, int, int, st
 	if *verboseMode {
 		logLevel = logrus.DebugLevel
 	}
-	return *licenseKey, *specsPath, *rootDir, *agentDir, *apiKey, *accountID, *retryAttempts, *retrySeconds, *commitSha, logLevel
+	return *licenseKey, *specsPath, *rootDir, *agentDir, *agentEnabled, *apiKey, *accountID, *retryAttempts, *retrySeconds, *commitSha, logLevel
 
 }
 
 func main() {
 	logrus.Info("running e2e")
 
-	licenseKey, specsPath, rootDir, agentDir, apiKey, accountID, retryAttempts, retrySeconds, commitSha, logLevel := processCliArgs()
+	licenseKey, specsPath, rootDir, agentDir, agentEnabled, apiKey, accountID, retryAttempts, retrySeconds, commitSha, logLevel := processCliArgs()
 	s, err := e2e.NewSettings(
 		e2e.SettingsWithSpecPath(specsPath),
 		e2e.SettingsWithLogLevel(logLevel),
 		e2e.SettingsWithLicenseKey(licenseKey),
+		e2e.SettingsWithAgentEnabled(agentEnabled),
 		e2e.SettingsWithAgentDir(agentDir),
 		e2e.SettingsWithRootDir(rootDir),
 		e2e.SettingsWithApiKey(apiKey),
@@ -98,22 +99,13 @@ func main() {
 func createRunner(settings e2e.Settings) (*runtime.Runner, error) {
 	settings.Logger().Debug("validating the spec definition")
 
-	if err := settings.SpecDefinition().Validate(); err != nil {
-		return nil, fmt.Errorf("error validating the spec definition: %s", err)
+	nrClient := newrelic.NewNrClient(settings.ApiKey(), settings.AccountID())
+
+	runtimeTester := []runtime.Tester{
+		runtime.NewEntitiesTester(nrClient, settings.Logger()),
+		runtime.NewMetricsTester(nrClient, settings.Logger(), settings.SpecParentDir()),
+		runtime.NewNRQLTester(nrClient, settings.Logger()),
 	}
 
-	nrClient := newrelic.NewNrClient(settings.ApiKey(), settings.AccountID())
-	entitiesTester := runtime.NewEntitiesTester(nrClient, settings.Logger())
-	metricsTester := runtime.NewMetricsTester(nrClient, settings.Logger(), settings.SpecParentDir())
-	nrqlTester := runtime.NewNRQLTester(nrClient, settings.Logger())
-
-	return runtime.NewRunner(
-		agent.NewAgent(settings),
-		[]runtime.Tester{
-			entitiesTester,
-			metricsTester,
-			nrqlTester,
-		},
-		settings,
-	), nil
+	return runtime.NewRunner(runtimeTester, settings), nil
 }

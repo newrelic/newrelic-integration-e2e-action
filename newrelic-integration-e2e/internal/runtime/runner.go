@@ -2,6 +2,7 @@ package runtime
 
 import (
 	"math/rand"
+	"os"
 	"os/exec"
 	"time"
 
@@ -14,7 +15,7 @@ import (
 
 const (
 	dmTableName       = "Metric"
-	scenarioTagRuneNr = 10
+	scenarioTagRuneNr = 5
 )
 
 var letterRunes = []rune("abcdefghijklmnopqrstuvwxyz")
@@ -25,17 +26,17 @@ type Tester interface {
 
 type Runner struct {
 	agent         agent.Agent
+	agentEnabled  bool
 	testers       []Tester
 	logger        *logrus.Logger
 	spec          *spec.Definition
 	specParentDir string
-	customTagKey  string
 	retryAttempts int
 	retryAfter    time.Duration
 	commitSha     string
 }
 
-func NewRunner(agent agent.Agent, testers []Tester, settings e2e.Settings) *Runner {
+func NewRunner(testers []Tester, settings e2e.Settings) *Runner {
 	rand.Seed(time.Now().UnixNano())
 
 	var retryAttempts int
@@ -48,15 +49,20 @@ func NewRunner(agent agent.Agent, testers []Tester, settings e2e.Settings) *Runn
 		retryAfter = time.Duration(settings.RetrySeconds()) * time.Second
 	}
 
+	var agentInstance agent.Agent
+	if settings.AgentEnabled() {
+		agentInstance = agent.NewAgent(settings)
+	}
+
 	return &Runner{
-		agent:         agent,
+		agent:         agentInstance,
+		agentEnabled:  settings.AgentEnabled(),
 		testers:       testers,
 		logger:        settings.Logger(),
 		spec:          settings.SpecDefinition(),
 		specParentDir: settings.SpecParentDir(),
 		retryAttempts: retryAttempts,
 		retryAfter:    retryAfter,
-		customTagKey:  settings.CustomTagKey(),
 		commitSha:     settings.CommitSha(),
 	}
 }
@@ -66,30 +72,30 @@ func (r *Runner) Run() error {
 		scenarioTag := r.generateScenarioTag()
 		r.logger.Debugf("[scenario]: %s, [Tag]: %s", scenario.Description, scenarioTag)
 
-		if err := r.executeOSCommands(scenario.Before); err != nil {
+		if err := r.executeOSCommands(scenario.Before, scenarioTag); err != nil {
 			return err
 		}
 
-		if err := r.agent.SetUp(scenario); err != nil {
-			return err
+		if r.agentEnabled {
+			if err := r.agent.SetUp(scenario); err != nil {
+				return err
+			}
+
+			if err := r.agent.Run(scenarioTag); err != nil {
+				return err
+			}
 		}
 
-		if err := r.executeOSCommands(scenario.Before); err != nil {
-			return err
-		}
+		errAssertions := r.executeTests(scenario.Tests, r.spec.CustomTestKey, scenarioTag)
 
-		if err := r.agent.Run(scenarioTag); err != nil {
-			return err
-		}
-
-		errAssertions := r.executeTests(scenario.Tests, scenarioTag)
-
-		if err := r.executeOSCommands(scenario.After); err != nil {
+		if err := r.executeOSCommands(scenario.After, scenarioTag); err != nil {
 			r.logger.Error(err)
 		}
 
-		if err := r.agent.Stop(); err != nil {
-			return err
+		if r.agentEnabled {
+			if err := r.agent.Stop(); err != nil {
+				return err
+			}
 		}
 
 		if errAssertions != nil {
@@ -100,13 +106,15 @@ func (r *Runner) Run() error {
 	return nil
 }
 
-func (r *Runner) executeOSCommands(statements []string) error {
+func (r *Runner) executeOSCommands(statements []string, scenarioTag string) error {
 	for _, stmt := range statements {
 		r.logger.Debugf("execute command '%s' from path '%s'", stmt, r.specParentDir)
 		cmd := exec.Command("bash", "-c", stmt)
 		cmd.Dir = r.specParentDir
-		stdout, err := cmd.Output()
-		logrus.Debug(stdout)
+		cmd.Env = os.Environ()
+		cmd.Env = append(cmd.Env, "SCENARIO_TAG="+scenarioTag)
+		combinedOutput, err := cmd.CombinedOutput()
+		r.logger.Debugf("stdout: %q", combinedOutput)
 		if err != nil {
 			return err
 		}
@@ -114,10 +122,10 @@ func (r *Runner) executeOSCommands(statements []string) error {
 	return nil
 }
 
-func (r *Runner) executeTests(tests spec.Tests, scenarioTag string) error {
+func (r *Runner) executeTests(tests spec.Tests, customTestKey string, scenarioTag string) error {
 	for _, tester := range r.testers {
 		err := retrier.Retry(r.logger, r.retryAttempts, r.retryAfter, func() []error {
-			return tester.Test(tests, r.customTagKey, scenarioTag)
+			return tester.Test(tests, customTestKey, scenarioTag)
 		})
 		if err != nil {
 			return err

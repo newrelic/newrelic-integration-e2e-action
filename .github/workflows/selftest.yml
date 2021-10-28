@@ -12,9 +12,26 @@ on:
 # use the action. Please refer to the examples in the README.md file for that
 
 jobs:
-  test_local:
+  test_local_power_dns:
     runs-on: ubuntu-latest
     name: Test run the e2e test on powerdns local testdata
+    steps:
+      - name: checkout-repository
+        uses: actions/checkout@v2
+      - name: Setup go
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.17
+      - name: Run action for PowerDNS (exporter based)
+        uses: ./
+        with:
+          spec_path: newrelic-integration-e2e/test/testdata/powerdns/powerdns-e2e.yml
+          account_id: ${{ secrets.ACCOUNT_ID }}
+          api_key: ${{ secrets.API_KEY }}
+          license_key: ${{ secrets.LICENSE_KEY }}
+  test_local_kafka:
+    runs-on: ubuntu-latest
+    name: Test run the e2e test on kafka local testdata
     steps:
       - name: checkout-repository
         uses: actions/checkout@v2
@@ -30,10 +47,33 @@ jobs:
           api_key: ${{ secrets.API_KEY }}
           license_key: ${{ secrets.LICENSE_KEY }}
           agent_dir: newrelic-integration-e2e/test/testdata/kafka/agent_dir
-      - name: Run action for PowerDNS (exporter based)
+  test_local_k8s:
+    runs-on: ubuntu-latest
+    name: Test run the e2e test on k8s local testdata
+    steps:
+      - name: checkout-repository
+        uses: actions/checkout@v2
+      - name: Setup go
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.17
+      - name: Setup Minikube
+        uses: manusa/actions-setup-minikube@v2.4.2
+        with:
+          minikube version: v1.20.0
+          kubernetes version: v1.21.4
+          driver: none # required for nri-kubernetes, as metrics gathered for the host are tested as well
+      - name: Setup Helm
+        run: |
+          chmod go-r /home/runner/.kube/config
+          helm repo add stable https://charts.helm.sh/stable
+          helm repo add newrelic https://helm-charts.newrelic.com
+          helm repo update
+      - name: Run action for K8s (sample based without agent)
         uses: ./
         with:
-          spec_path: newrelic-integration-e2e/test/testdata/powerdns/powerdns-e2e.yml
+          spec_path: newrelic-integration-e2e/test/testdata/k8s/k8s-e2e.yml
           account_id: ${{ secrets.ACCOUNT_ID }}
           api_key: ${{ secrets.API_KEY }}
           license_key: ${{ secrets.LICENSE_KEY }}
+          agent_enabled: "false"
