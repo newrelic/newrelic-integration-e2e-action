@@ -24,6 +24,7 @@ type settingOptions struct {
 	retryAttempts int
 	retrySeconds  int
 	commitSha     string
+	region        string
 }
 
 type SettingOption func(*settingOptions)
@@ -89,6 +90,12 @@ func SettingsWithAgentEnabled(agentEnabled bool) SettingOption {
 	}
 }
 
+func SettingsWithRegion(region string) SettingOption {
+	return func(o *settingOptions) {
+		o.region = region
+	}
+}
+
 type Settings interface {
 	Logger() *logrus.Logger
 	SpecDefinition() *spec.Definition
@@ -101,6 +108,7 @@ type Settings interface {
 	RetryAttempts() int
 	RetrySeconds() int
 	CommitSha() string
+	Region() string
 }
 
 type settings struct {
@@ -115,6 +123,7 @@ type settings struct {
 	retryAttempts  int
 	retrySeconds   int
 	commitSha      string
+	region         string
 }
 
 func (s *settings) Logger() *logrus.Logger {
@@ -161,6 +170,10 @@ func (s *settings) CommitSha() string {
 	return s.commitSha
 }
 
+func (s *settings) Region() string {
+	return s.region
+}
+
 // New returns a Scheduler
 func NewSettings(
 	opts ...SettingOption) (Settings, error) {
@@ -193,5 +206,6 @@ func NewSettings(
 		retryAttempts:  options.retryAttempts,
 		retrySeconds:   options.retrySeconds,
 		commitSha:      options.commitSha,
+		region:         options.region,
 	}, nil
 }

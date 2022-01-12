@@ -35,4 +35,4 @@ run:
 	@cd newrelic-integration-e2e; go run $(CURDIR)/newrelic-integration-e2e/cmd/main.go \
 	 --commit_sha=$(COMMIT_SHA) --retry_attempts=$(RETRY_ATTEMPTS) --retry_seconds=$(RETRY_SECONDS) \
 	 --agent_dir=$(AGENT_DIR_COMPOSED) --account_id=$(ACCOUNT_ID) --api_key=$(API_KEY) --license_key=$(LICENSE_KEY) \
-	 --spec_path=$(ROOT_DIR)/$(SPEC_PATH) --verbose_mode=$(VERBOSE) --agent_enabled=$(AGENT_ENABLED)
+	 --spec_path=$(ROOT_DIR)/$(SPEC_PATH) --verbose_mode=$(VERBOSE) --agent_enabled=$(AGENT_ENABLED) --region=$(REGION)

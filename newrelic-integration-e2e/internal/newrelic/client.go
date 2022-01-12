@@ -31,8 +31,8 @@ type nrClient struct {
 	client    ApiClient
 }
 
-func NewNrClient(apiKey string, accountID int) *nrClient {
-	client, err := NewApiClientWrapper(apiKey)
+func NewNrClient(apiKey string, region string, accountID int) *nrClient {
+	client, err := NewApiClientWrapper(apiKey, region)
 	if err != nil {
 		log.Fatal("error initializing client:", err)
 	}
