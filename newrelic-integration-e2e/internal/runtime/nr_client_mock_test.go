@@ -3,6 +3,7 @@ package runtime
 import (
 	"errors"
 
+	"github.com/newrelic/newrelic-client-go/pkg/common"
 	"github.com/newrelic/newrelic-client-go/pkg/entities"
 )
 
@@ -15,20 +16,20 @@ const (
 
 type clientMock struct{}
 
-func (c clientMock) FindEntityGUIDs(sample, metricName, customTagKey, entityTag string, expectedNumber int) ([]entities.EntityGUID, error) {
+func (c clientMock) FindEntityGUIDs(sample, metricName, customTagKey, entityTag string, expectedNumber int) ([]common.EntityGUID, error) {
 	switch sample {
 	case errFindEntityGUID:
 		return nil, errors.New("an-error")
 	case errFindEntityByGUID:
-		guid := entities.EntityGUID(errFindEntityByGUID)
-		return []entities.EntityGUID{guid}, nil
+		guid := common.EntityGUID(errFindEntityByGUID)
+		return []common.EntityGUID{guid}, nil
 	}
 
-	guid := entities.EntityGUID("AAAA")
-	return []entities.EntityGUID{guid}, nil
+	guid := common.EntityGUID("AAAA")
+	return []common.EntityGUID{guid}, nil
 }
 
-func (c clientMock) FindEntityByGUID(guid *entities.EntityGUID) (entities.EntityInterface, error) {
+func (c clientMock) FindEntityByGUID(guid *common.EntityGUID) (entities.EntityInterface, error) {
 	if *guid == errFindEntityByGUID {
 		return nil, errors.New("an-error")
 	}

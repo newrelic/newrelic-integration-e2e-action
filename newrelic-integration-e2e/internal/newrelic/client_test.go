@@ -6,6 +6,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/newrelic/newrelic-client-go/pkg/common"
 	"github.com/newrelic/newrelic-client-go/pkg/entities"
 	"github.com/newrelic/newrelic-client-go/pkg/nrdb"
 )
@@ -68,9 +69,9 @@ func (a apiClientMock) Query(_ int, query string) (*nrdb.NRDBResultContainer, er
 	}, nil
 }
 
-func (a apiClientMock) GetEntity(guid *entities.EntityGUID) (*entities.EntityInterface, error) {
-	uncorrectEntity := entities.EntityGUID(fmt.Sprintf("%+v", entityGUIDA))
-	nilEntity := entities.EntityGUID(fmt.Sprintf("%+v", entityGUIDB))
+func (a apiClientMock) GetEntity(guid *common.EntityGUID) (*entities.EntityInterface, error) {
+	uncorrectEntity := common.EntityGUID(fmt.Sprintf("%+v", entityGUIDA))
+	nilEntity := common.EntityGUID(fmt.Sprintf("%+v", entityGUIDB))
 	switch *guid {
 	case uncorrectEntity:
 		return nil, randomError
@@ -83,13 +84,13 @@ func (a apiClientMock) GetEntity(guid *entities.EntityGUID) (*entities.EntityInt
 }
 
 func TestNrClient_FindEntityGUIDs(t *testing.T) {
-	correctEntityA := entities.EntityGUID(fmt.Sprintf("%+v", entityGUIDA))
-	correctEntityB := entities.EntityGUID(fmt.Sprintf("%+v", entityGUIDB))
+	correctEntityA := common.EntityGUID(fmt.Sprintf("%+v", entityGUIDA))
+	correctEntityB := common.EntityGUID(fmt.Sprintf("%+v", entityGUIDB))
 
 	tests := []struct {
 		name           string
 		metricName     string
-		entityGUIDs    []entities.EntityGUID
+		entityGUIDs    []common.EntityGUID
 		expectedNumber int
 		errorExpected  error
 	}{
@@ -121,7 +122,7 @@ func TestNrClient_FindEntityGUIDs(t *testing.T) {
 			name:           "when the client returns uniques.entity.guid equal to expected it should return the array",
 			metricName:     "random-existing-metric-name",
 			expectedNumber: 2,
-			entityGUIDs:    []entities.EntityGUID{correctEntityA, correctEntityB},
+			entityGUIDs:    []common.EntityGUID{correctEntityA, correctEntityB},
 		},
 	}
 
@@ -142,13 +143,13 @@ func TestNrClient_FindEntityGUIDs(t *testing.T) {
 }
 
 func TestNrClient_FindEntityByGUID(t *testing.T) {
-	unCorrectEntity := entities.EntityGUID(fmt.Sprintf("%+v", entityGUIDA))
-	nilEntity := entities.EntityGUID(fmt.Sprintf("%+v", entityGUIDB))
-	someRandomCorrectEntity := entities.EntityGUID(fmt.Sprintf("%+v", "a-guid"))
+	unCorrectEntity := common.EntityGUID(fmt.Sprintf("%+v", entityGUIDA))
+	nilEntity := common.EntityGUID(fmt.Sprintf("%+v", entityGUIDB))
+	someRandomCorrectEntity := common.EntityGUID(fmt.Sprintf("%+v", "a-guid"))
 
 	tests := []struct {
 		name          string
-		entityGUID    *entities.EntityGUID
+		entityGUID    *common.EntityGUID
 		errorExpected error
 	}{
 		{
