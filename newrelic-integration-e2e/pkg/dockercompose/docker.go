@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"strings"
 )
 
 const (
@@ -42,7 +41,6 @@ func Build(path, container string, envVars map[string]string) error {
 		args = append(args, "--build-arg", fmt.Sprintf("%s=%s", k, v))
 	}
 	args = append(args, container)
-	fmt.Println(strings.Join(args, " "))
 	cmd := exec.Command(dockerComposeBin, args...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr

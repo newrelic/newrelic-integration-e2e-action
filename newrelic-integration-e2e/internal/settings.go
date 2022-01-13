@@ -92,7 +92,13 @@ func SettingsWithAgentEnabled(agentEnabled bool) SettingOption {
 
 func SettingsWithRegion(region string) SettingOption {
 	return func(o *settingOptions) {
-		o.region = region
+		// Using a Makefile as a wrapper makes region to be initialized to empty.
+		// So we make the default here.
+		if region != "" {
+			o.region = region
+		} else {
+			o.region = "US"
+		}
 	}
 }
 

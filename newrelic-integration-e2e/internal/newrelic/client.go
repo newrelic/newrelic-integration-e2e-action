@@ -5,14 +5,14 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/newrelic/newrelic-client-go/pkg/nrdb"
-
+	"github.com/newrelic/newrelic-client-go/pkg/common"
 	"github.com/newrelic/newrelic-client-go/pkg/entities"
+	"github.com/newrelic/newrelic-client-go/pkg/nrdb"
 )
 
 type Client interface {
-	FindEntityGUIDs(sample, metricName, customTagKey, entityTag string, expectedNumber int) ([]entities.EntityGUID, error)
-	FindEntityByGUID(guid *entities.EntityGUID) (entities.EntityInterface, error)
+	FindEntityGUIDs(sample, metricName, customTagKey, entityTag string, expectedNumber int) ([]common.EntityGUID, error)
+	FindEntityByGUID(guid *common.EntityGUID) (entities.EntityInterface, error)
 	FindEntityMetrics(sample, customTagKey, entityTag string) ([]string, error)
 	NRQLQuery(query, customTagKey, entityTag string) error
 }
@@ -43,8 +43,8 @@ func NewNrClient(apiKey string, region string, accountID int) *nrClient {
 	}
 }
 
-func (nrc *nrClient) FindEntityGUIDs(sample, metricName, customTagKey, entityTag string, expectedNumber int) ([]entities.EntityGUID, error) {
-	var entityGuids []entities.EntityGUID
+func (nrc *nrClient) FindEntityGUIDs(sample, metricName, customTagKey, entityTag string, expectedNumber int) ([]common.EntityGUID, error) {
+	var entityGuids []common.EntityGUID
 	query := fmt.Sprintf("SELECT uniques(entity.guid) from %s where metricName = '%s' where %s = '%s' limit 1", sample, metricName, customTagKey, entityTag)
 
 	a, err := nrc.client.Query(nrc.accountID, query)
@@ -61,14 +61,14 @@ func (nrc *nrClient) FindEntityGUIDs(sample, metricName, customTagKey, entityTag
 	}
 
 	for _, g := range a.Results[0]["uniques.entity.guid"].([]interface{}) {
-		guid := entities.EntityGUID(fmt.Sprintf("%v", g))
+		guid := common.EntityGUID(fmt.Sprintf("%v", g))
 		entityGuids = append(entityGuids, guid)
 	}
 
 	return entityGuids, nil
 }
 
-func (nrc *nrClient) FindEntityByGUID(guid *entities.EntityGUID) (entities.EntityInterface, error) {
+func (nrc *nrClient) FindEntityByGUID(guid *common.EntityGUID) (entities.EntityInterface, error) {
 	if guid == nil {
 		return nil, ErrNilGUID
 	}

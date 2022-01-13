@@ -26,7 +26,7 @@ const (
 )
 
 func processCliArgs() (string, string, string, bool, string, int, int, int, string, logrus.Level, string) {
-	specsPath := flag.String(flagSpecPath, "", "Relative path to the spec file")
+	specsPath := flag.String(flagSpecPath, "", "Path to the spec file")
 	licenseKey := flag.String(flagLicenseKey, "", "New Relic License Key")
 	agentDir := flag.String(flagAgentDir, "", "Directory used to deploy the agent")
 	agentEnabled := flag.Bool(flagAgentEnabled, true, "If false the agent is not run")

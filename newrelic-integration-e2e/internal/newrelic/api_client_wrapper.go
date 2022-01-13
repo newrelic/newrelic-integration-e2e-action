@@ -3,6 +3,7 @@ package newrelic
 import (
 	"fmt"
 	newrelicgo "github.com/newrelic/newrelic-client-go/newrelic"
+	"github.com/newrelic/newrelic-client-go/pkg/common"
 	"github.com/newrelic/newrelic-client-go/pkg/entities"
 	"github.com/newrelic/newrelic-client-go/pkg/nrdb"
 	"github.com/newrelic/newrelic-client-go/pkg/region"
@@ -10,7 +11,7 @@ import (
 
 type ApiClient interface {
 	Query(accountId int, query string) (*nrdb.NRDBResultContainer, error)
-	GetEntity(guid *entities.EntityGUID) (*entities.EntityInterface, error)
+	GetEntity(guid *common.EntityGUID) (*entities.EntityInterface, error)
 }
 
 type ApiClientWrapper struct {
@@ -33,6 +34,6 @@ func (a ApiClientWrapper) Query(accountId int, query string) (*nrdb.NRDBResultCo
 	return a.client.Nrdb.Query(accountId, nrdb.NRQL(query))
 }
 
-func (a ApiClientWrapper) GetEntity(guid *entities.EntityGUID) (*entities.EntityInterface, error) {
+func (a ApiClientWrapper) GetEntity(guid *common.EntityGUID) (*entities.EntityInterface, error) {
 	return a.client.Entities.GetEntity(*guid)
 }
