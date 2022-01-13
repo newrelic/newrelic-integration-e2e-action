@@ -33,7 +33,14 @@ inputs:
     required: false
     default: "true"
   region:
-    description: The region where to send/read the e2e data
+    description: |
+      The region where to send/read the e2e data. The possible values are:
+       * "US" for New Relic's US-based production,
+       * "EU" for New Relic's EU-based production,
+       * "Staging" for New Relic's staging (internal use only) and
+       * "Local" for a local development of the backend (internal use only).
+
+      The values at the time of writing this are from this commit: https://github.com/newrelic/newrelic-client-go/blob/ece2430d7cfd7f5bd69c300568a7e9ec24f287ca/pkg/region/region_constants.go#L7-L20
     required: false
     default: "US"
 
