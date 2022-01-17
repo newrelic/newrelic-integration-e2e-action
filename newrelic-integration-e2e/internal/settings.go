@@ -92,13 +92,7 @@ func SettingsWithAgentEnabled(agentEnabled bool) SettingOption {
 
 func SettingsWithRegion(region string) SettingOption {
 	return func(o *settingOptions) {
-		// Using a Makefile as a wrapper makes region to be initialized to empty.
-		// So we make the default here.
-		if region != "" {
-			o.region = region
-		} else {
-			o.region = "US"
-		}
+		o.region = region
 	}
 }
 
@@ -177,7 +171,10 @@ func (s *settings) CommitSha() string {
 }
 
 func (s *settings) Region() string {
-	return s.region
+	if s.region != "" {
+		return s.region
+	}
+	return "US"
 }
 
 // New returns a Scheduler
