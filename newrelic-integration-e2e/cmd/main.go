@@ -22,10 +22,11 @@ const (
 	flagRetryAttempts = "retry_attempts"
 	flagRetrySecons   = "retry_seconds"
 	flagCommitSha     = "commit_sha"
+	flagRegion        = "region"
 )
 
-func processCliArgs() (string, string, string, bool, string, int, int, int, string, logrus.Level) {
-	specsPath := flag.String(flagSpecPath, "", "Relative path to the spec file")
+func processCliArgs() (string, string, string, bool, string, int, int, int, string, logrus.Level, string) {
+	specsPath := flag.String(flagSpecPath, "", "Path to the spec file")
 	licenseKey := flag.String(flagLicenseKey, "", "New Relic License Key")
 	agentDir := flag.String(flagAgentDir, "", "Directory used to deploy the agent")
 	agentEnabled := flag.Bool(flagAgentEnabled, true, "If false the agent is not run")
@@ -35,6 +36,7 @@ func processCliArgs() (string, string, string, bool, string, int, int, int, stri
 	retryAttempts := flag.Int(flagRetryAttempts, 10, "Number of attempts to retry a test")
 	retrySeconds := flag.Int(flagRetrySecons, 30, "Number of seconds before retrying a test")
 	commitSha := flag.String(flagCommitSha, "", "Current commit sha")
+	region := flag.String(flagRegion, "", "Current commit sha")
 	flag.Parse()
 
 	if *licenseKey == "" {
@@ -54,14 +56,14 @@ func processCliArgs() (string, string, string, bool, string, int, int, int, stri
 	if *verboseMode {
 		logLevel = logrus.DebugLevel
 	}
-	return *licenseKey, *specsPath, *agentDir, *agentEnabled, *apiKey, *accountID, *retryAttempts, *retrySeconds, *commitSha, logLevel
+	return *licenseKey, *specsPath, *agentDir, *agentEnabled, *apiKey, *accountID, *retryAttempts, *retrySeconds, *commitSha, logLevel, *region
 
 }
 
 func main() {
 	logrus.Info("running e2e")
 
-	licenseKey, specsPath, agentDir, agentEnabled, apiKey, accountID, retryAttempts, retrySeconds, commitSha, logLevel := processCliArgs()
+	licenseKey, specsPath, agentDir, agentEnabled, apiKey, accountID, retryAttempts, retrySeconds, commitSha, logLevel, region := processCliArgs()
 	s, err := e2e.NewSettings(
 		e2e.SettingsWithSpecPath(specsPath),
 		e2e.SettingsWithLogLevel(logLevel),
@@ -73,6 +75,7 @@ func main() {
 		e2e.SettingsWithRetryAttempts(retryAttempts),
 		e2e.SettingsWithRetrySeconds(retrySeconds),
 		e2e.SettingsWithCommitSha(commitSha),
+		e2e.SettingsWithRegion(region),
 	)
 	if err != nil {
 		logrus.Fatalf("error loading settings: %s", err)
@@ -93,7 +96,7 @@ func main() {
 func createRunner(settings e2e.Settings) (*runtime.Runner, error) {
 	settings.Logger().Debug("validating the spec definition")
 
-	nrClient := newrelic.NewNrClient(settings.ApiKey(), settings.AccountID())
+	nrClient := newrelic.NewNrClient(settings.ApiKey(), settings.Region(), settings.AccountID())
 
 	runtimeTester := []runtime.Tester{
 		runtime.NewEntitiesTester(nrClient, settings.Logger()),
