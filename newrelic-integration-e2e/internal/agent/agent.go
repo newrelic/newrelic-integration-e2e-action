@@ -27,6 +27,9 @@ const (
 	container             = "agent"
 )
 
+//go:embed resources/docker-compose.yml
+var defaultCompose []byte
+
 type Agent interface {
 	SetUp(scenario spec.Scenario) error
 	Run(scenarioTag string) error
@@ -68,6 +71,32 @@ func NewAgent(settings e2e.Settings) *agent {
 	}
 
 	return &a
+}
+
+func (a *agent) initDefaultCompose() error {
+	if a.agentDir != "" {
+		return nil
+	}
+
+	composeDir, err := ioutil.TempDir("", "agent-docker-compose")
+	if err != nil {
+		return fmt.Errorf("crating default docker-compose dir: %w", err)
+	}
+
+	a.dockerComposePath = filepath.Join(composeDir, "docker-compose.yml")
+
+	err = ioutil.WriteFile(
+		a.dockerComposePath,
+		defaultCompose,
+		444,
+	)
+	if err != nil {
+		return fmt.Errorf("crating default docker-compose file: %w", err)
+	}
+
+	a.logger.Debugf("using default docker-compose: %s", a.dockerComposePath)
+
+	return nil
 }
 
 func (a *agent) initialize() error {
@@ -133,6 +162,10 @@ func (a *agent) addIntegrationsConfigFile(integrations []spec.Integration) error
 // config files that are going to be mounted the agent.
 func (a *agent) SetUp(scenario spec.Scenario) error {
 	a.scenario = scenario
+	if err := a.initDefaultCompose(); err != nil {
+		return err
+	}
+
 	if err := a.initialize(); err != nil {
 		return err
 	}
@@ -195,6 +228,17 @@ func (a *agent) Stop() error {
 		a.logger.Debug(dockercompose.Logs(a.dockerComposePath, a.containerName))
 	}
 
+	if err := dockercompose.Down(a.dockerComposePath); err != nil {
+		return err
+	}
+
+	// Remove compose file when using default.
+	if a.agentDir == "" {
+		if err := os.RemoveAll(a.dockerComposePath); err != nil {
+			return err
+		}
+	}
+
 	if err := os.RemoveAll(a.binsDir); err != nil {
 		return err
 	}
@@ -207,5 +251,5 @@ func (a *agent) Stop() error {
 		return err
 	}
 
-	return dockercompose.Down(a.dockerComposePath)
+	return nil
 }
