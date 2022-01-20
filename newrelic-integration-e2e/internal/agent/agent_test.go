@@ -1,9 +1,11 @@
 package agent
 
 import (
+	"io/fs"
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	e2e "github.com/newrelic/newrelic-integration-e2e-action/newrelic-integration-e2e/internal"
@@ -13,12 +15,9 @@ import (
 
 func TestAgent_SetUp(t *testing.T) {
 	agentDir := t.TempDir()
-	err := oshelper.MakeDirs(0777, filepath.Join(agentDir, infraAgentDir))
-	require.NoError(t, err)
-
 	rootDir := t.TempDir()
 
-	_, err = os.Create(filepath.Join(rootDir, "/nri-powerdns"))
+	_, err := os.Create(filepath.Join(rootDir, "/nri-powerdns"))
 	require.NoError(t, err)
 	_, err = os.Create(filepath.Join(rootDir, "/nri-powerdns-exporter"))
 	require.NoError(t, err)
@@ -41,18 +40,38 @@ func TestAgent_SetUp(t *testing.T) {
 		require.NoError(t, err)
 
 		// nri-integration and exporter
-		binaryFiles, err := ioutil.ReadDir(filepath.Join(agentDir, infraAgentDir, integrationsBinDir))
-		require.NoError(t, err)
-		require.Equal(t, 2, len(binaryFiles))
+		err = filepath.WalkDir(agentDir, func(path string, d fs.DirEntry, err error) error {
+			if err != nil {
+				return err
+			}
 
-		// nri-prometheus
-		exporterFiles, err := ioutil.ReadDir(filepath.Join(agentDir, infraAgentDir, exportersDir))
-		require.NoError(t, err)
-		require.Equal(t, 1, len(exporterFiles))
+			if !d.IsDir() {
+				return nil
+			}
 
-		// config file
-		configFiles, err := ioutil.ReadDir(filepath.Join(agentDir, infraAgentDir, integrationsCfgDir))
+			files, err := ioutil.ReadDir(path)
+			require.NoError(t, err)
+
+			switch {
+			case strings.Contains(d.Name(), integrationsBinDir):
+				require.Equal(t, 2, len(files))
+
+			case strings.Contains(d.Name(), exportersDir):
+				require.Equal(t, 1, len(files))
+
+			case strings.Contains(d.Name(), integrationsCfgDir):
+				require.Equal(t, 1, len(files))
+
+			case path == agentDir:
+				return nil
+
+			default:
+				require.Fail(t, "found not expected directory", path)
+			}
+
+			return nil
+		})
+
 		require.NoError(t, err)
-		require.Equal(t, 1, len(configFiles))
 	})
 }

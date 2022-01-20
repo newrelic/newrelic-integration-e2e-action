@@ -5,8 +5,6 @@ RETRY_SECONDS ?= 30
 
 ifneq ($(strip $(AGENT_DIR)),)
     AGENT_DIR_COMPOSED = $(ROOT_DIR)/$(AGENT_DIR)
-else
-    AGENT_DIR_COMPOSED = $(CURDIR)/agent_dir
 endif
 
 all: validate test snyk-test

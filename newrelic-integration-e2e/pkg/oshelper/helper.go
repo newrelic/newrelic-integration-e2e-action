@@ -6,16 +6,6 @@ import (
 	"os"
 )
 
-func RemoveDirectories(dirs ...string) error {
-	for i := range dirs {
-		dir := dirs[i]
-		if err := os.RemoveAll(dir); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
 func CopyFile(src, dst string) error {
 	sourceFileStat, err := os.Stat(src)
 	if err != nil {
@@ -41,16 +31,12 @@ func CopyFile(src, dst string) error {
 	defer func() {
 		_ = destination.Close()
 	}()
-	_, err = io.Copy(destination, source)
-	return err
-}
-
-func MakeDirs(perm os.FileMode, dirs ...string) error {
-	for i := range dirs {
-		dir := dirs[i]
-		if err := os.Mkdir(dir, perm); err != nil {
-			return err
-		}
+	if _, err := io.Copy(destination, source); err != nil {
+		return err
 	}
+	if err := os.Chmod(destination.Name(), sourceFileStat.Mode()); err != nil {
+		return err
+	}
+
 	return nil
 }

@@ -4,6 +4,7 @@ import (
 	_ "embed"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 
 	e2e "github.com/newrelic/newrelic-integration-e2e-action/newrelic-integration-e2e/internal"
@@ -15,14 +16,19 @@ import (
 )
 
 const (
-	integrationsCfgDir = "integrations.d"
-	exportersDir       = "exporters"
-	integrationsBinDir = "bin"
-	dockerCompose      = "docker-compose.yml"
-	defConfigFile      = "nri-config.yml"
-	container          = "agent"
-	infraAgentDir      = "newrelic-infra-agent"
+	integrationsCfgDir    = "integrations.d"
+	integrationsCfgDirEnv = "E2E_NRI_CONFIG"
+	exportersDir          = "exporters"
+	exportersDirEnv       = "E2E_EXPORTER_BIN"
+	integrationsBinDir    = "bin"
+	integrationsBinDirEnv = "E2E_NRI_BIN"
+	dockerCompose         = "docker-compose.yml"
+	defConfigFile         = "nri-config.yml"
+	container             = "agent"
 )
+
+//go:embed resources/docker-compose.yml
+var defaultCompose []byte
 
 type Agent interface {
 	SetUp(scenario spec.Scenario) error
@@ -38,7 +44,6 @@ type agent struct {
 	exportersDir      string
 	binsDir           string
 	licenseKey        string
-	defConfigFile     string
 	specParentDir     string
 	dockerComposePath string
 	logger            *logrus.Logger
@@ -54,10 +59,6 @@ func NewAgent(settings e2e.Settings) *agent {
 		specParentDir:     settings.SpecParentDir(),
 		containerName:     container,
 		agentDir:          agentDir,
-		configsDir:        filepath.Join(agentDir, infraAgentDir, integrationsCfgDir),
-		exportersDir:      filepath.Join(agentDir, infraAgentDir, exportersDir),
-		binsDir:           filepath.Join(agentDir, infraAgentDir, integrationsBinDir),
-		defConfigFile:     filepath.Join(agentDir, infraAgentDir, integrationsCfgDir, defConfigFile),
 		dockerComposePath: filepath.Join(agentDir, dockerCompose),
 		licenseKey:        settings.LicenseKey(),
 		logger:            settings.Logger(),
@@ -72,13 +73,58 @@ func NewAgent(settings e2e.Settings) *agent {
 	return &a
 }
 
-func (a *agent) initialize() error {
-	a.logger.Debug("removing temporary folders")
-	if err := oshelper.RemoveDirectories(a.exportersDir, a.configsDir, a.binsDir); err != nil {
-		return err
+func (a *agent) initDefaultCompose() error {
+	if a.agentDir != "" {
+		return nil
 	}
-	a.logger.Debug("creating folders required by the agent")
-	return oshelper.MakeDirs(0777, a.exportersDir, a.configsDir, a.binsDir)
+
+	composeDir, err := ioutil.TempDir("", "agent-docker-compose")
+	if err != nil {
+		return fmt.Errorf("crating default docker-compose dir: %w", err)
+	}
+
+	a.dockerComposePath = filepath.Join(composeDir, "docker-compose.yml")
+
+	err = ioutil.WriteFile(
+		a.dockerComposePath,
+		defaultCompose,
+		444,
+	)
+	if err != nil {
+		return fmt.Errorf("crating default docker-compose file: %w", err)
+	}
+
+	a.logger.Debugf("using default docker-compose: %s", a.dockerComposePath)
+
+	return nil
+}
+
+func (a *agent) initialize() error {
+	configDir, err := ioutil.TempDir(a.agentDir, integrationsCfgDir)
+	if err != nil {
+		return fmt.Errorf("creating configs dir: %w", err)
+	}
+
+	a.logger.Debugf("configs dir: %s", configDir)
+	a.configsDir = configDir
+
+	exportersDir, err := ioutil.TempDir(a.agentDir, exportersDir)
+	if err != nil {
+		return fmt.Errorf("creating exporters dir: %w", err)
+	}
+
+	a.logger.Debugf("exporters dir: %s", exportersDir)
+	a.exportersDir = exportersDir
+
+	binsDir, err := ioutil.TempDir(a.agentDir, integrationsBinDir)
+	if err != nil {
+		return fmt.Errorf("creating integration bin dir: %w", err)
+	}
+
+	a.logger.Debugf("bins dir: %s", binsDir)
+	a.binsDir = binsDir
+
+	return nil
 }
 
 func (a *agent) addIntegration(integration spec.Integration) error {
@@ -112,8 +158,14 @@ func (a *agent) addIntegrationsConfigFile(integrations []spec.Integration) error
 	return ioutil.WriteFile(cfgPath, content, 0777)
 }
 
+// SetUp creates temporary folders where it copies the binaries and
+// config files that are going to be mounted the agent.
 func (a *agent) SetUp(scenario spec.Scenario) error {
 	a.scenario = scenario
+	if err := a.initDefaultCompose(); err != nil {
+		return err
+	}
+
 	if err := a.initialize(); err != nil {
 		return err
 	}
@@ -142,7 +194,7 @@ func (a *agent) SetUp(scenario spec.Scenario) error {
 }
 
 func (a *agent) Run(scenarioTag string) error {
-	var envVars = map[string]string{
+	envVars := map[string]string{
 		"NRIA_VERBOSE":           "1",
 		"NRIA_LICENSE_KEY":       a.licenseKey,
 		"NRIA_CUSTOM_ATTRIBUTES": fmt.Sprintf(`{"%s":"%s"}`, a.customTagKey, scenarioTag),
@@ -152,6 +204,22 @@ func (a *agent) Run(scenarioTag string) error {
 		envVars[envKey] = envValue
 	}
 
+	// Temporary directories with configs and binaries are passed to the docker-compose
+	// through env vars. The docker compose is resposable for mounting this directories
+	// so the Agent automatically executes the integrations.
+
+	if err := os.Setenv(integrationsCfgDirEnv, a.configsDir); err != nil {
+		return fmt.Errorf("fail to set %s env: %w", integrationsCfgDirEnv, err)
+	}
+
+	if err := os.Setenv(integrationsBinDirEnv, a.binsDir); err != nil {
+		return fmt.Errorf("fail to set %s env: %w", integrationsBinDirEnv, err)
+	}
+
+	if err := os.Setenv(exportersDirEnv, a.exportersDir); err != nil {
+		return fmt.Errorf("fail to set %s env: %w", exportersDirEnv, err)
+	}
+
 	return dockercompose.Run(a.dockerComposePath, a.containerName, envVars)
 }
 
@@ -159,5 +227,29 @@ func (a *agent) Stop() error {
 	if a.logger.GetLevel() == logrus.DebugLevel {
 		a.logger.Debug(dockercompose.Logs(a.dockerComposePath, a.containerName))
 	}
-	return dockercompose.Down(a.dockerComposePath)
+
+	if err := dockercompose.Down(a.dockerComposePath); err != nil {
+		return err
+	}
+
+	// Remove compose file when using default.
+	if a.agentDir == "" {
+		if err := os.RemoveAll(a.dockerComposePath); err != nil {
+			return err
+		}
+	}
+
+	if err := os.RemoveAll(a.binsDir); err != nil {
+		return err
+	}
+
+	if err := os.RemoveAll(a.exportersDir); err != nil {
+		return err
+	}
+
+	if err := os.RemoveAll(a.configsDir); err != nil {
+		return err
+	}
+
+	return nil
 }
