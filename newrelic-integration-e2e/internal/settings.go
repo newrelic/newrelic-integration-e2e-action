@@ -17,7 +17,6 @@ type settingOptions struct {
 	specPath      string
 	specParentDir string
 	licenseKey    string
-	agentDir      string
 	agentEnabled  bool
 	accountID     int
 	apiKey        string
@@ -45,12 +44,6 @@ func SettingsWithLogLevel(logLevel logrus.Level) SettingOption {
 func SettingsWithLicenseKey(licenseKey string) SettingOption {
 	return func(o *settingOptions) {
 		o.licenseKey = licenseKey
-	}
-}
-
-func SettingsWithAgentDir(agentDir string) SettingOption {
-	return func(o *settingOptions) {
-		o.agentDir = agentDir
 	}
 }
 
@@ -100,7 +93,7 @@ type Settings interface {
 	Logger() *logrus.Logger
 	SpecDefinition() *spec.Definition
 	AgentEnabled() bool
-	AgentDir() string
+	AgentBuildContext() string
 	SpecParentDir() string
 	LicenseKey() string
 	ApiKey() string
@@ -116,7 +109,6 @@ type settings struct {
 	specDefinition *spec.Definition
 	agentEnabled   bool
 	specParentDir  string
-	agentDir       string
 	licenseKey     string
 	accountID      int
 	apiKey         string
@@ -138,8 +130,12 @@ func (s *settings) SpecDefinition() *spec.Definition {
 	return s.specDefinition
 }
 
-func (s *settings) AgentDir() string {
-	return s.agentDir
+func (s *settings) AgentBuildContext() string {
+	if s.specDefinition == nil || s.specDefinition.AgentExtensions == nil {
+		return ""
+	}
+
+	return filepath.Join(s.specParentDir, s.specDefinition.AgentExtensions.BuildContext)
 }
 
 func (s *settings) AgentEnabled() bool {
@@ -200,7 +196,6 @@ func NewSettings(
 	return &settings{
 		logger:         logger,
 		specDefinition: s,
-		agentDir:       options.agentDir,
 		agentEnabled:   options.agentEnabled,
 		specParentDir:  options.specParentDir,
 		licenseKey:     options.licenseKey,

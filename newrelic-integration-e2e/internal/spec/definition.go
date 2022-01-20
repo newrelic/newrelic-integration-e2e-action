@@ -12,6 +12,7 @@ type Definition struct {
 }
 
 type Agent struct {
+	BuildContext string            `yaml:"build_context"`
 	Integrations map[string]string `yaml:"integrations"`
 	EnvVars      map[string]string `yaml:"env_vars"`
 }

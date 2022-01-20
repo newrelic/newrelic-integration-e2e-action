@@ -17,7 +17,6 @@ const (
 	flagApiKey        = "api_key"
 	flagAccountID     = "account_id"
 	flagLicenseKey    = "license_key"
-	flagAgentDir      = "agent_dir"
 	flagAgentEnabled  = "agent_enabled"
 	flagRetryAttempts = "retry_attempts"
 	flagRetrySecons   = "retry_seconds"
@@ -25,10 +24,9 @@ const (
 	flagRegion        = "region"
 )
 
-func processCliArgs() (string, string, string, bool, string, int, int, int, string, logrus.Level, string) {
+func processCliArgs() (string, string, bool, string, int, int, int, string, logrus.Level, string) {
 	specsPath := flag.String(flagSpecPath, "", "Path to the spec file")
 	licenseKey := flag.String(flagLicenseKey, "", "New Relic License Key")
-	agentDir := flag.String(flagAgentDir, "", "Directory used to deploy the agent")
 	agentEnabled := flag.Bool(flagAgentEnabled, true, "If false the agent is not run")
 	verboseMode := flag.Bool(flagVerboseMode, false, "If true the debug level is enabled")
 	apiKey := flag.String(flagApiKey, "", "New Relic Api Key")
@@ -56,20 +54,18 @@ func processCliArgs() (string, string, string, bool, string, int, int, int, stri
 	if *verboseMode {
 		logLevel = logrus.DebugLevel
 	}
-	return *licenseKey, *specsPath, *agentDir, *agentEnabled, *apiKey, *accountID, *retryAttempts, *retrySeconds, *commitSha, logLevel, *region
-
+	return *licenseKey, *specsPath, *agentEnabled, *apiKey, *accountID, *retryAttempts, *retrySeconds, *commitSha, logLevel, *region
 }
 
 func main() {
 	logrus.Info("running e2e")
 
-	licenseKey, specsPath, agentDir, agentEnabled, apiKey, accountID, retryAttempts, retrySeconds, commitSha, logLevel, region := processCliArgs()
+	licenseKey, specsPath, agentEnabled, apiKey, accountID, retryAttempts, retrySeconds, commitSha, logLevel, region := processCliArgs()
 	s, err := e2e.NewSettings(
 		e2e.SettingsWithSpecPath(specsPath),
 		e2e.SettingsWithLogLevel(logLevel),
 		e2e.SettingsWithLicenseKey(licenseKey),
 		e2e.SettingsWithAgentEnabled(agentEnabled),
-		e2e.SettingsWithAgentDir(agentDir),
 		e2e.SettingsWithApiKey(apiKey),
 		e2e.SettingsWithAccountID(accountID),
 		e2e.SettingsWithRetryAttempts(retryAttempts),
