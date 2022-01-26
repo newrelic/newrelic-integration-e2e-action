@@ -72,6 +72,7 @@ func NewAgent(settings e2e.Settings) *agent {
 	return &a
 }
 
+// initDefaultCompose creates a temp dir with the embedded default docker-compose.yml .
 func (a *agent) initDefaultCompose() error {
 	if a.agentBuildContext != "" {
 		return nil
@@ -98,8 +99,14 @@ func (a *agent) initDefaultCompose() error {
 	return nil
 }
 
+// initialize creates temp dirs for configs, and exporters/integrations bins inside
+// the same dir where the agent compose file is located.
 func (a *agent) initialize() error {
-	configDir, err := ioutil.TempDir(a.agentBuildContext, IntegrationsCfgDir)
+	// dockerComposePath can be in a temporal dir if using default or inside the
+	// agentBuildContext dir if using custom agent container.
+	parentDir := filepath.Dir(a.dockerComposePath)
+
+	configDir, err := ioutil.TempDir(parentDir, IntegrationsCfgDir)
 	if err != nil {
 		return fmt.Errorf("creating configs dir: %w", err)
 	}
@@ -107,7 +114,7 @@ func (a *agent) initialize() error {
 	a.logger.Debugf("configs dir: %s", configDir)
 	a.configsDir = configDir
 
-	exportersDir, err := ioutil.TempDir(a.agentBuildContext, ExportersDir)
+	exportersDir, err := ioutil.TempDir(parentDir, ExportersDir)
 	if err != nil {
 		return fmt.Errorf("creating exporters dir: %w", err)
 	}
@@ -115,7 +122,7 @@ func (a *agent) initialize() error {
 	a.logger.Debugf("exporters dir: %s", exportersDir)
 	a.exportersDir = exportersDir
 
-	binsDir, err := ioutil.TempDir(a.agentBuildContext, IntegrationsBinDir)
+	binsDir, err := ioutil.TempDir(parentDir, IntegrationsBinDir)
 	if err != nil {
 		return fmt.Errorf("creating integration bin dir: %w", err)
 	}
@@ -158,7 +165,7 @@ func (a *agent) addIntegrationsConfigFile(integrations []spec.Integration) error
 }
 
 // SetUp creates temporary folders where it copies the binaries and
-// config files that are going to be mounted the agent.
+// config files that are going to be mounted in the agent container.
 func (a *agent) SetUp(scenario spec.Scenario) error {
 	if err := a.initDefaultCompose(); err != nil {
 		return err
