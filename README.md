@@ -162,6 +162,8 @@ A [docker-compose.yml](newrelic-integration-e2e/internal/agent/resources/docker-
 
 If a custom image is needed, `agent.build_context` must contain a relative path to a directory containing a `docker-compose.yml`.In order to mount the binaries to the image `E2E_EXPORTER_BIN`, `E2E_NRI_CONFIG` and `E2E_NRI_BIN` will be set as env variables with the path to the temporary folders where assets are copied.
 
+A concrete example can be checked in [this test](newrelic-integration-e2e/test/testdata/kafka/kafka-e2e.yml).
+
 ## Types of test
 All the queries done to NROne are done with an extra WHERE condition that is `WHERE testKey = 'COMMMITSHA + 10 Digit alphanumeric'` a custom attribute added to the agent. This attribute is decorated in all the emitted metrics. 
 
