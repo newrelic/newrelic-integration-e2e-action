@@ -1,7 +1,6 @@
 description: |
   End-to-end tests for PowerDNS integration
 
-
 scenarios:
   - description: |
       This scenario will verify that metrics from both PDNS authoritative & PDNS recursor

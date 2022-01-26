@@ -17,13 +17,12 @@ New Relic has two kinds of integrations:
 
 - It reads the e2e test descriptor file/s that must be passed as an argument to the action.
 - For each scenario present in the descriptor:  
-    - It installs the infrastructure agent & the required packages.
-    - It launches services dependencies (e.g. a docker-compose ) if specified in the before step.
-    - It verifies that the required services are up & running
+    - It launches services dependencies (e.g. a docker-compose ) if specified in the `before` step.
     - It creates a config file with the details in the descriptor. 
     - Adds a custom-attribute to the config:
         - Composed by the current commit sha + a new 10 alphanumeric-random digit on each scenario.
         - The tests will look for this label to fetch the metrics and the entities from the New Relic backend.
+    - It launches the default docker-compose of the Infra Agent mounting the binaries and configs so the integrations are run automatically.
     - The runner executes the tests one by one, checking that metrics &/or entities are being created correctly. 
     - If the test fails, it's retried after the `retry_seconds` (default 30s) and up to the `retry_attempts` (default 10) defined for the action. 
     - It stops & removes the services if specified in the after step.
@@ -60,7 +59,6 @@ jobs:
           account_id: ${{ secrets.ACCOUNT_ID }}
           api_key: ${{ secrets.API_KEY }}
           license_key: ${{ secrets.LICENSE_KEY }}
-          agent_dir: exporters/powerdns/e2e/agent_dir
           retry_seconds: 30
           retry_attempts: 10
           verbose: false
@@ -73,7 +71,6 @@ The required fields are:
 - `license_key` required by the agent.
 
 Optional parameters:
-- `agent_dir` path to a custom agent_dir in a specific e2e with a docker-compose and Dockerfile in it. If not set a default compose will be used.
 - `retry_seconds` it's the number of seconds to wait after retrying a test. default: 30.
 - `retry_attempts` it's the number of attempts a failed test can be retried. default: 10.
 - `verbose` if set to to true the agent logs and other useful debug logs will be printed. default: false.
@@ -90,6 +87,7 @@ The spec file for the e2e needs to be a yaml file with the following structure:
 `custom_test_key`: (Optional) Key of the custom attribute to test. Useful in case you cannot control the keyName. 
 
 `agent`: Extra environment variables and/or integrations required for the e2e.
+- `build_context` : Relative path to the directory where a custom `docker-compose.yml` will be build and run to launch the Agent. If not specified a default embedded docker-compose is executed. 
 - `integrations` : Additional integrations needed for the e2e.
 - `env_vars` : Additional EnvVars for the agent execution.
 
@@ -119,8 +117,6 @@ description: |
   End-to-end tests for PowerDNS integration
   
 agent:
-  integrations:
-    nri-prometheus:  bin/nri-prometheus # nri-prometheus is added with the agent by default, but we added here as an example
   env_vars:
     NRJMX_VERSION: "1.5.3"
 
@@ -159,6 +155,14 @@ scenarios:
             - powerdns_recursor_cache_lookups_total
           # additionals: ""
 ```
+
+### Custom Agent image
+
+A [docker-compose.yml](newrelic-integration-e2e/internal/agent/resources/docker-compose.yml) is embedded into the code which is used by default to build the Agent image that contains the integrations and configs to be tested. 
+
+If a custom image is needed, `agent.build_context` must contain a relative path to a directory containing a `docker-compose.yml`.In order to mount the binaries to the image `E2E_EXPORTER_BIN`, `E2E_NRI_CONFIG` and `E2E_NRI_BIN` will be set as env variables with the path to the temporary folders where assets are copied.
+
+A concrete example can be checked in [this test](newrelic-integration-e2e/test/testdata/kafka/kafka-e2e.yml).
 
 ## Types of test
 All the queries done to NROne are done with an extra WHERE condition that is `WHERE testKey = 'COMMMITSHA + 10 Digit alphanumeric'` a custom attribute added to the agent. This attribute is decorated in all the emitted metrics. 

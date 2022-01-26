@@ -46,7 +46,6 @@ jobs:
           account_id: ${{ secrets.ACCOUNT_ID }}
           api_key: ${{ secrets.API_KEY }}
           license_key: ${{ secrets.LICENSE_KEY }}
-          agent_dir: newrelic-integration-e2e/test/testdata/kafka/agent_dir
   test_local_k8s:
     runs-on: ubuntu-latest
     name: Test run the e2e test on k8s local testdata

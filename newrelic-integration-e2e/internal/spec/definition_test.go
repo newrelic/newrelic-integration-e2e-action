@@ -7,11 +7,12 @@ import (
 )
 
 func Test_ParseDefinitionFile(t *testing.T) {
-	var sample = `
+	sample := `
 description: |
   End-to-end tests for PowerDNS integration
 
 agent:
+  build_context: /path/to/compose/dir
   integrations:
     nri-prometheus:  bin/nri-prometheus
   env_vars:
@@ -45,6 +46,7 @@ scenarios:
 	assert.Equal(t, "End-to-end tests for PowerDNS integration\n", spec.Description)
 
 	expectedAgentExtensions := Agent{
+		BuildContext: "/path/to/compose/dir",
 		Integrations: map[string]string{
 			"nri-prometheus": "bin/nri-prometheus",
 		},

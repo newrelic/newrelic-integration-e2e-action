@@ -2,6 +2,7 @@ description: |
   End-to-end tests for PowerDNS integration
 
 agent:
+  build_context: build_context_dir
   integrations:
     nri-prometheus:  nri-prometheus
 

@@ -2,6 +2,7 @@ description: |
   End-to-end tests for Kafka integration
 
 agent:
+  build_context: ./agent_dir
   env_vars:
     NRJMX_VERSION: "1.5.3"
 

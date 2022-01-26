@@ -16,11 +16,11 @@ import (
 )
 
 const (
-	integrationsCfgDir    = "integrations.d"
+	IntegrationsCfgDir    = "integrations.d"
 	integrationsCfgDirEnv = "E2E_NRI_CONFIG"
-	exportersDir          = "exporters"
+	ExportersDir          = "exporters"
 	exportersDirEnv       = "E2E_EXPORTER_BIN"
-	integrationsBinDir    = "bin"
+	IntegrationsBinDir    = "bin"
 	integrationsBinDirEnv = "E2E_NRI_BIN"
 	dockerCompose         = "docker-compose.yml"
 	defConfigFile         = "nri-config.yml"
@@ -37,8 +37,7 @@ type Agent interface {
 }
 
 type agent struct {
-	scenario          spec.Scenario
-	agentDir          string
+	agentBuildContext string
 	configsDir        string
 	containerName     string
 	exportersDir      string
@@ -53,13 +52,13 @@ type agent struct {
 }
 
 func NewAgent(settings e2e.Settings) *agent {
-	agentDir := settings.AgentDir()
+	agentBuildContext := settings.AgentBuildContext()
 
 	a := agent{
 		specParentDir:     settings.SpecParentDir(),
 		containerName:     container,
-		agentDir:          agentDir,
-		dockerComposePath: filepath.Join(agentDir, dockerCompose),
+		agentBuildContext: agentBuildContext,
+		dockerComposePath: filepath.Join(agentBuildContext, dockerCompose),
 		licenseKey:        settings.LicenseKey(),
 		logger:            settings.Logger(),
 		customTagKey:      settings.SpecDefinition().CustomTestKey,
@@ -73,8 +72,9 @@ func NewAgent(settings e2e.Settings) *agent {
 	return &a
 }
 
+// initDefaultCompose creates a temp dir with the embedded default docker-compose.yml .
 func (a *agent) initDefaultCompose() error {
-	if a.agentDir != "" {
+	if a.agentBuildContext != "" {
 		return nil
 	}
 
@@ -99,8 +99,14 @@ func (a *agent) initDefaultCompose() error {
 	return nil
 }
 
+// initialize creates temp dirs for configs, and exporters/integrations bins inside
+// the same dir where the agent compose file is located.
 func (a *agent) initialize() error {
-	configDir, err := ioutil.TempDir(a.agentDir, integrationsCfgDir)
+	// dockerComposePath can be in a temporal dir if using default or inside the
+	// agentBuildContext dir if using custom agent container.
+	parentDir := filepath.Dir(a.dockerComposePath)
+
+	configDir, err := ioutil.TempDir(parentDir, IntegrationsCfgDir)
 	if err != nil {
 		return fmt.Errorf("creating configs dir: %w", err)
 	}
@@ -108,7 +114,7 @@ func (a *agent) initialize() error {
 	a.logger.Debugf("configs dir: %s", configDir)
 	a.configsDir = configDir
 
-	exportersDir, err := ioutil.TempDir(a.agentDir, exportersDir)
+	exportersDir, err := ioutil.TempDir(parentDir, ExportersDir)
 	if err != nil {
 		return fmt.Errorf("creating exporters dir: %w", err)
 	}
@@ -116,7 +122,7 @@ func (a *agent) initialize() error {
 	a.logger.Debugf("exporters dir: %s", exportersDir)
 	a.exportersDir = exportersDir
 
-	binsDir, err := ioutil.TempDir(a.agentDir, integrationsBinDir)
+	binsDir, err := ioutil.TempDir(parentDir, IntegrationsBinDir)
 	if err != nil {
 		return fmt.Errorf("creating integration bin dir: %w", err)
 	}
@@ -159,9 +165,8 @@ func (a *agent) addIntegrationsConfigFile(integrations []spec.Integration) error
 }
 
 // SetUp creates temporary folders where it copies the binaries and
-// config files that are going to be mounted the agent.
+// config files that are going to be mounted in the agent container.
 func (a *agent) SetUp(scenario spec.Scenario) error {
-	a.scenario = scenario
 	if err := a.initDefaultCompose(); err != nil {
 		return err
 	}
@@ -233,7 +238,7 @@ func (a *agent) Stop() error {
 	}
 
 	// Remove compose file when using default.
-	if a.agentDir == "" {
+	if a.agentBuildContext == "" {
 		if err := os.RemoveAll(a.dockerComposePath); err != nil {
 			return err
 		}
