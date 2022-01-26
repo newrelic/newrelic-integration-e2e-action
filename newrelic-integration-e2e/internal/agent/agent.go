@@ -37,7 +37,6 @@ type Agent interface {
 }
 
 type agent struct {
-	scenario          spec.Scenario
 	agentBuildContext string
 	configsDir        string
 	containerName     string
@@ -161,7 +160,6 @@ func (a *agent) addIntegrationsConfigFile(integrations []spec.Integration) error
 // SetUp creates temporary folders where it copies the binaries and
 // config files that are going to be mounted the agent.
 func (a *agent) SetUp(scenario spec.Scenario) error {
-	a.scenario = scenario
 	if err := a.initDefaultCompose(); err != nil {
 		return err
 	}
