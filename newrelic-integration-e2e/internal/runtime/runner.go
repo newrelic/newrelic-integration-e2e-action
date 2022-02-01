@@ -1,6 +1,7 @@
 package runtime
 
 import (
+	"fmt"
 	"math/rand"
 	"os"
 	"os/exec"
@@ -112,7 +113,16 @@ func (r *Runner) executeOSCommands(statements []string, scenarioTag string) erro
 		cmd.Env = os.Environ()
 		cmd.Env = append(cmd.Env, "SCENARIO_TAG="+scenarioTag)
 		combinedOutput, err := cmd.CombinedOutput()
-		r.logger.WithField("command", stmt).Info(combinedOutput)
+
+		if r.spec.PlainLogs {
+			r.logger.WithField("command", stmt).Info(combinedOutput)
+		} else {
+			logWriter := r.logger.Writer()
+			_, _ = fmt.Fprintf(logWriter, "::group::%s\n", stmt)
+			_, _ = fmt.Fprint(logWriter, combinedOutput)
+			_, _ = fmt.Fprintln(logWriter, "::endgroup::")
+		}
+
 		if err != nil {
 			return err
 		}
