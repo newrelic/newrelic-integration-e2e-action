@@ -112,7 +112,7 @@ func (r *Runner) executeOSCommands(statements []string, scenarioTag string) erro
 		cmd.Env = os.Environ()
 		cmd.Env = append(cmd.Env, "SCENARIO_TAG="+scenarioTag)
 		combinedOutput, err := cmd.CombinedOutput()
-		r.logger.Debugf("stdout: %q", combinedOutput)
+		r.logger.WithField("command", stmt).Info(combinedOutput)
 		if err != nil {
 			return err
 		}
