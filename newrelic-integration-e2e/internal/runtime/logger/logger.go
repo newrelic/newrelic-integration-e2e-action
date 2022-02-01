@@ -7,7 +7,9 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// CommandLogger is an object to log output from commands
+// CommandLogger is an object that logs grouped output from commands.
+// Callers can get an io.Writer to feed to exec.Command by calling Open, and close the group with Close when the command
+// has finished.
 type CommandLogger interface {
 	// Open returns an io.Writer the command should write its stdout and stderr to.
 	// Implementations may assume callers do not interact with the underlying writers between calls to Open and Close.
@@ -27,11 +29,13 @@ func NewLogrusLogger(logger *logrus.Logger) LogrusLogger {
 	return LogrusLogger{logrus: logger}
 }
 
+// Open creates a Writer from a Logrus entry with the "command" field set to the command name.
 func (ll LogrusLogger) Open(name string) io.Writer {
 	ll.pipe = ll.logrus.WithField("command", name).Writer()
 	return ll.pipe
 }
 
+// Close closes the logrus entry pipe.
 func (ll LogrusLogger) Close() {
 	if ll.pipe != nil {
 		_ = ll.pipe.Close()
@@ -49,11 +53,13 @@ func NewGHALogger(writer io.Writer) GHALogger {
 	return GHALogger{writer}
 }
 
+// Open prints the GHA `group` command using the name of the command as group name.
 func (gha GHALogger) Open(name string) io.Writer {
 	_, _ = fmt.Fprintf(gha, "::group::%s\n", name)
 	return gha
 }
 
+// Close closes the log group by printing the `endgroup` command.
 func (gha GHALogger) Close() {
 	_, _ = fmt.Fprintln(gha, "::endgroup::")
 }

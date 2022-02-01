@@ -106,6 +106,7 @@ func (r *Runner) Run() error {
 }
 
 func (r *Runner) executeOSCommands(statements []string, scenarioTag string) error {
+	// Create a logger for the executed commands.
 	var cmdLogger logger.CommandLogger
 	if r.spec.PlainLogs {
 		cmdLogger = logger.NewLogrusLogger(r.logger)
@@ -120,6 +121,7 @@ func (r *Runner) executeOSCommands(statements []string, scenarioTag string) erro
 		cmd.Env = os.Environ()
 		cmd.Env = append(cmd.Env, "SCENARIO_TAG="+scenarioTag)
 
+		// Open a log group for the command and run it.
 		loggerWriter := cmdLogger.Open(stmt)
 		cmd.Stdout = loggerWriter
 		cmd.Stderr = loggerWriter
