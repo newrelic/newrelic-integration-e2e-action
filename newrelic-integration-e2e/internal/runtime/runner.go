@@ -8,6 +8,7 @@ import (
 
 	e2e "github.com/newrelic/newrelic-integration-e2e-action/newrelic-integration-e2e/internal"
 	"github.com/newrelic/newrelic-integration-e2e-action/newrelic-integration-e2e/internal/agent"
+	"github.com/newrelic/newrelic-integration-e2e-action/newrelic-integration-e2e/internal/runtime/logger"
 	"github.com/newrelic/newrelic-integration-e2e-action/newrelic-integration-e2e/internal/spec"
 	"github.com/newrelic/newrelic-integration-e2e-action/newrelic-integration-e2e/pkg/retrier"
 	"github.com/sirupsen/logrus"
@@ -105,14 +106,28 @@ func (r *Runner) Run() error {
 }
 
 func (r *Runner) executeOSCommands(statements []string, scenarioTag string) error {
+	// Create a logger for the executed commands.
+	var cmdLogger logger.CommandLogger
+	if r.spec.PlainLogs {
+		cmdLogger = logger.NewLogrusLogger(r.logger)
+	} else {
+		cmdLogger = logger.NewGHALogger(os.Stderr)
+	}
+
 	for _, stmt := range statements {
 		r.logger.Debugf("execute command '%s' from path '%s'", stmt, r.specParentDir)
 		cmd := exec.Command("bash", "-c", stmt)
 		cmd.Dir = r.specParentDir
 		cmd.Env = os.Environ()
 		cmd.Env = append(cmd.Env, "SCENARIO_TAG="+scenarioTag)
-		combinedOutput, err := cmd.CombinedOutput()
-		r.logger.Debugf("stdout: %q", combinedOutput)
+
+		// Open a log group for the command and run it.
+		loggerWriter := cmdLogger.Open(stmt)
+		cmd.Stdout = loggerWriter
+		cmd.Stderr = loggerWriter
+		err := cmd.Run()
+		cmdLogger.Close()
+
 		if err != nil {
 			return err
 		}

@@ -8,6 +8,7 @@ type Definition struct {
 	Description     string     `yaml:"description"`
 	Scenarios       []Scenario `yaml:"scenarios"`
 	AgentExtensions *Agent     `yaml:"agent"`
+	PlainLogs       bool       `yaml:"plain_logs"`
 	CustomTestKey   string     `yaml:"custom_test_key"`
 }
 

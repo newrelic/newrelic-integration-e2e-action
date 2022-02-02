@@ -56,8 +56,8 @@ func (nrc *nrClient) FindEntityGUIDs(sample, metricName, customTagKey, entityTag
 		return nil, ErrNoResult
 	}
 
-	if len(a.Results[0]["uniques.entity.guid"].([]interface{})) < expectedNumber {
-		return nil, fmt.Errorf("%w: %s", ErrResultNumber, query)
+	if results := len(a.Results[0]["uniques.entity.guid"].([]interface{})); results < expectedNumber {
+		return nil, fmt.Errorf("%w: %s: got %d, expected %d", ErrResultNumber, query, results, expectedNumber)
 	}
 
 	for _, g := range a.Results[0]["uniques.entity.guid"].([]interface{}) {
