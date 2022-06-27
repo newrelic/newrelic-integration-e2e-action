@@ -106,6 +106,7 @@ The spec file for the e2e needs to be a yaml file with the following structure:
     - `source` : Relative path to the integration spec file (It defines the entities and metrics) that will be parsed to match the metrics got from NROne.
     - `except_entities` : Array of entities whose metrics will be skipped.
     - `except_metrics` : Array of metrics to skip.
+    - `exceptions_source` : Relative (to the spec file) path to a YAML file containing extra exceptions. This metrics are appended to the ones defined in `except_metrics` and `except_entities`. 
   - `entities` : Array of entities to chek existing in NROne.
     - `type` : Type of the entity to look for in NROne
     - `data_type` : Name of the table to check for the entity in NROne (If V4 integration, will always be Metric)
@@ -153,7 +154,16 @@ scenarios:
           except_metrics:
             - powerdns_authoritative_answers_bytes_total
             - powerdns_recursor_cache_lookups_total
-          # additionals: ""
+          exceptions_source: "powerdns-custom-exceptions.yml"
+```
+
+Extra exceptions file `powerdns-custom-exceptions.yml` example:
+```yaml
+except_entities:
+  - POWERDNS_MY_CUSTOM_ENTITY
+except_metrics:
+  - powerdns_metric_removed_on_version_x
+
 ```
 
 ### Custom Agent image
