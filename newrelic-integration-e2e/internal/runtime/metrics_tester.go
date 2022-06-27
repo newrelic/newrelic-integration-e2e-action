@@ -3,6 +3,7 @@ package runtime
 import (
 	"fmt"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 
 	"github.com/sirupsen/logrus"
@@ -117,7 +118,7 @@ func (mt MetricsTester) containsMetric(metric string, queriedMetricsList []strin
 }
 
 func parseExceptions(exceptMetricsPath string) (*spec.Exceptions, error) {
-	content, err := ioutil.ReadFile(exceptMetricsPath)
+	content, err := ioutil.ReadFile(os.ExpandEnv(exceptMetricsPath))
 	if err != nil {
 		return nil, fmt.Errorf("reading except metrics source file %s: %w", exceptMetricsPath, err)
 	}
