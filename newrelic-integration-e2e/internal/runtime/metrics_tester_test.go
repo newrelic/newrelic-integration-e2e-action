@@ -17,9 +17,11 @@ func TestMetricsTester_Test(t *testing.T) {
 
 	inputTests := spec.Tests{Metrics: []spec.TestMetrics{
 		{
-			Source:         "testdata/powerdns.yml",
-			ExceptEntities: nil,
-			ExceptMetrics:  nil,
+			Source: "testdata/powerdns.yml",
+			Exceptions: spec.Exceptions{
+				ExceptEntities: nil,
+				ExceptMetrics:  nil,
+			},
 		},
 	}}
 
@@ -54,13 +56,14 @@ func TestMetricsTester_checkMetrics(t *testing.T) {
 		queriedMetrics         []string
 		numberOfErrorsExpected int
 	}{
-
 		{
 			name: "when no metrics it should return 3 errors, one from each missing metric",
 			testMetrics: spec.TestMetrics{
-				Source:         "",
-				ExceptEntities: []string{},
-				ExceptMetrics:  []string{},
+				Source: "",
+				Exceptions: spec.Exceptions{
+					ExceptEntities: []string{},
+					ExceptMetrics:  []string{},
+				},
 			},
 			queriedMetrics:         []string{},
 			numberOfErrorsExpected: 3,
@@ -68,9 +71,11 @@ func TestMetricsTester_checkMetrics(t *testing.T) {
 		{
 			name: "when only metrics from entity B but entity A excluded it shouldn't return errors",
 			testMetrics: spec.TestMetrics{
-				Source:         "",
-				ExceptEntities: []string{"ENTITY-A"},
-				ExceptMetrics:  []string{},
+				Source: "",
+				Exceptions: spec.Exceptions{
+					ExceptEntities: []string{"ENTITY-A"},
+					ExceptMetrics:  []string{},
+				},
 			},
 			queriedMetrics:         []string{"metric-B1", "metric-B2"},
 			numberOfErrorsExpected: 0,
@@ -78,11 +83,38 @@ func TestMetricsTester_checkMetrics(t *testing.T) {
 		{
 			name: "when a metric is not returned but it's excluded it shouldn't return errors",
 			testMetrics: spec.TestMetrics{
-				Source:         "",
-				ExceptEntities: []string{},
-				ExceptMetrics:  []string{"metric-A"},
+				Source: "",
+				Exceptions: spec.Exceptions{
+					ExceptEntities: []string{},
+					ExceptMetrics:  []string{"metric-A"},
+				},
 			},
 			queriedMetrics:         []string{"metric-B1", "metric-B2"},
+			numberOfErrorsExpected: 0,
+		},
+		{
+			name: "when a metric is excluded from exceptions file source it shouldn't return errors",
+			testMetrics: spec.TestMetrics{
+				Source: "",
+				Exceptions: spec.Exceptions{
+					ExceptEntities: []string{},
+					ExceptMetrics:  []string{"metric-B1"},
+				},
+				ExceptionsSource: "testdata/exceptions_metric.yml",
+			},
+			queriedMetrics:         []string{"metric-B2"},
+			numberOfErrorsExpected: 0,
+		},
+		{
+			name: "when an entity is excluded from except metrics source it shouldn't return errors",
+			testMetrics: spec.TestMetrics{
+				Source: "",
+				Exceptions: spec.Exceptions{
+					ExceptEntities: []string{"ENTITY-B"},
+				},
+				ExceptionsSource: "testdata/exceptions_entity.yml",
+			},
+			queriedMetrics:         []string{},
 			numberOfErrorsExpected: 0,
 		},
 	}

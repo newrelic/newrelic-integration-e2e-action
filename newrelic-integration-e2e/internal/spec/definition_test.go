@@ -6,6 +6,25 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func Test_ParseExceptionsFile(t *testing.T) {
+	sample := `
+except_metrics:
+- metric_a
+- metric_b
+except_entities:
+- entity_a
+`
+	exceptions, err := ParseExceptionsFile([]byte(sample))
+	assert.Nil(t, err)
+	assert.Equal(
+		t,
+		&Exceptions{
+			ExceptEntities: []string{"entity_a"},
+			ExceptMetrics:  []string{"metric_a", "metric_b"},
+		},
+		exceptions)
+}
+
 func Test_ParseDefinitionFile(t *testing.T) {
 	sample := `
 description: |
@@ -82,8 +101,10 @@ scenarios:
 				},
 				Metrics: []TestMetrics{
 					{
-						Source:        "powerdns.yml",
-						ExceptMetrics: []string{"powerdns_authoritative_answers_bytes_total"},
+						Source: "powerdns.yml",
+						Exceptions: Exceptions{
+							ExceptMetrics: []string{"powerdns_authoritative_answers_bytes_total"},
+						},
 					},
 				},
 			},

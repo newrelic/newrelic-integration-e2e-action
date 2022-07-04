@@ -52,10 +52,24 @@ type TestEntity struct {
 }
 
 type TestMetrics struct {
-	Source                 string   `yaml:"source"`
-	ExceptEntities         []string `yaml:"except_entities"`
-	ExceptMetrics          []string `yaml:"except_metrics"`
-	ExpectedEntitiesNumber int      `yaml:"expected_entities_number"`
+	Source           string `yaml:"source"`
+	ExceptionsSource string `yaml:"exceptions_source"`
+	Exceptions       `yaml:",inline"`
+}
+
+type Exceptions struct {
+	ExceptEntities []string `yaml:"except_entities"`
+	ExceptMetrics  []string `yaml:"except_metrics"`
+}
+
+func ParseExceptionsFile(content []byte) (*Exceptions, error) {
+	exceptions := &Exceptions{}
+
+	if err := yaml.Unmarshal(content, exceptions); err != nil {
+		return nil, err
+	}
+
+	return exceptions, nil
 }
 
 func ParseDefinitionFile(content []byte) (*Definition, error) {

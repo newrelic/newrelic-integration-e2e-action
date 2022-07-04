@@ -3,6 +3,7 @@ package runtime
 import (
 	"fmt"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 
 	"github.com/sirupsen/logrus"
@@ -54,6 +55,21 @@ func (mt MetricsTester) Test(tests spec.Tests, customTagKey, customTagValue stri
 
 func (mt MetricsTester) checkMetrics(entities []spec.Entity, tm spec.TestMetrics, queriedMetrics []string) []error {
 	var errors []error
+
+	if tm.ExceptionsSource != "" {
+		exceptMetricsPath := filepath.Join(mt.specParentDir, tm.ExceptionsSource)
+		mt.logger.Debugf("parsing the content of the except metrics source file: %s", exceptMetricsPath)
+
+		exceptions, err := parseExceptions(exceptMetricsPath)
+		if err != nil {
+			errors = append(errors, fmt.Errorf("reading except metrics source file %s: %w", exceptMetricsPath, err))
+			return errors
+		}
+
+		tm.ExceptMetrics = append(tm.ExceptMetrics, exceptions.ExceptMetrics...)
+		tm.ExceptEntities = append(tm.ExceptEntities, exceptions.ExceptEntities...)
+	}
+
 	for _, entity := range entities {
 		if mt.isEntityException(entity.EntityType, tm.ExceptEntities) {
 			continue
@@ -99,4 +115,13 @@ func (mt MetricsTester) containsMetric(metric string, queriedMetricsList []strin
 		}
 	}
 	return false
+}
+
+func parseExceptions(exceptMetricsPath string) (*spec.Exceptions, error) {
+	content, err := ioutil.ReadFile(os.ExpandEnv(exceptMetricsPath))
+	if err != nil {
+		return nil, fmt.Errorf("reading except metrics source file %s: %w", exceptMetricsPath, err)
+	}
+
+	return spec.ParseExceptionsFile(content)
 }
