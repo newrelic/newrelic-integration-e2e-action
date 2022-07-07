@@ -24,7 +24,7 @@ const (
 	integrationsBinDirEnv = "E2E_NRI_BIN"
 	dockerCompose         = "docker-compose.yml"
 	defConfigFile         = "nri-config.yml"
-	container             = "agent"
+	agentContainerName    = "agent"
 )
 
 //go:embed resources/docker-compose.yml
@@ -39,7 +39,6 @@ type Agent interface {
 type agent struct {
 	agentBuildContext string
 	configsDir        string
-	containerName     string
 	exportersDir      string
 	binsDir           string
 	licenseKey        string
@@ -49,6 +48,7 @@ type agent struct {
 	ExtraIntegrations map[string]string
 	ExtraEnvVars      map[string]string
 	customTagKey      string
+	compose           *dockercompose.Compose
 }
 
 func NewAgent(settings e2e.Settings) *agent {
@@ -56,7 +56,6 @@ func NewAgent(settings e2e.Settings) *agent {
 
 	a := agent{
 		specParentDir:     settings.SpecParentDir(),
-		containerName:     container,
 		agentBuildContext: agentBuildContext,
 		dockerComposePath: filepath.Join(agentBuildContext, dockerCompose),
 		licenseKey:        settings.LicenseKey(),
@@ -103,7 +102,7 @@ func (a *agent) initDefaultCompose() error {
 // the same dir where the agent compose file is located.
 func (a *agent) initialize() error {
 	// dockerComposePath can be in a temporal dir if using default or inside the
-	// agentBuildContext dir if using custom agent container.
+	// agentBuildContext dir if using custom agent agentContainerName.
 	parentDir := filepath.Dir(a.dockerComposePath)
 
 	configDir, err := ioutil.TempDir(parentDir, IntegrationsCfgDir)
@@ -129,6 +128,8 @@ func (a *agent) initialize() error {
 
 	a.logger.Debugf("bins dir: %s", binsDir)
 	a.binsDir = binsDir
+
+	a.compose = dockercompose.New(a.dockerComposePath)
 
 	return nil
 }
@@ -202,7 +203,7 @@ func (a *agent) Run(scenarioTag string) error {
 	envVars := map[string]string{
 		"NRIA_VERBOSE":           "1",
 		"NRIA_LICENSE_KEY":       a.licenseKey,
-		"NRIA_CUSTOM_ATTRIBUTES": fmt.Sprintf(`{"%s":"%s"}`, a.customTagKey, scenarioTag),
+		"NRIA_CUSTOM_ATTRIBUTES": fmt.Sprintf(`'{"%s":"%s"}'`, a.customTagKey, scenarioTag),
 	}
 
 	for envKey, envValue := range a.ExtraEnvVars {
@@ -210,9 +211,10 @@ func (a *agent) Run(scenarioTag string) error {
 	}
 
 	// Temporary directories with configs and binaries are passed to the docker-compose
-	// through env vars. The docker compose is resposable for mounting this directories
+	// through env vars. The docker compose is responsible for mounting this directories
 	// so the Agent automatically executes the integrations.
-
+	// These env vars are evaluated by the host, as they are used in the default docker-compose file:
+	// newrelic-integration-e2e/test/testdata/kafka/agent_dir/docker-compose.yml
 	if err := os.Setenv(integrationsCfgDirEnv, a.configsDir); err != nil {
 		return fmt.Errorf("fail to set %s env: %w", integrationsCfgDirEnv, err)
 	}
@@ -225,15 +227,18 @@ func (a *agent) Run(scenarioTag string) error {
 		return fmt.Errorf("fail to set %s env: %w", exportersDirEnv, err)
 	}
 
-	return dockercompose.Run(a.dockerComposePath, a.containerName, envVars)
+	a.compose.Env(envVars)
+
+	return a.compose.Run(agentContainerName)
 }
 
 func (a *agent) Stop() error {
+	logrus.Debugf("Stopping container")
 	if a.logger.GetLevel() == logrus.DebugLevel {
-		a.logger.Debug(dockercompose.Logs(a.dockerComposePath, a.containerName))
+		_ = a.compose.Logs(agentContainerName)
 	}
 
-	if err := dockercompose.Down(a.dockerComposePath); err != nil {
+	if err := a.compose.Down(); err != nil {
 		return err
 	}
 

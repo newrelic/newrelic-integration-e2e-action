@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+
+	"github.com/newrelic/newrelic-integration-e2e-action/newrelic-integration-e2e/internal/runtime/logger"
 )
 
 const (
@@ -11,52 +13,83 @@ const (
 	dockerBin        = "docker"
 )
 
-func Run(path string, container string, envVars map[string]string) error {
-	if err := Build(path, container, envVars); err != nil {
-		return err
+type Compose struct {
+	path      string
+	env       map[string]string
+	buildArgs map[string]string
+
+	cmdLogger logger.CommandLogger
+}
+
+// New creates a new docker-compose wrapper given the path to a docker-compose.yml file.
+func New(filepath string) *Compose {
+	return &Compose{
+		path:      filepath,
+		cmdLogger: logger.NewGHALogger(os.Stderr),
 	}
-	args := []string{"-f", path, "run"}
-	for k, v := range envVars {
-		args = append(args, "-e", fmt.Sprintf("%s=%s", k, v))
-	}
-	args = append(args, "-d", container)
-	cmd := exec.Command(dockerComposeBin, args...)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
+}
+
+func (c *Compose) Logger(commandLogger logger.CommandLogger) {
+	c.cmdLogger = commandLogger
+}
+
+func (c *Compose) Env(env map[string]string) {
+	c.env = env
+}
+
+func (c *Compose) BuildArgs(args map[string]string) {
+	c.buildArgs = args
+}
+
+func (c *Compose) command(args ...string) error {
+	cmdArgs := []string{"-f", c.path}
+	cmdArgs = append(cmdArgs, args...)
+	cmd := exec.Command(dockerComposeBin, cmdArgs...)
+
+	logWriter := c.cmdLogger.Open(cmd.String())
+	defer c.cmdLogger.Close()
+
+	cmd.Stdout = logWriter
+	cmd.Stderr = logWriter
 	return cmd.Run()
 }
 
-func Down(path string) error {
-	args := []string{"-f", path, "down", "-v"}
-	cmd := exec.Command(dockerComposeBin, args...)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-
-	return cmd.Run()
-}
-
-func Build(path, container string, envVars map[string]string) error {
-	args := []string{"-f", path, "build", "--no-cache"}
-	for k, v := range envVars {
-		args = append(args, "--build-arg", fmt.Sprintf("%s=%s", k, v))
+func (c *Compose) Run(container string) error {
+	if err := c.Build(); err != nil {
+		return fmt.Errorf("building before run: %w", err)
 	}
-	args = append(args, container)
-	cmd := exec.Command(dockerComposeBin, args...)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	return cmd.Run()
+
+	args := []string{"run", "-d", container}
+	args = append(args, asFlags("-e", c.env)...)
+
+	return c.command(args...)
 }
 
-func Logs(path, containerName string) string {
-	containerID := getContainerID(path, containerName)
+func (c *Compose) Down() error {
+	return c.command("down", "-v")
+}
+
+func (c *Compose) Build() error {
+	args := []string{"build", "--no-cache"}
+	// docker-compose.yml might use env vars to populate build args, so we set them during Build() as well.
+	args = append(args, asFlags("--build-arg", c.env)...)
+	args = append(args, asFlags("--build-arg", c.buildArgs)...)
+
+	return c.command(args...)
+}
+
+func (c *Compose) Logs(containerName string) error {
+	containerID := getContainerID(c.path, containerName)
 
 	args := []string{"logs", containerID}
 	cmd := exec.Command(dockerBin, args...)
-	stdout, err := cmd.Output()
-	if ee, ok := err.(*exec.ExitError); ok {
-		fmt.Print(string(ee.Stderr))
-	}
-	return string(stdout)
+
+	logWriter := c.cmdLogger.Open(cmd.String())
+	defer c.cmdLogger.Close()
+
+	cmd.Stdout = logWriter
+	cmd.Stderr = logWriter
+	return cmd.Run()
 }
 
 func getContainerID(path, containerName string) string {
@@ -68,4 +101,12 @@ func getContainerID(path, containerName string) string {
 		return string(containerID)[:shortContainerIDLength]
 	}
 	return string(containerID)
+}
+
+func asFlags(flag string, vars map[string]string) (args []string) {
+	for k, v := range vars {
+		args = append(args, flag, fmt.Sprintf("%s=%s", k, v))
+	}
+
+	return
 }
