@@ -181,7 +181,7 @@ func TestNrClient_FindEntityByGUID(t *testing.T) {
 			}
 			guid, err := nrClient.FindEntityByGUID(tt.entityGUID)
 			if !errors.Is(err, tt.errorExpected) {
-				t.Errorf("Error returned is not: %w", tt.errorExpected)
+				t.Errorf("Error returned is not: %v", tt.errorExpected)
 			}
 			if tt.errorExpected == nil && guid == nil {
 				t.Errorf("Expected entity, got nil")
