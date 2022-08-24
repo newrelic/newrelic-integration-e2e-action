@@ -3,13 +3,7 @@ VERBOSE ?= false
 RETRY_ATTEMPTS ?= 10
 RETRY_SECONDS ?= 30
 
-all: validate test snyk-test
-
-validate:
-	@printf "=== newrelic-integration-e2e === [ validate ]: running golangci-lint & semgrep... "
-	@cd newrelic-integration-e2e; go run -mod=readonly -modfile=tools/go.mod github.com/golangci/golangci-lint/cmd/golangci-lint run --verbose
-	@[ -f .semgrep.yml ] && semgrep_config=".semgrep.yml" || semgrep_config="p/golang" ; \
-	docker run --rm -v "${PWD}/newrelic-integration-e2e:/src:ro" --workdir / returntocorp/semgrep -c "$$semgrep_config"
+all: test snyk-test
 
 test:
 	@echo "=== newrelic-integration-e2e === [ test ]: running unit tests..."

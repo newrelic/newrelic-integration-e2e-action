@@ -49,7 +49,7 @@ jobs:
       - name: Setup go
         uses: actions/setup-go@v1
         with:
-          go-version: 1.17
+          go-version: 1.18
       - name: build-powerdns
         run: make build-powerdns
       - name: e2e-test
