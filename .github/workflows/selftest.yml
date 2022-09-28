@@ -1,10 +1,6 @@
 name: Self-test action
 
 on:
-  push:
-    branches:
-      - master
-      - main
   pull_request:
 
 # ATTENTION
@@ -16,46 +12,42 @@ jobs:
     runs-on: ubuntu-latest
     name: Test run the e2e test on powerdns local testdata
     steps:
-      - name: checkout-repository
-        uses: actions/checkout@v2
-      - name: Setup go
-        uses: actions/setup-go@v1
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
         with:
-          go-version: 1.18
+          go-version-file: 'go.mod'
       - name: Run action for PowerDNS (exporter based)
         uses: ./
         with:
-          spec_path: newrelic-integration-e2e/test/testdata/powerdns/powerdns-e2e.yml
+          spec_path: test/testdata/powerdns/powerdns-e2e.yml
           account_id: ${{ secrets.ACCOUNT_ID }}
           api_key: ${{ secrets.API_KEY }}
           license_key: ${{ secrets.LICENSE_KEY }}
+
   test_local_kafka:
     runs-on: ubuntu-latest
     name: Test run the e2e test on kafka local testdata
     steps:
-      - name: checkout-repository
-        uses: actions/checkout@v2
-      - name: Setup go
-        uses: actions/setup-go@v1
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
         with:
-          go-version: 1.18
+          go-version-file: 'go.mod'
       - name: Run action for Kafka (sample based)
         uses: ./
         with:
-          spec_path: newrelic-integration-e2e/test/testdata/kafka/kafka-e2e.yml
+          spec_path: test/testdata/kafka/kafka-e2e.yml
           account_id: ${{ secrets.ACCOUNT_ID }}
           api_key: ${{ secrets.API_KEY }}
           license_key: ${{ secrets.LICENSE_KEY }}
+
   test_local_k8s:
     runs-on: ubuntu-latest
     name: Test run the e2e test on k8s local testdata
     steps:
-      - name: checkout-repository
-        uses: actions/checkout@v2
-      - name: Setup go
-        uses: actions/setup-go@v1
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
         with:
-          go-version: 1.18
+          go-version-file: 'go.mod'
       - name: Setup Minikube
         uses: manusa/actions-setup-minikube@v2.4.2
         with:
@@ -71,7 +63,7 @@ jobs:
       - name: Run action for K8s (sample based without agent)
         uses: ./
         with:
-          spec_path: newrelic-integration-e2e/test/testdata/k8s/k8s-e2e.yml
+          spec_path: test/testdata/k8s/k8s-e2e.yml
           account_id: ${{ secrets.ACCOUNT_ID }}
           api_key: ${{ secrets.API_KEY }}
           license_key: ${{ secrets.LICENSE_KEY }}
