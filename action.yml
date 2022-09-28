@@ -44,6 +44,23 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - id: run-spec
-      run: make -C ${{ github.action_path }} COMMIT_SHA=${{ github.sha }} AGENT_ENABLED=${{ inputs.agent_enabled }} ROOT_DIR=${{ github.workspace }} ACCOUNT_ID=${{ inputs.account_id }} API_KEY=${{ inputs.api_key }} LICENSE_KEY=${{ inputs.license_key }} SPEC_PATH=${{ inputs.spec_path }} RETRY_ATTEMPTS=${{ inputs.retry_attempts }} RETRY_SECONDS=${{ inputs.retry_seconds }} VERBOSE=${{ inputs.verbose }} REGION=${{ inputs.region }} run
+    - uses: actions/checkout@v3
+    - uses: actions/setup-go@v3
+      with:
+        go-version-file: '${{ github.action_path }}/go.mod'
+
+    - name: Run external Job
       shell: bash
+      run: |
+        cd "${{ github.action_path }}" && go build -o newrelic-integration-e2e ./cmd && \
+        ./newrelic-integration-e2e \
+          --commit_sha="${{ inputs.commit_sha }}" \
+          --retry_attempts="${{ inputs.retry_attempts }}" \
+          --retry_seconds="${{ inputs.retry_seconds }}" \
+          --account_id="${{ inputs.account_id }}" \
+          --api_key="${{ inputs.api_key }}" \
+          --license_key="${{ inputs.license_key }}" \
+          --spec_path="${{ inputs.spec_path }}" \
+          --verbose_mode="${{ inputs.verbose_mode }}" \
+          --agent_enabled="${{ inputs.agent_enabled }}" \
+          --region="${{ inputs.region }}"

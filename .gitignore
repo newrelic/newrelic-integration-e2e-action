@@ -1,9 +1,7 @@
-.idea
-vendor
 .agent_dir
-agent_dir/newrelic-infra-agent/bin
-agent_dir/newrelic-infra-agent/exporters
-agent_dir/newrelic-infra-agent/integrations.d
-newrelic-integration-e2e/test/testdata/kafka/agent_dir/newrelic-infra-agent/bin
-newrelic-integration-e2e/test/testdata/kafka/agent_dir/newrelic-infra-agent/exporters
-newrelic-integration-e2e/test/testdata/kafka/agent_dir/newrelic-infra-agent/integrations.d
+
+**/bin/
+**/exporters/
+**/integrations.d/
+
+dist/
