@@ -21,6 +21,7 @@ func Run(path string, container string, envVars map[string]string) error {
 	}
 	args = append(args, "-d", container)
 	cmd := exec.Command(dockerComposeBin, args...)
+	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	return cmd.Run()
