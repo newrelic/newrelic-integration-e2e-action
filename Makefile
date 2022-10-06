@@ -20,7 +20,7 @@ snyk-test:
 
 run:
 	@printf "=== newrelic-integration-e2e === [ run / $* ]: running the binary \n"
-	@cd newrelic-integration-e2e; go run $(CURDIR)/newrelic-integration-e2e/cmd/main.go \
+	@cd newrelic-integration-e2e; go run $(CURDIR)/newrelic-integration-e2e/main.go \
 	 --commit_sha=$(COMMIT_SHA) \
 	 --retry_attempts=$(RETRY_ATTEMPTS) \
 	 --retry_seconds=$(RETRY_SECONDS) \

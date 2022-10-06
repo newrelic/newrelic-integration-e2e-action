@@ -29,6 +29,20 @@ New Relic has two kinds of integrations:
     - If `verbose` is true it logs the agent logs with other debug information.
 - The action is completed.
 
+## Install
+
+`newrelic-integration-e2e-action` can be installed as binary by using the following Go tool command:
+
+```shell
+go install github.com/newrelic/newrelic-integration-e2e-action/newrelic-integration-e2e@latest
+```
+
+In case you don't want to install de binary you can always run it directly:
+
+```shell
+go run github.com/newrelic/newrelic-integration-e2e-action/newrelic-integration-e2e@latest
+```
+
 ## Usage
 
 Example usage:
