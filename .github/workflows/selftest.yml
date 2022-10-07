@@ -25,7 +25,7 @@ jobs:
       - name: Run action for PowerDNS (exporter based)
         uses: ./
         with:
-          spec_path: newrelic-integration-e2e/test/testdata/powerdns/powerdns-e2e.yml
+          spec_path: test/testdata/powerdns/powerdns-e2e.yml
           account_id: ${{ secrets.ACCOUNT_ID }}
           api_key: ${{ secrets.API_KEY }}
           license_key: ${{ secrets.LICENSE_KEY }}
@@ -42,7 +42,7 @@ jobs:
       - name: Run action for Kafka (sample based)
         uses: ./
         with:
-          spec_path: newrelic-integration-e2e/test/testdata/kafka/kafka-e2e.yml
+          spec_path: test/testdata/kafka/kafka-e2e.yml
           account_id: ${{ secrets.ACCOUNT_ID }}
           api_key: ${{ secrets.API_KEY }}
           license_key: ${{ secrets.LICENSE_KEY }}
@@ -71,7 +71,7 @@ jobs:
       - name: Run action for K8s (sample based without agent)
         uses: ./
         with:
-          spec_path: newrelic-integration-e2e/test/testdata/k8s/k8s-e2e.yml
+          spec_path: test/testdata/k8s/k8s-e2e.yml
           account_id: ${{ secrets.ACCOUNT_ID }}
           api_key: ${{ secrets.API_KEY }}
           license_key: ${{ secrets.LICENSE_KEY }}
