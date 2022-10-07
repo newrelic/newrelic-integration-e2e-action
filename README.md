@@ -34,13 +34,13 @@ New Relic has two kinds of integrations:
 `newrelic-integration-e2e-action` can be installed as binary by using the following Go tool command:
 
 ```shell
-go install github.com/newrelic/newrelic-integration-e2e-action/newrelic-integration-e2e@latest
+go install github.com/newrelic/newrelic-integration-e2e-action@latest
 ```
 
 In case you don't want to install de binary you can always run it directly:
 
 ```shell
-go run github.com/newrelic/newrelic-integration-e2e-action/newrelic-integration-e2e@latest
+go run github.com/newrelic/newrelic-integration-e2e-action@latest
 ```
 
 ## Usage
@@ -182,11 +182,11 @@ except_metrics:
 
 ### Custom Agent image
 
-A [docker-compose.yml](newrelic-integration-e2e/internal/agent/resources/docker-compose.yml) is embedded into the code which is used by default to build the Agent image that contains the integrations and configs to be tested. 
+A [docker-compose.yml](internal/agent/resources/docker-compose.yml) is embedded into the code which is used by default to build the Agent image that contains the integrations and configs to be tested. 
 
 If a custom image is needed, `agent.build_context` must contain a relative path to a directory containing a `docker-compose.yml`.In order to mount the binaries to the image `E2E_EXPORTER_BIN`, `E2E_NRI_CONFIG` and `E2E_NRI_BIN` will be set as env variables with the path to the temporary folders where assets are copied.
 
-A concrete example can be checked in [this test](newrelic-integration-e2e/test/testdata/kafka/kafka-e2e.yml).
+A concrete example can be checked in [this test](test/testdata/kafka/kafka-e2e.yml).
 
 ## Types of test
 All the queries done to NROne are done with an extra WHERE condition that is `WHERE testKey = 'COMMMITSHA + 10 Digit alphanumeric'` a custom attribute added to the agent. This attribute is decorated in all the emitted metrics. 

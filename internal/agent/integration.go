@@ -1,7 +1,7 @@
 package agent
 
 import (
-	"github.com/newrelic/newrelic-integration-e2e-action/newrelic-integration-e2e/internal/spec"
+	"github.com/newrelic/newrelic-integration-e2e-action/internal/spec"
 )
 
 type integration struct {

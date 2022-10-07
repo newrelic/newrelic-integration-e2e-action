@@ -4,10 +4,9 @@ import (
 	_ "embed"
 	"flag"
 
-	"github.com/newrelic/newrelic-integration-e2e-action/newrelic-integration-e2e/internal/newrelic"
-	"github.com/newrelic/newrelic-integration-e2e-action/newrelic-integration-e2e/internal/runtime"
-
-	e2e "github.com/newrelic/newrelic-integration-e2e-action/newrelic-integration-e2e/internal"
+	e2e "github.com/newrelic/newrelic-integration-e2e-action/internal"
+	"github.com/newrelic/newrelic-integration-e2e-action/internal/newrelic"
+	"github.com/newrelic/newrelic-integration-e2e-action/internal/runtime"
 	"github.com/sirupsen/logrus"
 )
 

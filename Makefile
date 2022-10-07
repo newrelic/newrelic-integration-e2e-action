@@ -5,22 +5,24 @@ RETRY_SECONDS ?= 30
 
 all: test snyk-test
 
+.PHONY: test
 test:
-	@echo "=== newrelic-integration-e2e === [ test ]: running unit tests..."
-	@cd newrelic-integration-e2e; go test -race ./... -count=1
+	echo "=== newrelic-integration-e2e === [ test ]: running unit tests..."
+	@go test -race ./... -count=1
 
 snyk-test:
 	@docker run --rm -t \
 			--name "newrelic-integration-e2e-snyk-test" \
 			-v $(CURDIR):/go/src/github.com/newrelic/newrelic-integration-e2e-action \
-			-w /go/src/github.com/newrelic/newrelic-integration-e2e-action/newrelic-integration-e2e \
+			-w /go/src/github.com/newrelic/newrelic-integration-e2e-action \
 			-e SNYK_TOKEN \
 			-e GO111MODULE=auto \
 			snyk/snyk:golang snyk test --severity-threshold=high
 
+.PHONY: run
 run:
 	@printf "=== newrelic-integration-e2e === [ run / $* ]: running the binary \n"
-	@cd newrelic-integration-e2e; go run $(CURDIR)/newrelic-integration-e2e/main.go \
+	@go run main.go \
 	 --commit_sha=$(COMMIT_SHA) \
 	 --retry_attempts=$(RETRY_ATTEMPTS) \
 	 --retry_seconds=$(RETRY_SECONDS) \

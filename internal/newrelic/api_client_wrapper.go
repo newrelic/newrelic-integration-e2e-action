@@ -2,6 +2,7 @@ package newrelic
 
 import (
 	"fmt"
+
 	newrelicgo "github.com/newrelic/newrelic-client-go/newrelic"
 	"github.com/newrelic/newrelic-client-go/pkg/common"
 	"github.com/newrelic/newrelic-client-go/pkg/entities"

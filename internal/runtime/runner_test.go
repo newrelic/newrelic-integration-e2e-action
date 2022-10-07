@@ -4,11 +4,9 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"github.com/stretchr/testify/require"
-
+	"github.com/newrelic/newrelic-integration-e2e-action/internal/spec"
 	"github.com/sirupsen/logrus"
-
-	"github.com/newrelic/newrelic-integration-e2e-action/newrelic-integration-e2e/internal/spec"
+	"github.com/stretchr/testify/require"
 )
 
 type agentMock struct {

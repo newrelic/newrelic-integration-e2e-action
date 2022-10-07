@@ -6,11 +6,11 @@ import (
 	"os/exec"
 	"time"
 
-	e2e "github.com/newrelic/newrelic-integration-e2e-action/newrelic-integration-e2e/internal"
-	"github.com/newrelic/newrelic-integration-e2e-action/newrelic-integration-e2e/internal/agent"
-	"github.com/newrelic/newrelic-integration-e2e-action/newrelic-integration-e2e/internal/runtime/logger"
-	"github.com/newrelic/newrelic-integration-e2e-action/newrelic-integration-e2e/internal/spec"
-	"github.com/newrelic/newrelic-integration-e2e-action/newrelic-integration-e2e/pkg/retrier"
+	e2e "github.com/newrelic/newrelic-integration-e2e-action/internal"
+	"github.com/newrelic/newrelic-integration-e2e-action/internal/agent"
+	"github.com/newrelic/newrelic-integration-e2e-action/internal/runtime/logger"
+	"github.com/newrelic/newrelic-integration-e2e-action/internal/spec"
+	"github.com/newrelic/newrelic-integration-e2e-action/pkg/retrier"
 	"github.com/sirupsen/logrus"
 )
 

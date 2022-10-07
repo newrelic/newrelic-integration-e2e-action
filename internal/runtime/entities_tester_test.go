@@ -4,7 +4,7 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"github.com/newrelic/newrelic-integration-e2e-action/newrelic-integration-e2e/internal/spec"
+	"github.com/newrelic/newrelic-integration-e2e-action/internal/spec"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 )
