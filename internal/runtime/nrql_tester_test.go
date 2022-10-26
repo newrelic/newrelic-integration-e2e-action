@@ -43,5 +43,4 @@ func TestNRQLTester_Test_error(t *testing.T) {
 
 	errors = nrqlTester.Test(inputTests, "", "")
 	assert.Equal(t, 2, len(errors))
-
 }

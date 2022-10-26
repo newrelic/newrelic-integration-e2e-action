@@ -29,7 +29,7 @@ func (nt NRQLTester) Test(tests spec.Tests, customTagKey, customTagValue string)
 			continue
 		}
 		if err == nil && nrql.ErrorExpected {
-			errors = append(errors, fmt.Errorf("querying running %q: an error was expected", nrql.Query))
+			errors = append(errors, fmt.Errorf("an error was expected running: %q", nrql.Query))
 			continue
 		}
 	}
