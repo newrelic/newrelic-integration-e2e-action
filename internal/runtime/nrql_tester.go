@@ -24,8 +24,12 @@ func (nt NRQLTester) Test(tests spec.Tests, customTagKey, customTagValue string)
 	var errors []error
 	for _, nrql := range tests.NRQLs {
 		err := nt.nrClient.NRQLQuery(nrql.Query, customTagKey, customTagValue)
-		if err != nil {
+		if err != nil && !nrql.ErrorExpected {
 			errors = append(errors, fmt.Errorf("querying: %w", err))
+			continue
+		}
+		if err == nil && nrql.ErrorExpected {
+			errors = append(errors, fmt.Errorf("querying running %q: an error was expected", nrql.Query))
 			continue
 		}
 	}

@@ -115,8 +115,10 @@ The spec file for the e2e needs to be a yaml file with the following structure:
   - `exporter_binary_path` : Relative path to the prometheus exporter if it's needed (Prometheus based integrations)
   - `config` : The config values for this NR integration that will be red by the agent to execute the integration.
 - `tests` : The 3 kinds of tests that will be done to the New relic api to check for metrics/entities in NROne:
-  - `nrqls` : Array of queries that will be executed independently and will fail if returned value is nil. 
-  - `metrics` : Array of metrics to chek existing in NROne
+  - `nrqls` : Array of queries that will be executed independently. You can specify if running a query an error is expected or not. 
+   - `query` : the query to run
+   - `error_expected`: false by default, useful if we want to test that a metric is not being sent 
+  - `metrics` : Array of metrics to check existing in NROne
     - `source` : Relative path to the integration spec file (It defines the entities and metrics) that will be parsed to match the metrics got from NROne.
     - `except_entities` : Array of entities whose metrics will be skipped.
     - `except_metrics` : Array of metrics to skip.
@@ -154,6 +156,7 @@ scenarios:
     tests:
       nrqls:
         - query: "SELECT average(powerdns_authoritative_queries_total) FROM Metric"
+          error_expected: false
       entities:
         - type: "POWERDNS_AUTHORITATIVE"
           data_type: "Metric"
