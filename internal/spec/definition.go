@@ -41,7 +41,8 @@ type Tests struct {
 }
 
 type TestNRQL struct {
-	Query string `yaml:"query"`
+	Query         string `yaml:"query"`
+	ErrorExpected bool   `yaml:"error_expected"`
 }
 
 type TestEntity struct {
