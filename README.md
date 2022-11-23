@@ -93,6 +93,7 @@ Optional parameters:
 - `retry_attempts` it's the number of attempts a failed test can be retried. default: 10.
 - `verbose` if set to to true the agent logs and other useful debug logs will be printed. default: false.
 - `agent_enabled` if set to false then the agent will not be spawned and its lifecycle will be up to the user of the action. Useful when testing K8s like integrations
+- `region` is where to send the e2e data. Possible values: "US", "EU", "Staging", "Local". See `action.yaml` for more info.
 
 ## Spec file for the e2e
 
