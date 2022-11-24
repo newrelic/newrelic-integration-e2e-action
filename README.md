@@ -8,6 +8,7 @@ End to end testing action for New Relic integrations to ensure that:
 - The service metrics and entities are correctly sent to NROne.
 
 New Relic has two kinds of integrations:
+
 - Custom made integrations
 - Integrations based on prometheus exporters
 
@@ -16,17 +17,17 @@ New Relic has two kinds of integrations:
 ## Steps executed by the e2e action
 
 - It reads the e2e test descriptor file/s that must be passed as an argument to the action.
-- For each scenario present in the descriptor:  
-    - It launches services dependencies (e.g. a docker-compose ) if specified in the `before` step.
-    - It creates a config file with the details in the descriptor. 
-    - Adds a custom-attribute to the config:
-        - Composed by the current commit sha + a new 10 alphanumeric-random digit on each scenario.
-        - The tests will look for this label to fetch the metrics and the entities from the New Relic backend.
-    - It launches the default docker-compose of the Infra Agent mounting the binaries and configs so the integrations are run automatically.
-    - The runner executes the tests one by one, checking that metrics &/or entities are being created correctly. 
-    - If the test fails, it's retried after the `retry_seconds` (default 30s) and up to the `retry_attempts` (default 10) defined for the action. 
-    - It stops & removes the services if specified in the after step.
-    - If `verbose` is true it logs the agent logs with other debug information.
+- For each scenario present in the descriptor:
+  - It launches services dependencies (e.g. a docker-compose ) if specified in the `before` step.
+  - It creates a config file with the details in the descriptor.
+  - Adds a custom-attribute to the config:
+    - Composed by the current commit sha + a new 10 alphanumeric-random digit on each scenario.
+    - The tests will look for this label to fetch the metrics and the entities from the New Relic backend.
+  - It launches the default docker-compose of the Infra Agent mounting the binaries and configs so the integrations are run automatically.
+  - The runner executes the tests one by one, checking that metrics &/or entities are being created correctly.
+  - If the test fails, it's retried after the `retry_seconds` (default 30s) and up to the `retry_attempts` (default 10) defined for the action.
+  - It stops & removes the services if specified in the after step.
+  - If `verbose` is true it logs the agent logs with other debug information.
 - The action is completed.
 
 ## Install
@@ -46,6 +47,7 @@ go run github.com/newrelic/newrelic-integration-e2e-action@latest
 ## Usage
 
 Example usage:
+
 ```yaml
 name: e2e
 on:
@@ -79,33 +81,38 @@ jobs:
 ```
 
 The required fields are:
+
 - `spec_path` to define the e2e.
-- `account_id` required by the NR Api.
-- `api_key` required by the NR Api.
-- `license_key` required by the agent.
+- `account_id` required by the NR API.
+- `api_key` required by the NR API (API key type: "User").
+- `license_key` required by the agent (API key type: "Ingest - License").
 
 Optional parameters:
+
 - `retry_seconds` it's the number of seconds to wait after retrying a test. default: 30.
 - `retry_attempts` it's the number of attempts a failed test can be retried. default: 10.
 - `verbose` if set to to true the agent logs and other useful debug logs will be printed. default: false.
 - `agent_enabled` if set to false then the agent will not be spawned and its lifecycle will be up to the user of the action. Useful when testing K8s like integrations
+- `region` is where to send the e2e data. Possible values: "US", "EU", "Staging", "Local". See `action.yaml` for more info.
 
-## Spec file for the e2e 
+## Spec file for the e2e
 
 The paths of the binaries in this file are relative to its parent folder.
 
 The spec file for the e2e needs to be a yaml file with the following structure:
 
-`decription` : Description for the e2e test. 
+`decription` : Description for the e2e test.
 
-`custom_test_key`: (Optional) Key of the custom attribute to test. Useful in case you cannot control the keyName. 
+`custom_test_key`: (Optional) Key of the custom attribute to test. Useful in case you cannot control the keyName.
 
 `agent`: Extra environment variables and/or integrations required for the e2e.
-- `build_context` : Relative path to the directory where a custom `docker-compose.yml` will be build and run to launch the Agent. If not specified a default embedded docker-compose is executed. 
+
+- `build_context` : Relative path to the directory where a custom `docker-compose.yml` will be build and run to launch the Agent. If not specified a default embedded docker-compose is executed.
 - `integrations` : Additional integrations needed for the e2e.
 - `env_vars` : Additional EnvVars for the agent execution.
 
 `scenarios`: Array of scenarios, each one is an independent run for the e2e.
+
 - `decription` : Description of the scenario.
 - `before` : Array of shell commands that will be executed by the e2e runner before the next steps of the scenario. (Here is where the docker-compose commands need to be put to setup the environment)
 - `after` : Array of shell commands that will be executed by the e2e runner as the last step of the scenario.
@@ -115,24 +122,25 @@ The spec file for the e2e needs to be a yaml file with the following structure:
   - `exporter_binary_path` : Relative path to the prometheus exporter if it's needed (Prometheus based integrations)
   - `config` : The config values for this NR integration that will be red by the agent to execute the integration.
 - `tests` : The 3 kinds of tests that will be done to the New relic api to check for metrics/entities in NROne:
-  - `nrqls` : Array of queries that will be executed independently. You can specify if running a query an error is expected or not. 
-   - `query` : the query to run
-   - `error_expected`: false by default, useful if we want to test that a metric is not being sent 
+  - `nrqls` : Array of queries that will be executed independently. You can specify if running a query an error is expected or not.
+  - `query` : the query to run
+  - `error_expected`: false by default, useful if we want to test that a metric is not being sent
   - `metrics` : Array of metrics to check existing in NROne
     - `source` : Relative path to the integration spec file (It defines the entities and metrics) that will be parsed to match the metrics got from NROne.
     - `except_entities` : Array of entities whose metrics will be skipped.
     - `except_metrics` : Array of metrics to skip.
-    - `exceptions_source` : Relative (to the spec file) path to a YAML file containing extra exceptions. This metrics are appended to the ones defined in `except_metrics` and `except_entities`. 
+    - `exceptions_source` : Relative (to the spec file) path to a YAML file containing extra exceptions. This metrics are appended to the ones defined in `except_metrics` and `except_entities`.
   - `entities` : Array of entities to chek existing in NROne.
     - `type` : Type of the entity to look for in NROne
     - `data_type` : Name of the table to check for the entity in NROne (If V4 integration, will always be Metric)
     - `metric_name` : Name of the known metric that should be having the entity dimension in NROne.
 
 Example:
+
 ```yaml
 description: |
   End-to-end tests for PowerDNS integration
-  
+
 agent:
   env_vars:
     NRJMX_VERSION: "1.5.3"
@@ -175,6 +183,7 @@ scenarios:
 ```
 
 Extra exceptions file `powerdns-custom-exceptions.yml` example:
+
 ```yaml
 except_entities:
   - POWERDNS_MY_CUSTOM_ENTITY
@@ -185,25 +194,31 @@ except_metrics:
 
 ### Custom Agent image
 
-A [docker-compose.yml](internal/agent/resources/docker-compose.yml) is embedded into the code which is used by default to build the Agent image that contains the integrations and configs to be tested. 
+A [docker-compose.yml](internal/agent/resources/docker-compose.yml) is embedded into the code which is used by default to build the Agent image that contains the integrations and configs to be tested.
 
 If a custom image is needed, `agent.build_context` must contain a relative path to a directory containing a `docker-compose.yml`.In order to mount the binaries to the image `E2E_EXPORTER_BIN`, `E2E_NRI_CONFIG` and `E2E_NRI_BIN` will be set as env variables with the path to the temporary folders where assets are copied.
 
 A concrete example can be checked in [this test](test/testdata/kafka/kafka-e2e.yml).
 
 ## Types of test
-All the queries done to NROne are done with an extra WHERE condition that is `WHERE testKey = 'COMMMITSHA + 10 Digit alphanumeric'` a custom attribute added to the agent. This attribute is decorated in all the emitted metrics. 
+
+All the queries done to NROne are done with an extra WHERE condition that is `WHERE testKey = 'COMMMITSHA + 10 Digit alphanumeric'` a custom attribute added to the agent. This attribute is decorated in all the emitted metrics.
 
 In this way we ensure that every returned metric/entity is really the emitted by the current e2e scenario.
 
 Example:
 `SELECT * from Metric where metricName = 'powerdns_authoritative_up' where testKey = '35e32b6a00dec02ae7d7c45c6b7106779a124685sneniedzku' limit 1`
+
 ### Entities
+
 This test is to ensure that the list of entities specified on the array have been created in NROne, and also to see there exactly the expected number for each type.
+
 ### Metrics
+
 This test is to check if the metrics specified in the spec file added to the pipeline's e2e source attribute are present on NROne. The current approach is to copy this spec file in the e2e path.
 
 Example of metrics spec file:
+
 ```yaml
 specVersion: "2"
 owningTeam: integrations
@@ -230,11 +245,12 @@ entities:
             type: string
 ```
 
-This file will be parsed, getting each entity type and the metric names associated. The e2e will do a query to NROne to get all metrics with the testkey of the scenario and will fail if one is not found. 
+This file will be parsed, getting each entity type and the metric names associated. The e2e will do a query to NROne to get all metrics with the testkey of the scenario and will fail if one is not found.
 
 There is the possibility to skip some entity's metrics or specific metrics.
 
 ### NRQL
+
 A list of NRQLs that will be checked in NROne, it can be any query and will fail if the result is nil.
 
 ## Support
@@ -258,4 +274,5 @@ If you would like to contribute to this project, review [these guidelines](./CON
 To all contributors, we thank you!  Without your contribution, this project would not be what it is today.  We also host a community project page dedicated to [Project Name](<LINK TO https://opensource.newrelic.com/projects/... PAGE>).
 
 ## License
+
 newrelic-integration-e2e-action is licensed under the [Apache 2.0](http://apache.org/licenses/LICENSE-2.0.txt) License.
