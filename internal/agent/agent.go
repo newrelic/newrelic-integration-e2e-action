@@ -25,6 +25,7 @@ const (
 	dockerCompose         = "docker-compose.yml"
 	defConfigFile         = "nri-config.yml"
 	container             = "agent"
+	regionStaging         = "Staging"
 )
 
 //go:embed resources/docker-compose.yml
@@ -67,6 +68,13 @@ func NewAgent(settings e2e.Settings) *agent {
 	if settings.SpecDefinition().AgentExtensions != nil {
 		a.ExtraIntegrations = settings.SpecDefinition().AgentExtensions.Integrations
 		a.ExtraEnvVars = settings.SpecDefinition().AgentExtensions.EnvVars
+	}
+
+	if settings.Region() == regionStaging {
+		if a.ExtraEnvVars == nil {
+			a.ExtraEnvVars = map[string]string{}
+		}
+		a.ExtraEnvVars["NRIA_STAGING"] = "1"
 	}
 
 	return &a
