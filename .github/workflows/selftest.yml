@@ -16,12 +16,10 @@ jobs:
     runs-on: ubuntu-latest
     name: Test run the e2e test on powerdns local testdata
     steps:
-      - name: checkout-repository
-        uses: actions/checkout@v2
-      - name: Setup go
-        uses: actions/setup-go@v1
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v2
         with:
-          go-version: 1.18
+          go-version-file: go.mod
       - name: Run action for PowerDNS (exporter based)
         uses: ./
         with:
@@ -29,16 +27,16 @@ jobs:
           account_id: ${{ secrets.ACCOUNT_ID }}
           api_key: ${{ secrets.API_KEY }}
           license_key: ${{ secrets.LICENSE_KEY }}
+          retry_seconds: 60
+          retry_attempts: 15
   test_local_kafka:
     runs-on: ubuntu-latest
     name: Test run the e2e test on kafka local testdata
     steps:
-      - name: checkout-repository
-        uses: actions/checkout@v2
-      - name: Setup go
-        uses: actions/setup-go@v1
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v2
         with:
-          go-version: 1.18
+          go-version-file: go.mod
       - name: Run action for Kafka (sample based)
         uses: ./
         with:
@@ -46,22 +44,26 @@ jobs:
           account_id: ${{ secrets.ACCOUNT_ID }}
           api_key: ${{ secrets.API_KEY }}
           license_key: ${{ secrets.LICENSE_KEY }}
+          retry_seconds: 60
+          retry_attempts: 15
   test_local_k8s:
-    runs-on: ubuntu-latest
+    # To be able to use driver=none we have to provide a CRI that kubelet allows.
+    # Or we do the research to use `ubuntu-latest` or we should keep to an old version of Ubuntu and Kubernetes
+    # so this test can run using Docker as a CRI.
+    runs-on: ubuntu-20.04
     name: Test run the e2e test on k8s local testdata
     steps:
       - name: checkout-repository
-        uses: actions/checkout@v2
-      - name: Setup go
-        uses: actions/setup-go@v1
+        uses: actions/checkout@v3
+      - uses: actions/setup-go@v2
         with:
-          go-version: 1.18
+          go-version-file: go.mod
       - name: Setup Minikube
         uses: manusa/actions-setup-minikube@v2.4.2
         with:
           minikube version: v1.20.0
           kubernetes version: v1.21.4
-          driver: none # required for nri-kubernetes, as metrics gathered for the host are tested as well
+          driver: none  # required for nri-kubernetes, as metrics gathered for the host are tested as well
       - name: Setup Helm
         run: |
           chmod go-r /home/runner/.kube/config
@@ -75,4 +77,6 @@ jobs:
           account_id: ${{ secrets.ACCOUNT_ID }}
           api_key: ${{ secrets.API_KEY }}
           license_key: ${{ secrets.LICENSE_KEY }}
+          retry_seconds: 60
+          retry_attempts: 15
           agent_enabled: "false"
