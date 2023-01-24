@@ -31,6 +31,7 @@ func TestAgent_SetUp(t *testing.T) {
 
 	settings, err := e2e.NewSettings(
 		e2e.SettingsWithSpecPath(filepath.Join(specPath, "spec_file.yml")),
+		e2e.SettingsWithRegion("Staging"),
 	)
 	require.NoError(t, err)
 
