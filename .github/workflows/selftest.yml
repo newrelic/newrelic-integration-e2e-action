@@ -17,7 +17,7 @@ jobs:
     name: Test run the e2e test on powerdns local testdata
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-go@v2
+      - uses: actions/setup-go@v3
         with:
           go-version-file: go.mod
       - name: Run action for PowerDNS (exporter based)
@@ -32,7 +32,7 @@ jobs:
     name: Test run the e2e test on kafka local testdata
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-go@v2
+      - uses: actions/setup-go@v3
         with:
           go-version-file: go.mod
       - name: Run action for Kafka (sample based)
@@ -51,7 +51,7 @@ jobs:
     steps:
       - name: checkout-repository
         uses: actions/checkout@v3
-      - uses: actions/setup-go@v2
+      - uses: actions/setup-go@v3
         with:
           go-version-file: go.mod
       - name: Setup Minikube
