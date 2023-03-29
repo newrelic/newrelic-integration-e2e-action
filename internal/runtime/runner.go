@@ -34,6 +34,7 @@ type Runner struct {
 	retryAttempts int
 	retryAfter    time.Duration
 	commitSha     string
+	scenarioTag   string
 }
 
 func NewRunner(testers []Tester, settings e2e.Settings) *Runner {
@@ -63,6 +64,7 @@ func NewRunner(testers []Tester, settings e2e.Settings) *Runner {
 		retryAttempts: retryAttempts,
 		retryAfter:    retryAfter,
 		commitSha:     settings.CommitSha(),
+		scenarioTag:   settings.ScenarioTag(),
 	}
 }
 
@@ -148,6 +150,11 @@ func (r *Runner) executeTests(tests spec.Tests, customTestKey string, scenarioTa
 }
 
 func (r *Runner) generateScenarioTag() string {
+	// if there is a customer defined scenario tag, just return it instead of generating a randome one.
+	if len(r.scenarioTag) > 0 {
+		return r.scenarioTag
+	}
+
 	b := make([]rune, scenarioTagRuneNr)
 	for i := range b {
 		b[i] = letterRunes[rand.Intn(len(letterRunes))]
