@@ -35,7 +35,7 @@ func processCliArgs() (string, string, bool, string, int, int, int, string, logr
 	retrySeconds := flag.Int(flagRetrySecons, 60, "Number of seconds before retrying a test")
 	commitSha := flag.String(flagCommitSha, "", "Current commit sha")
 	region := flag.String(flagRegion, "", "Current commit sha")
-	scenarioTag := flag.String(flagScenarioTag, "", "E2e testing scenario")
+	scenarioTag := flag.String(flagScenarioTag, "", "E2e testing scenario tag")
 	flag.Parse()
 
 	if *licenseKey == "" {
