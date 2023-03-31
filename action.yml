@@ -40,10 +40,14 @@ inputs:
       The values at the time of writing this are from this commit: https://github.com/newrelic/newrelic-client-go/blob/ece2430d7cfd7f5bd69c300568a7e9ec24f287ca/pkg/region/region_constants.go#L7-L20
     required: false
     default: "US"
+  scenario_tag:
+    description: Allow customers to set the testing cluster name as their cluster name if they do not want to use the auto-generated random cluster name.
+    required: false
+    default: ""
 
 runs:
   using: "composite"
   steps:
     - id: run-spec
-      run: make -C ${{ github.action_path }} COMMIT_SHA=${{ github.sha }} AGENT_ENABLED=${{ inputs.agent_enabled }} ROOT_DIR=${{ github.workspace }} ACCOUNT_ID=${{ inputs.account_id }} API_KEY=${{ inputs.api_key }} LICENSE_KEY=${{ inputs.license_key }} SPEC_PATH=${{ inputs.spec_path }} RETRY_ATTEMPTS=${{ inputs.retry_attempts }} RETRY_SECONDS=${{ inputs.retry_seconds }} VERBOSE=${{ inputs.verbose }} REGION=${{ inputs.region }} run
+      run: make -C ${{ github.action_path }} COMMIT_SHA=${{ github.sha }} AGENT_ENABLED=${{ inputs.agent_enabled }} ROOT_DIR=${{ github.workspace }} ACCOUNT_ID=${{ inputs.account_id }} API_KEY=${{ inputs.api_key }} LICENSE_KEY=${{ inputs.license_key }} SPEC_PATH=${{ inputs.spec_path }} RETRY_ATTEMPTS=${{ inputs.retry_attempts }} RETRY_SECONDS=${{ inputs.retry_seconds }} VERBOSE=${{ inputs.verbose }} REGION=${{ inputs.region }} SCENARIO_TAG=${{ inputs.scenario_tag }} run
       shell: bash

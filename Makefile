@@ -32,4 +32,5 @@ run:
 	 --spec_path=$(ROOT_DIR)/$(SPEC_PATH) \
 	 --verbose_mode=$(VERBOSE) \
 	 --agent_enabled=$(AGENT_ENABLED) \
-	 --region=$(REGION)
+	 --region=$(REGION) \
+	 --scenario_tag=$(SCENARIO_TAG)
