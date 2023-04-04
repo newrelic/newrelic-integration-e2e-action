@@ -21,9 +21,10 @@ const (
 	flagRetrySecons   = "retry_seconds"
 	flagCommitSha     = "commit_sha"
 	flagRegion        = "region"
+	flagScenarioTag   = "scenario_tag"
 )
 
-func processCliArgs() (string, string, bool, string, int, int, int, string, logrus.Level, string) {
+func processCliArgs() (string, string, bool, string, int, int, int, string, logrus.Level, string, string) {
 	specsPath := flag.String(flagSpecPath, "", "Path to the spec file")
 	licenseKey := flag.String(flagLicenseKey, "", "New Relic License Key")
 	agentEnabled := flag.Bool(flagAgentEnabled, true, "If false the agent is not run")
@@ -34,6 +35,7 @@ func processCliArgs() (string, string, bool, string, int, int, int, string, logr
 	retrySeconds := flag.Int(flagRetrySecons, 60, "Number of seconds before retrying a test")
 	commitSha := flag.String(flagCommitSha, "", "Current commit sha")
 	region := flag.String(flagRegion, "", "Current commit sha")
+	scenarioTag := flag.String(flagScenarioTag, "", "E2e testing scenario tag")
 	flag.Parse()
 
 	if *licenseKey == "" {
@@ -53,13 +55,13 @@ func processCliArgs() (string, string, bool, string, int, int, int, string, logr
 	if *verboseMode {
 		logLevel = logrus.DebugLevel
 	}
-	return *licenseKey, *specsPath, *agentEnabled, *apiKey, *accountID, *retryAttempts, *retrySeconds, *commitSha, logLevel, *region
+	return *licenseKey, *specsPath, *agentEnabled, *apiKey, *accountID, *retryAttempts, *retrySeconds, *commitSha, logLevel, *region, *scenarioTag
 }
 
 func main() {
 	logrus.Info("running e2e")
 
-	licenseKey, specsPath, agentEnabled, apiKey, accountID, retryAttempts, retrySeconds, commitSha, logLevel, region := processCliArgs()
+	licenseKey, specsPath, agentEnabled, apiKey, accountID, retryAttempts, retrySeconds, commitSha, logLevel, region, scenarioTag := processCliArgs()
 	s, err := e2e.NewSettings(
 		e2e.SettingsWithSpecPath(specsPath),
 		e2e.SettingsWithLogLevel(logLevel),
@@ -71,6 +73,7 @@ func main() {
 		e2e.SettingsWithRetrySeconds(retrySeconds),
 		e2e.SettingsWithCommitSha(commitSha),
 		e2e.SettingsWithRegion(region),
+		e2e.SettingsWithScenarioTag(scenarioTag),
 	)
 	if err != nil {
 		logrus.Fatalf("error loading settings: %s", err)
