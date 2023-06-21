@@ -3,6 +3,7 @@ package newrelic
 import (
 	"errors"
 	"fmt"
+	"github.com/newrelic/newrelic-integration-e2e-action/internal/spec"
 	"log"
 
 	"github.com/newrelic/newrelic-client-go/pkg/common"
@@ -14,7 +15,7 @@ type Client interface {
 	FindEntityGUIDs(sample, metricName, customTagKey, entityTag string, expectedNumber int) ([]common.EntityGUID, error)
 	FindEntityByGUID(guid *common.EntityGUID) (entities.EntityInterface, error)
 	FindEntityMetrics(sample, customTagKey, entityTag string) ([]string, error)
-	NRQLQuery(query, customTagKey, entityTag string) error
+	NRQLQuery(query, customTagKey, entityTag string, errorExpected bool, expectedResults []spec.TestNRQLExpectedResult) error
 }
 
 var (
@@ -97,20 +98,37 @@ func (nrc *nrClient) FindEntityMetrics(sample, customTagKey, entityTag string) (
 	return resultMetrics(a.Results), nil
 }
 
-func (nrc *nrClient) NRQLQuery(query, customTagKey, entityTag string) error {
+func (nrc *nrClient) NRQLQuery(query, customTagKey, entityTag string, errorExpected bool, expectedResults []spec.TestNRQLExpectedResult) error {
 	query = fmt.Sprintf("%s WHERE %s = '%s'", query, customTagKey, entityTag)
 
 	a, err := nrc.client.Query(nrc.accountID, query)
 	if err != nil {
+		if errorExpected {
+			return nil
+		}
 		return fmt.Errorf("executing nrql query %s, %w", query, err)
 	}
 	if len(a.Results) == 0 {
+		if errorExpected {
+			return nil
+		}
 		return fmt.Errorf("%w: %s", ErrNoResult, query)
 	}
-	if !validValue(a.Results) {
-		return fmt.Errorf("%w: %s", ErrNotValid, query)
+
+	if expectedResults == nil {
+		if !validValue(a.Results) {
+			return fmt.Errorf("%w: %s", ErrNotValid, query)
+		}
+		return nil
+	} else {
+		//FIXME
+		expectedResult := expectedResults[0]
+		stringResult := fmt.Sprintf("%v", a.Results[0][expectedResult.Key])
+		if stringResult != expectedResult.Value {
+			return fmt.Errorf("%w: %s - expected for key '%s': '%s' got '%s'", errors.New("query did not return expected value"), query, expectedResult.Key, expectedResult.Value, stringResult)
+		}
+		return nil
 	}
-	return nil
 }
 
 func resultMetrics(queryResults []nrdb.NRDBResult) []string {

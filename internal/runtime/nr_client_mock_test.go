@@ -2,6 +2,7 @@ package runtime
 
 import (
 	"errors"
+	"github.com/newrelic/newrelic-integration-e2e-action/internal/spec"
 
 	"github.com/newrelic/newrelic-client-go/pkg/common"
 	"github.com/newrelic/newrelic-client-go/pkg/entities"
@@ -40,8 +41,12 @@ func (c clientMock) FindEntityMetrics(sample, customTagKey, entityTag string) ([
 	return []string{"powerdns_authoritative_deferred_cache_actions"}, nil
 }
 
-func (c clientMock) NRQLQuery(query, customTagKey, entityTag string) error {
-	if query == errNRQLQuery {
+func (c clientMock) NRQLQuery(query, customTagKey, entityTag string, errorExpected bool, expectedResults []spec.TestNRQLExpectedResult) error {
+
+	if query == errNRQLQuery && !errorExpected {
+		return errors.New("an-error")
+	}
+	if query != errNRQLQuery && errorExpected {
 		return errors.New("an-error")
 	}
 	return nil
