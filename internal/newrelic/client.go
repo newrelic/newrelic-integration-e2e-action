@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/newrelic/newrelic-integration-e2e-action/internal/spec"
 	"log"
+	"strings"
 
 	"github.com/newrelic/newrelic-client-go/pkg/common"
 	"github.com/newrelic/newrelic-client-go/pkg/entities"
@@ -100,6 +101,7 @@ func (nrc *nrClient) FindEntityMetrics(sample, customTagKey, entityTag string) (
 
 func (nrc *nrClient) NRQLQuery(query, customTagKey, entityTag string, errorExpected bool, expectedResults []spec.TestNRQLExpectedResult) error {
 	query = fmt.Sprintf("%s WHERE %s = '%s'", query, customTagKey, entityTag)
+	query = strings.ReplaceAll(query, "${SCENARIO_TAG}", entityTag)
 
 	a, err := nrc.client.Query(nrc.accountID, query)
 	if err != nil {

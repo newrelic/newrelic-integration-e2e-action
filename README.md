@@ -38,7 +38,7 @@ New Relic has two kinds of integrations:
 go install github.com/newrelic/newrelic-integration-e2e-action@latest
 ```
 
-In case you don't want to install de binary you can always run it directly:
+In case you don't want to install the binary you can always run it directly:
 
 ```shell
 go run github.com/newrelic/newrelic-integration-e2e-action@latest
