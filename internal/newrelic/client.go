@@ -124,15 +124,60 @@ func (nrc *nrClient) NRQLQuery(query, customTagKey, entityTag string, errorExpec
 		return nil
 	} else {
 		if len(expectedResults) != len(a.Results) {
-			return fmt.Errorf("%w: %s - expected %d got %d", errors.New("query did not return expected number of results"), len(expectedResults), len(a.Results))
+			return fmt.Errorf("%w: %s\n - expected %d got %d", errors.New("query did not return expected number of results"), query, len(expectedResults), len(a.Results))
 		}
 		for i, expectedResult := range expectedResults {
-			stringResult := fmt.Sprintf("%v", a.Results[i][expectedResult.Key])
-			if stringResult != expectedResult.Value {
-				return fmt.Errorf("%w: %s - expected for key '%s': '%s' got '%s'", errors.New("query did not return expected results"), query, expectedResult.Key, expectedResult.Value, stringResult)
+			actualResult := a.Results[i][expectedResult.Key]
+			comparisonErr := compareResults(expectedResult.Value, actualResult)
+			if comparisonErr != nil {
+				return fmt.Errorf("%w: %s\n - Expected for key '%s': %w", errors.New("query did not return expected results"), query, expectedResult.Key, comparisonErr)
 			}
 		}
 		return nil
+	}
+}
+
+func compareResults(expectedResult any, actualResult any) error {
+	// Preprocess expectedResult
+	switch expectedResult.(type) {
+	case int:
+		intResult, ok := expectedResult.(int)
+		if !ok {
+			return fmt.Errorf("int is not an int")
+		}
+		// Convert int into floats
+		expectedResult = float64(intResult)
+	case string:
+		stringResult, ok := expectedResult.(string)
+		if !ok {
+			return fmt.Errorf("string is not an string")
+		}
+		// Convert string nil into nil
+		if strings.EqualFold(stringResult, "nil") {
+			expectedResult = nil
+		}
+	}
+
+	//  Preprocess actualResult
+	switch actualResult.(type) {
+	case string:
+		stringResult, ok := actualResult.(string)
+		if !ok {
+			return fmt.Errorf("string is not an string")
+		}
+
+		// Convert string booleans into boolean type
+		if strings.EqualFold(stringResult, "false") {
+			actualResult = false
+		} else if strings.EqualFold(stringResult, "true") {
+			actualResult = true
+		}
+	}
+
+	if expectedResult == actualResult {
+		return nil
+	} else {
+		return fmt.Errorf("expected: '%s', got '%s'", expectedResult, actualResult)
 	}
 }
 

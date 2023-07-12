@@ -47,8 +47,8 @@ type TestNRQL struct {
 }
 
 type TestNRQLExpectedResult struct {
-	Key   string `yaml:"key"`
-	Value string `yaml:"value"`
+	Key   string      `yaml:"key"`
+	Value interface{} `yaml:"value"`
 }
 
 type TestEntity struct {
