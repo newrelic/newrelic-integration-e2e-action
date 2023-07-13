@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/newrelic/newrelic-integration-e2e-action/internal/spec"
 	"log"
+	"math"
 	"strings"
 
 	"github.com/newrelic/newrelic-client-go/pkg/common"
@@ -128,7 +129,7 @@ func (nrc *nrClient) NRQLQuery(query, customTagKey, entityTag string, errorExpec
 		}
 		for i, expectedResult := range expectedResults {
 			actualResult := a.Results[i][expectedResult.Key]
-			comparisonErr := compareResults(expectedResult.Value, actualResult)
+			comparisonErr := compareResults(actualResult, expectedResult.Value, expectedResult.LowerBoundedValue, expectedResult.UpperBoundedValue)
 			if comparisonErr != nil {
 				return fmt.Errorf("%w: %s\n - Expected for key '%s': %w", errors.New("query did not return expected results"), query, expectedResult.Key, comparisonErr)
 			}
@@ -137,47 +138,93 @@ func (nrc *nrClient) NRQLQuery(query, customTagKey, entityTag string, errorExpec
 	}
 }
 
-func compareResults(expectedResult any, actualResult any) error {
-	// Preprocess expectedResult
-	switch expectedResult.(type) {
+func preprocessResult(result any) any {
+	switch result.(type) {
 	case int:
-		intResult, ok := expectedResult.(int)
+		intResult, ok := result.(int)
 		if !ok {
 			return fmt.Errorf("int is not an int")
 		}
 		// Convert int into floats
-		expectedResult = float64(intResult)
+		return float64(intResult)
 	case string:
-		stringResult, ok := expectedResult.(string)
+		stringResult, ok := result.(string)
 		if !ok {
 			return fmt.Errorf("string is not an string")
 		}
 		// Convert string nil into nil
 		if strings.EqualFold(stringResult, "nil") {
-			expectedResult = nil
-		}
-	}
-
-	//  Preprocess actualResult
-	switch actualResult.(type) {
-	case string:
-		stringResult, ok := actualResult.(string)
-		if !ok {
-			return fmt.Errorf("string is not an string")
+			return nil
 		}
 
 		// Convert string booleans into boolean type
 		if strings.EqualFold(stringResult, "false") {
-			actualResult = false
+			return false
 		} else if strings.EqualFold(stringResult, "true") {
-			actualResult = true
+			return true
 		}
+		return stringResult
 	}
 
-	if expectedResult == actualResult {
-		return nil
+	return result
+}
+
+func extractFloat(result any) (float64, error) {
+	result = preprocessResult(result)
+	floatResult, ok := result.(float64)
+	if !ok {
+		return 0, fmt.Errorf("int is not an int")
+	}
+	return floatResult, nil
+}
+
+func compareResults(actualResult any, expectedResult any, expectedLowerResult any, expectedUpperResult any) error {
+	if expectedResult != nil {
+		// We are checking for an exact value
+		expectedResult = preprocessResult(expectedResult)
+		actualResult = preprocessResult(actualResult)
+
+		if expectedResult == actualResult {
+			return nil
+		} else {
+			return fmt.Errorf("expected: '%s', got '%s'", expectedResult, actualResult)
+		}
 	} else {
-		return fmt.Errorf("expected: '%s', got '%s'", expectedResult, actualResult)
+		// We are checking for a bounded value
+		actualFloat, err := extractFloat(actualResult)
+		if err != nil {
+			return err
+		}
+
+		var lowerBoundFloat float64
+		var upperBoundFloat float64
+
+		if expectedLowerResult == nil {
+			lowerBoundFloat = math.SmallestNonzeroFloat64
+		} else {
+			lowerBoundTemp, err := extractFloat(expectedLowerResult)
+			if err != nil {
+				return err
+			}
+			lowerBoundFloat = lowerBoundTemp
+		}
+
+		if expectedUpperResult == nil {
+			upperBoundFloat = math.MaxFloat64
+		} else {
+			upperBoundTemp, err := extractFloat(expectedUpperResult)
+			if err != nil {
+				return err
+			}
+			upperBoundFloat = upperBoundTemp
+		}
+
+		if actualFloat >= lowerBoundFloat && actualFloat <= upperBoundFloat {
+			// Hooray!
+			return nil
+		} else {
+			return fmt.Errorf("expected value in range: [%f,%f], got '%f'", lowerBoundFloat, upperBoundFloat, actualFloat)
+		}
 	}
 }
 
