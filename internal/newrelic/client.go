@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/newrelic/newrelic-integration-e2e-action/internal/spec"
 	"log"
-	"math"
 	"strings"
 
 	"github.com/newrelic/newrelic-client-go/pkg/common"
@@ -199,9 +198,7 @@ func compareResults(actualResult any, expectedResult any, expectedLowerResult an
 		var lowerBoundFloat float64
 		var upperBoundFloat float64
 
-		if expectedLowerResult == nil {
-			lowerBoundFloat = math.SmallestNonzeroFloat64
-		} else {
+		if expectedLowerResult != nil {
 			lowerBoundTemp, err := extractFloat(expectedLowerResult)
 			if err != nil {
 				return err
@@ -209,9 +206,7 @@ func compareResults(actualResult any, expectedResult any, expectedLowerResult an
 			lowerBoundFloat = lowerBoundTemp
 		}
 
-		if expectedUpperResult == nil {
-			upperBoundFloat = math.MaxFloat64
-		} else {
+		if expectedUpperResult != nil {
 			upperBoundTemp, err := extractFloat(expectedUpperResult)
 			if err != nil {
 				return err
@@ -219,11 +214,29 @@ func compareResults(actualResult any, expectedResult any, expectedLowerResult an
 			upperBoundFloat = upperBoundTemp
 		}
 
-		if actualFloat >= lowerBoundFloat && actualFloat <= upperBoundFloat {
-			// Hooray!
-			return nil
+		if expectedLowerResult != nil && expectedUpperResult != nil {
+			// Bounded on both sides
+			if actualFloat >= lowerBoundFloat && actualFloat <= upperBoundFloat {
+				return nil
+			} else {
+				return fmt.Errorf("expected value in range: [%f,%f], got '%f'", lowerBoundFloat, upperBoundFloat, actualFloat)
+			}
+		} else if expectedLowerResult != nil && expectedUpperResult == nil {
+			// Lower bound only
+			if actualFloat >= lowerBoundFloat {
+				return nil
+			} else {
+				return fmt.Errorf("expected value in range: [%f,INF], got '%f'", lowerBoundFloat, actualFloat)
+			}
+		} else if expectedLowerResult == nil && expectedUpperResult != nil {
+			// Upper bound only
+			if actualFloat <= upperBoundFloat {
+				return nil
+			} else {
+				return fmt.Errorf("expected value in range: [-INF,%f], got '%f'", upperBoundFloat, actualFloat)
+			}
 		} else {
-			return fmt.Errorf("expected value in range: [%f,%f], got '%f'", lowerBoundFloat, upperBoundFloat, actualFloat)
+			return fmt.Errorf("missing bounds")
 		}
 	}
 }
