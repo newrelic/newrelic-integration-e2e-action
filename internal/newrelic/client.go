@@ -172,7 +172,7 @@ func extractFloat(result any) (float64, error) {
 	result = preprocessResult(result)
 	floatResult, ok := result.(float64)
 	if !ok {
-		return 0, fmt.Errorf("int is not an int")
+		return 0, fmt.Errorf("result is not an float")
 	}
 	return floatResult, nil
 }
