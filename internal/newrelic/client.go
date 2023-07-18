@@ -122,7 +122,7 @@ func (nrc *nrClient) NRQLQuery(query, customTagKey, entityTag string, errorExpec
 		return nil
 	} else {
 		if len(expectedResults) != len(a.Results) {
-			return fmt.Errorf("%w: %s - expected %d got %d", errors.New("query did not return expected number of results"), len(expectedResults), len(a.Results))
+			return fmt.Errorf("%w: %s - expected %d got %d", errors.New("query did not return expected number of results"), query, len(expectedResults), len(a.Results))
 		}
 		for i, expectedResult := range expectedResults {
 			stringResult := fmt.Sprintf("%v", a.Results[i][expectedResult.Key])
