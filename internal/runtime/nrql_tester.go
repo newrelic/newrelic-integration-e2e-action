@@ -27,7 +27,7 @@ func (nt NRQLTester) Test(tests spec.Tests, customTagKey, customTagValue string)
 	for _, nrql := range tests.NRQLs {
 		err := nt.nrClient.NRQLQuery(nrql.Query, customTagKey, customTagValue, nrql.ErrorExpected, nrql.ExpectedResults)
 		if err != nil {
-			errors = append(errors, fmt.Errorf("%s", err.Error()))
+			errors = append(errors, fmt.Errorf("%w", err))
 		}
 	}
 	return errors
