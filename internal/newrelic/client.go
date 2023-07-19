@@ -3,8 +3,9 @@ package newrelic
 import (
 	"errors"
 	"fmt"
-	"github.com/newrelic/newrelic-integration-e2e-action/internal/spec"
 	"log"
+
+	"github.com/newrelic/newrelic-integration-e2e-action/internal/spec"
 
 	"github.com/newrelic/newrelic-client-go/pkg/common"
 	"github.com/newrelic/newrelic-client-go/pkg/entities"
