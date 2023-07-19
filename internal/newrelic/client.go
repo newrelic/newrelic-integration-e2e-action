@@ -19,11 +19,12 @@ type Client interface {
 }
 
 var (
-	ErrNilEntity    = errors.New("nil entity, impossible to dereference")
-	ErrNilGUID      = errors.New("GUID is nil, impossible to find entity")
-	ErrNoResult     = errors.New("query did not return any result")
-	ErrResultNumber = errors.New("query did not return expected number of results")
-	ErrNotValid     = errors.New("query did not return a valid result")
+	ErrNilEntity         = errors.New("nil entity, impossible to dereference")
+	ErrNilGUID           = errors.New("GUID is nil, impossible to find entity")
+	ErrNoResult          = errors.New("query did not return any result")
+	ErrResultNumber      = errors.New("query did not return expected number of results")
+	ErrNotValid          = errors.New("query did not return a valid result")
+	ErrNotExpectedResult = errors.New("query did not return expected results")
 )
 
 type nrClient struct {
@@ -120,18 +121,18 @@ func (nrc *nrClient) NRQLQuery(query, customTagKey, entityTag string, errorExpec
 			return fmt.Errorf("%w: %s", ErrNotValid, query)
 		}
 		return nil
-	} else {
-		if len(expectedResults) != len(a.Results) {
-			return fmt.Errorf("%w: %s - expected %d got %d", errors.New("query did not return expected number of results"), query, len(expectedResults), len(a.Results))
-		}
-		for i, expectedResult := range expectedResults {
-			stringResult := fmt.Sprintf("%v", a.Results[i][expectedResult.Key])
-			if stringResult != expectedResult.Value {
-				return fmt.Errorf("%w: %s - expected for key '%s': '%s' got '%s'", errors.New("query did not return expected results"), query, expectedResult.Key, expectedResult.Value, stringResult)
-			}
-		}
-		return nil
 	}
+
+	if len(expectedResults) != len(a.Results) {
+		return fmt.Errorf("%w: %s - expected %d got %d", ErrResultNumber, query, len(expectedResults), len(a.Results))
+	}
+	for i, expectedResult := range expectedResults {
+		stringResult := fmt.Sprintf("%v", a.Results[i][expectedResult.Key])
+		if stringResult != expectedResult.Value {
+			return fmt.Errorf("%w: %s - expected for key '%s': '%s' got '%s'", ErrNotExpectedResult, query, expectedResult.Key, expectedResult.Value, stringResult)
+		}
+	}
+	return nil
 }
 
 func resultMetrics(queryResults []nrdb.NRDBResult) []string {

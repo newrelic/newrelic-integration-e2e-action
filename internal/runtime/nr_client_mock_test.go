@@ -15,12 +15,16 @@ const (
 	errNRQLQuery        = "wrongNRQLQuery"
 )
 
+var (
+	ErrorTest = errors.New("an-error")
+)
+
 type clientMock struct{}
 
 func (c clientMock) FindEntityGUIDs(sample, metricName, customTagKey, entityTag string, expectedNumber int) ([]common.EntityGUID, error) {
 	switch sample {
 	case errFindEntityGUID:
-		return nil, errors.New("an-error")
+		return nil, ErrorTest
 	case errFindEntityByGUID:
 		guid := common.EntityGUID(errFindEntityByGUID)
 		return []common.EntityGUID{guid}, nil
@@ -32,7 +36,7 @@ func (c clientMock) FindEntityGUIDs(sample, metricName, customTagKey, entityTag 
 
 func (c clientMock) FindEntityByGUID(guid *common.EntityGUID) (entities.EntityInterface, error) {
 	if *guid == errFindEntityByGUID {
-		return nil, errors.New("an-error")
+		return nil, ErrorTest
 	}
 	return entities.EntityInterface(&entities.GenericInfrastructureEntity{Type: correctEntityType}), nil
 }
@@ -42,12 +46,11 @@ func (c clientMock) FindEntityMetrics(sample, customTagKey, entityTag string) ([
 }
 
 func (c clientMock) NRQLQuery(query, customTagKey, entityTag string, errorExpected bool, expectedResults []spec.TestNRQLExpectedResult) error {
-
 	if query == errNRQLQuery && !errorExpected {
-		return errors.New("an-error")
+		return ErrorTest
 	}
 	if query != errNRQLQuery && errorExpected {
-		return errors.New("an-error")
+		return ErrorTest
 	}
 	return nil
 }
