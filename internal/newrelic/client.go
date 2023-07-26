@@ -26,6 +26,7 @@ var (
 	ErrResultNumber      = errors.New("query did not return expected number of results")
 	ErrNotValid          = errors.New("query did not return a valid result")
 	ErrNotExpectedResult = errors.New("query did not return expected results")
+	ErrExpected          = errors.New("an error was expected")
 )
 
 type nrClient struct {
@@ -103,26 +104,42 @@ func (nrc *nrClient) FindEntityMetrics(sample, customTagKey, entityTag string) (
 func (nrc *nrClient) NRQLQuery(query, customTagKey, entityTag string, errorExpected bool, expectedResults []spec.TestNRQLExpectedResult) error {
 	query = fmt.Sprintf("%s WHERE %s = '%s'", query, customTagKey, entityTag)
 
-	a, err := nrc.client.Query(nrc.accountID, query)
-	if err != nil {
-		if errorExpected {
-			return nil
-		}
-		return fmt.Errorf("executing nrql query %s, %w", query, err)
-	}
-	if len(a.Results) == 0 {
-		if errorExpected {
-			return nil
-		}
-		return fmt.Errorf("%w: %s", ErrNoResult, query)
-	}
-
 	if expectedResults == nil {
-		if !validValue(a.Results) {
-			return fmt.Errorf("%w: %s", ErrNotValid, query)
+		// Backwards compatible test
+		err := nrqlQueryDefaultTest(nrc, query)
+		if err != nil && !errorExpected {
+			return fmt.Errorf("querying: %w", err)
+		}
+		if err == nil && errorExpected {
+			return fmt.Errorf("running %q: %w", query, ErrExpected)
 		}
 		return nil
 	}
+
+	// Expected value test
+	testErr := nrqlQueryExpectedValueTest(nrc, query, expectedResults)
+	if testErr != nil {
+		return testErr
+	}
+	return nil
+}
+
+func nrqlQueryDefaultTest(nrc *nrClient, query string) error {
+	a, err := nrc.client.Query(nrc.accountID, query)
+	if err != nil {
+		return fmt.Errorf("executing nrql query %s, %w", query, err)
+	}
+	if len(a.Results) == 0 {
+		return fmt.Errorf("%w: %s", ErrNoResult, query)
+	}
+	if !validValue(a.Results) {
+		return fmt.Errorf("%w: %s", ErrNotValid, query)
+	}
+	return nil
+}
+
+func nrqlQueryExpectedValueTest(nrc *nrClient, query string, expectedResults []spec.TestNRQLExpectedResult) error {
+	a, _ := nrc.client.Query(nrc.accountID, query)
 
 	if len(expectedResults) != len(a.Results) {
 		return fmt.Errorf("%w: %s - expected %d got %d", ErrResultNumber, query, len(expectedResults), len(a.Results))

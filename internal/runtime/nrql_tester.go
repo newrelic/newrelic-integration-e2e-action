@@ -1,7 +1,6 @@
 package runtime
 
 import (
-	"errors"
 	"fmt"
 	"github.com/newrelic/newrelic-integration-e2e-action/internal/newrelic"
 	"github.com/newrelic/newrelic-integration-e2e-action/internal/spec"
@@ -19,8 +18,6 @@ func NewNRQLTester(nrClient newrelic.Client, logger *logrus.Logger) NRQLTester {
 		logger:   logger,
 	}
 }
-
-var ErrorExpected = errors.New("an error was expected")
 
 func (nt NRQLTester) Test(tests spec.Tests, customTagKey, customTagValue string) []error {
 	var errors []error
