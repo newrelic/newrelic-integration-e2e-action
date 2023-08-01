@@ -11,7 +11,11 @@ scenarios:
     after:
       - helm delete ${SCENARIO_TAG}
     tests:
-      nrqls: []
+      nrqls:
+        - query: "FROM Metric SELECT latest(k8s.deployment.podsTotal) as 'Pods Total'"
+          expected_results:
+            - key: "Pods Total"
+              value: 2
       entities:
         - type: "KUBERNETES_DEPLOYMENT"
           data_type: "Metric"
