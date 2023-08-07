@@ -236,6 +236,7 @@ func checkBounds(actualResult any, expectedLowerResult any, expectedUpperResult 
 	return assertInBounds(expectedLowerResult, expectedUpperResult, actualFloat, lowerBoundFloat, upperBoundFloat)
 }
 
+//nolint:gocyclo // This function is self-explanatory and simplifying it would be more convoluted
 func assertInBounds(expectedLowerResult any, expectedUpperResult any, actualFloat float64, lowerBoundFloat float64, upperBoundFloat float64) error {
 	switch {
 	case expectedLowerResult != nil && expectedUpperResult != nil:
