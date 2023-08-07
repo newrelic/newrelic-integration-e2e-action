@@ -129,6 +129,8 @@ The spec file for the e2e needs to be a yaml file with the following structure:
     - `expected_results` : Array of expected results that will be sequentially asserted against the NRQL response.
       - `key`: The key of the expected result to assert against (i.e. `Pods Available`)
       - `value`: The value expected for the above key (i.e. `4`)
+      - `lowerBoundedValue`: The lowest value (inclusive) expected for the above key (i.e. `3`). This cannot be used in conjunction with `value`.
+      - `upperBoundedValue`: The highest value (inclusive) expected for the above key (i.e. `5`). This cannot be used in conjunction with `value`.
   - `metrics` : Array of metrics to check existing in NROne
     - `source` : Relative path to the integration spec file (It defines the entities and metrics) that will be parsed to match the metrics got from NROne.
     - `except_entities` : Array of entities whose metrics will be skipped.
