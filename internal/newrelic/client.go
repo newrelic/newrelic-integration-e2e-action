@@ -142,6 +142,38 @@ func nrqlQueryDefaultTest(nrc *nrClient, query string) error {
 	return nil
 }
 
+func nrqlQueryExpectedValueTest(nrc *nrClient, query string, expectedResults []spec.TestNRQLExpectedResult) error {
+	a, _ := nrc.client.Query(nrc.accountID, query)
+
+	if len(expectedResults) != len(a.Results) {
+		return fmt.Errorf("%w: %s\n - expected %d got %d", ErrResultNumber, query, len(expectedResults), len(a.Results))
+	}
+	for i, expectedResult := range expectedResults {
+		actualResult := a.Results[i][expectedResult.Key]
+		comparisonErr := compareResults(actualResult, expectedResult.Value, expectedResult.LowerBoundedValue, expectedResult.UpperBoundedValue)
+		if comparisonErr != nil {
+			return fmt.Errorf("%w: %s\n - for key '%s': %s", ErrNotExpectedResult, query, expectedResult.Key, comparisonErr.Error())
+		}
+	}
+	return nil
+}
+
+func compareResults(actualResult any, expectedResult any, expectedLowerResult any, expectedUpperResult any) error {
+	if expectedResult != nil {
+		// We are checking for an exact value
+		expectedResult = preprocessResult(expectedResult)
+		actualResult = preprocessResult(actualResult)
+
+		if expectedResult == actualResult {
+			return nil
+		}
+		return fmt.Errorf("%w - expected: '%s', got '%s'", ErrAssertionFailure, expectedResult, actualResult)
+	}
+
+	// We are checking for a bounded value
+	return compareBounded(actualResult, expectedLowerResult, expectedUpperResult)
+}
+
 func preprocessResult(result any) any {
 	switch typedResult := result.(type) {
 	case int:
@@ -176,79 +208,51 @@ func extractFloat(result any) (float64, error) {
 	return floatResult, nil
 }
 
-func compareResults(actualResult any, expectedResult any, expectedLowerResult any, expectedUpperResult any) error {
-	if expectedResult != nil {
-		// We are checking for an exact value
-		expectedResult = preprocessResult(expectedResult)
-		actualResult = preprocessResult(actualResult)
+func compareBounded(actualResult any, expectedLowerResult any, expectedUpperResult any) error {
+	actualFloat, err := extractFloat(actualResult)
+	if err != nil {
+		return err
+	}
 
-		if expectedResult == actualResult {
-			return nil
-		}
-		return fmt.Errorf("%w - expected: '%s', got '%s'", ErrAssertionFailure, expectedResult, actualResult)
-	} else {
-		// We are checking for a bounded value
-		actualFloat, err := extractFloat(actualResult)
+	var lowerBoundFloat float64
+	var upperBoundFloat float64
+
+	if expectedLowerResult != nil {
+		lowerBoundTemp, err := extractFloat(expectedLowerResult)
 		if err != nil {
 			return err
 		}
-
-		var lowerBoundFloat float64
-		var upperBoundFloat float64
-
-		if expectedLowerResult != nil {
-			lowerBoundTemp, err := extractFloat(expectedLowerResult)
-			if err != nil {
-				return err
-			}
-			lowerBoundFloat = lowerBoundTemp
-		}
-
-		if expectedUpperResult != nil {
-			upperBoundTemp, err := extractFloat(expectedUpperResult)
-			if err != nil {
-				return err
-			}
-			upperBoundFloat = upperBoundTemp
-		}
-
-		if expectedLowerResult != nil && expectedUpperResult != nil {
-			// Bounded on both sides
-			if actualFloat >= lowerBoundFloat && actualFloat <= upperBoundFloat {
-				return nil
-			}
-			return fmt.Errorf("%w - expected value in range: [%f,%f], got '%f'", ErrAssertionFailure, lowerBoundFloat, upperBoundFloat, actualFloat)
-		} else if expectedLowerResult != nil && expectedUpperResult == nil {
-			// Lower bound only
-			if actualFloat >= lowerBoundFloat {
-				return nil
-			}
-			return fmt.Errorf("%w - expected value in range: [%f,INF], got '%f'", ErrAssertionFailure, lowerBoundFloat, actualFloat)
-		} else if expectedLowerResult == nil && expectedUpperResult != nil {
-			// Upper bound only
-			if actualFloat <= upperBoundFloat {
-				return nil
-			}
-			return fmt.Errorf("%w - expected value in range: [-INF,%f], got '%f'", ErrAssertionFailure, upperBoundFloat, actualFloat)
-		}
-		return ErrMissingBounds
+		lowerBoundFloat = lowerBoundTemp
 	}
-}
 
-func nrqlQueryExpectedValueTest(nrc *nrClient, query string, expectedResults []spec.TestNRQLExpectedResult) error {
-	a, _ := nrc.client.Query(nrc.accountID, query)
-
-	if len(expectedResults) != len(a.Results) {
-		return fmt.Errorf("%w: %s\n - expected %d got %d", ErrResultNumber, query, len(expectedResults), len(a.Results))
-	}
-	for i, expectedResult := range expectedResults {
-		actualResult := a.Results[i][expectedResult.Key]
-		comparisonErr := compareResults(actualResult, expectedResult.Value, expectedResult.LowerBoundedValue, expectedResult.UpperBoundedValue)
-		if comparisonErr != nil {
-			return fmt.Errorf("%w: %s\n - for key '%s': %s", ErrNotExpectedResult, query, expectedResult.Key, comparisonErr.Error())
+	if expectedUpperResult != nil {
+		upperBoundTemp, err := extractFloat(expectedUpperResult)
+		if err != nil {
+			return err
 		}
+		upperBoundFloat = upperBoundTemp
 	}
-	return nil
+
+	if expectedLowerResult != nil && expectedUpperResult != nil {
+		// Bounded on both sides
+		if actualFloat >= lowerBoundFloat && actualFloat <= upperBoundFloat {
+			return nil
+		}
+		return fmt.Errorf("%w - expected value in range: [%f,%f], got '%f'", ErrAssertionFailure, lowerBoundFloat, upperBoundFloat, actualFloat)
+	} else if expectedLowerResult != nil && expectedUpperResult == nil {
+		// Lower bound only
+		if actualFloat >= lowerBoundFloat {
+			return nil
+		}
+		return fmt.Errorf("%w - expected value in range: [%f,INF], got '%f'", ErrAssertionFailure, lowerBoundFloat, actualFloat)
+	} else if expectedLowerResult == nil && expectedUpperResult != nil {
+		// Upper bound only
+		if actualFloat <= upperBoundFloat {
+			return nil
+		}
+		return fmt.Errorf("%w - expected value in range: [-INF,%f], got '%f'", ErrAssertionFailure, upperBoundFloat, actualFloat)
+	}
+	return ErrMissingBounds
 }
 
 func resultMetrics(queryResults []nrdb.NRDBResult) []string {
