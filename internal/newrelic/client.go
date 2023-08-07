@@ -233,26 +233,28 @@ func compareBounded(actualResult any, expectedLowerResult any, expectedUpperResu
 		upperBoundFloat = upperBoundTemp
 	}
 
-	if expectedLowerResult != nil && expectedUpperResult != nil {
+	switch {
+	case expectedLowerResult != nil && expectedUpperResult != nil:
 		// Bounded on both sides
 		if actualFloat >= lowerBoundFloat && actualFloat <= upperBoundFloat {
 			return nil
 		}
 		return fmt.Errorf("%w - expected value in range: [%f,%f], got '%f'", ErrAssertionFailure, lowerBoundFloat, upperBoundFloat, actualFloat)
-	} else if expectedLowerResult != nil && expectedUpperResult == nil {
+	case expectedLowerResult != nil && expectedUpperResult == nil:
 		// Lower bound only
 		if actualFloat >= lowerBoundFloat {
 			return nil
 		}
 		return fmt.Errorf("%w - expected value in range: [%f,INF], got '%f'", ErrAssertionFailure, lowerBoundFloat, actualFloat)
-	} else if expectedLowerResult == nil && expectedUpperResult != nil {
+	case expectedLowerResult == nil && expectedUpperResult != nil:
 		// Upper bound only
 		if actualFloat <= upperBoundFloat {
 			return nil
 		}
 		return fmt.Errorf("%w - expected value in range: [-INF,%f], got '%f'", ErrAssertionFailure, upperBoundFloat, actualFloat)
+	default:
+		return ErrMissingBounds
 	}
-	return ErrMissingBounds
 }
 
 func resultMetrics(queryResults []nrdb.NRDBResult) []string {
