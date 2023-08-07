@@ -7,6 +7,8 @@ import (
 	"log"
 	"strings"
 
+	"github.com/newrelic/newrelic-integration-e2e-action/internal/spec"
+
 	"github.com/newrelic/newrelic-client-go/pkg/common"
 	"github.com/newrelic/newrelic-client-go/pkg/entities"
 	"github.com/newrelic/newrelic-client-go/pkg/nrdb"
@@ -20,11 +22,13 @@ type Client interface {
 }
 
 var (
-	ErrNilEntity    = errors.New("nil entity, impossible to dereference")
-	ErrNilGUID      = errors.New("GUID is nil, impossible to find entity")
-	ErrNoResult     = errors.New("query did not return any result")
-	ErrResultNumber = errors.New("query did not return expected number of results")
-	ErrNotValid     = errors.New("query did not return a valid result")
+	ErrNilEntity         = errors.New("nil entity, impossible to dereference")
+	ErrNilGUID           = errors.New("GUID is nil, impossible to find entity")
+	ErrNoResult          = errors.New("query did not return any result")
+	ErrResultNumber      = errors.New("query did not return expected number of results")
+	ErrNotValid          = errors.New("query did not return a valid result")
+	ErrNotExpectedResult = errors.New("query did not return expected results")
+	ErrExpected          = errors.New("an error was expected")
 )
 
 type nrClient struct {
@@ -103,6 +107,27 @@ func (nrc *nrClient) NRQLQuery(query, customTagKey, entityTag string, errorExpec
 	query = fmt.Sprintf("%s WHERE %s = '%s'", query, customTagKey, entityTag)
 	query = strings.ReplaceAll(query, "${SCENARIO_TAG}", entityTag)
 
+	if expectedResults == nil {
+		// Backwards compatible test
+		err := nrqlQueryDefaultTest(nrc, query)
+		if err != nil && !errorExpected {
+			return fmt.Errorf("querying: %w", err)
+		}
+		if err == nil && errorExpected {
+			return fmt.Errorf("running %q: %w", query, ErrExpected)
+		}
+		return nil
+	}
+
+	// Expected value test
+	testErr := nrqlQueryExpectedValueTest(nrc, query, expectedResults)
+	if testErr != nil {
+		return testErr
+	}
+	return nil
+}
+
+func nrqlQueryDefaultTest(nrc *nrClient, query string) error {
 	a, err := nrc.client.Query(nrc.accountID, query)
 	if err != nil {
 		if errorExpected {
@@ -239,6 +264,21 @@ func compareResults(actualResult any, expectedResult any, expectedLowerResult an
 			return fmt.Errorf("missing bounds")
 		}
 	}
+}
+
+func nrqlQueryExpectedValueTest(nrc *nrClient, query string, expectedResults []spec.TestNRQLExpectedResult) error {
+	a, _ := nrc.client.Query(nrc.accountID, query)
+
+	if len(expectedResults) != len(a.Results) {
+		return fmt.Errorf("%w: %s - expected %d got %d", ErrResultNumber, query, len(expectedResults), len(a.Results))
+	}
+	for i, expectedResult := range expectedResults {
+		stringResult := fmt.Sprintf("%v", a.Results[i][expectedResult.Key])
+		if stringResult != expectedResult.Value {
+			return fmt.Errorf("%w: %s - expected for key '%s': '%s' got '%s'", ErrNotExpectedResult, query, expectedResult.Key, expectedResult.Value, stringResult)
+		}
+	}
+	return nil
 }
 
 func resultMetrics(queryResults []nrdb.NRDBResult) []string {
