@@ -41,8 +41,14 @@ type Tests struct {
 }
 
 type TestNRQL struct {
-	Query         string `yaml:"query"`
-	ErrorExpected bool   `yaml:"error_expected"`
+	Query           string                   `yaml:"query"`
+	ErrorExpected   bool                     `yaml:"error_expected"`
+	ExpectedResults []TestNRQLExpectedResult `yaml:"expected_results"`
+}
+
+type TestNRQLExpectedResult struct {
+	Key   string `yaml:"key"`
+	Value string `yaml:"value"`
 }
 
 type TestEntity struct {

@@ -4,6 +4,7 @@ import (
 	"math/rand"
 	"os"
 	"os/exec"
+	"strings"
 	"time"
 
 	e2e "github.com/newrelic/newrelic-integration-e2e-action/internal"
@@ -71,7 +72,7 @@ func NewRunner(testers []Tester, settings e2e.Settings) *Runner {
 func (r *Runner) Run() error {
 	for _, scenario := range r.spec.Scenarios {
 		scenarioTag := r.generateScenarioTag()
-		r.logger.Debugf("[scenario]: %s, [Tag]: %s", scenario.Description, scenarioTag)
+		r.logger.Debugf("[scenario]: %s, [Tag]: %s", strings.TrimSpace(scenario.Description), scenarioTag)
 
 		if err := r.executeOSCommands(scenario.Before, scenarioTag); err != nil {
 			return err
