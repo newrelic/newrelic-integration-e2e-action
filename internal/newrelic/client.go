@@ -171,7 +171,7 @@ func compareResults(actualResult any, expectedResult any, expectedLowerResult an
 	}
 
 	// We are checking for a bounded value
-	return compareBounded(actualResult, expectedLowerResult, expectedUpperResult)
+	return checkBounds(actualResult, expectedLowerResult, expectedUpperResult)
 }
 
 func preprocessResult(result any) any {
@@ -208,7 +208,7 @@ func extractFloat(result any) (float64, error) {
 	return floatResult, nil
 }
 
-func compareBounded(actualResult any, expectedLowerResult any, expectedUpperResult any) error {
+func checkBounds(actualResult any, expectedLowerResult any, expectedUpperResult any) error {
 	actualFloat, err := extractFloat(actualResult)
 	if err != nil {
 		return err
@@ -233,6 +233,10 @@ func compareBounded(actualResult any, expectedLowerResult any, expectedUpperResu
 		upperBoundFloat = upperBoundTemp
 	}
 
+	return assertInBounds(expectedLowerResult, expectedUpperResult, actualFloat, lowerBoundFloat, upperBoundFloat)
+}
+
+func assertInBounds(expectedLowerResult any, expectedUpperResult any, actualFloat float64, lowerBoundFloat float64, upperBoundFloat float64) error {
 	switch {
 	case expectedLowerResult != nil && expectedUpperResult != nil:
 		// Bounded on both sides
