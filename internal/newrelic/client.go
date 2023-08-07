@@ -27,6 +27,9 @@ var (
 	ErrNotValid          = errors.New("query did not return a valid result")
 	ErrNotExpectedResult = errors.New("query did not return expected results")
 	ErrExpected          = errors.New("an error was expected")
+	ErrTypeAssertion     = errors.New("could not assert type from any")
+	ErrAssertionFailure  = errors.New("assertion failure")
+	ErrMissingBounds     = errors.New("missing comparison bounds")
 )
 
 type nrClient struct {
@@ -140,19 +143,13 @@ func nrqlQueryDefaultTest(nrc *nrClient, query string) error {
 }
 
 func preprocessResult(result any) any {
-	switch result.(type) {
+	switch typedResult := result.(type) {
 	case int:
-		intResult, ok := result.(int)
-		if !ok {
-			return fmt.Errorf("int is not an int")
-		}
+		intResult := typedResult
 		// Convert int into floats
 		return float64(intResult)
 	case string:
-		stringResult, ok := result.(string)
-		if !ok {
-			return fmt.Errorf("string is not an string")
-		}
+		stringResult := typedResult
 		// Convert string nil into nil
 		if strings.EqualFold(stringResult, "nil") {
 			return nil
@@ -174,7 +171,7 @@ func extractFloat(result any) (float64, error) {
 	result = preprocessResult(result)
 	floatResult, ok := result.(float64)
 	if !ok {
-		return 0, fmt.Errorf("result is not an float")
+		return 0, fmt.Errorf("%w: float", ErrTypeAssertion)
 	}
 	return floatResult, nil
 }
@@ -187,9 +184,8 @@ func compareResults(actualResult any, expectedResult any, expectedLowerResult an
 
 		if expectedResult == actualResult {
 			return nil
-		} else {
-			return fmt.Errorf("expected: '%s', got '%s'", expectedResult, actualResult)
 		}
+		return fmt.Errorf("%w - expected: '%s', got '%s'", ErrAssertionFailure, expectedResult, actualResult)
 	} else {
 		// We are checking for a bounded value
 		actualFloat, err := extractFloat(actualResult)
@@ -220,26 +216,22 @@ func compareResults(actualResult any, expectedResult any, expectedLowerResult an
 			// Bounded on both sides
 			if actualFloat >= lowerBoundFloat && actualFloat <= upperBoundFloat {
 				return nil
-			} else {
-				return fmt.Errorf("expected value in range: [%f,%f], got '%f'", lowerBoundFloat, upperBoundFloat, actualFloat)
 			}
+			return fmt.Errorf("%w - expected value in range: [%f,%f], got '%f'", ErrAssertionFailure, lowerBoundFloat, upperBoundFloat, actualFloat)
 		} else if expectedLowerResult != nil && expectedUpperResult == nil {
 			// Lower bound only
 			if actualFloat >= lowerBoundFloat {
 				return nil
-			} else {
-				return fmt.Errorf("expected value in range: [%f,INF], got '%f'", lowerBoundFloat, actualFloat)
 			}
+			return fmt.Errorf("%w - expected value in range: [%f,INF], got '%f'", ErrAssertionFailure, lowerBoundFloat, actualFloat)
 		} else if expectedLowerResult == nil && expectedUpperResult != nil {
 			// Upper bound only
 			if actualFloat <= upperBoundFloat {
 				return nil
-			} else {
-				return fmt.Errorf("expected value in range: [-INF,%f], got '%f'", upperBoundFloat, actualFloat)
 			}
-		} else {
-			return fmt.Errorf("missing bounds")
+			return fmt.Errorf("%w - expected value in range: [-INF,%f], got '%f'", ErrAssertionFailure, upperBoundFloat, actualFloat)
 		}
+		return ErrMissingBounds
 	}
 }
 
@@ -253,7 +245,7 @@ func nrqlQueryExpectedValueTest(nrc *nrClient, query string, expectedResults []s
 		actualResult := a.Results[i][expectedResult.Key]
 		comparisonErr := compareResults(actualResult, expectedResult.Value, expectedResult.LowerBoundedValue, expectedResult.UpperBoundedValue)
 		if comparisonErr != nil {
-			return fmt.Errorf("%w: %s\n - expected for key '%s': %w", ErrNotExpectedResult, query, expectedResult.Key, comparisonErr)
+			return fmt.Errorf("%w: %s\n - for key '%s': %s", ErrNotExpectedResult, query, expectedResult.Key, comparisonErr.Error())
 		}
 	}
 	return nil
