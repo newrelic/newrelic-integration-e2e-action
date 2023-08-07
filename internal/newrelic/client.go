@@ -7,8 +7,6 @@ import (
 	"log"
 	"strings"
 
-	"github.com/newrelic/newrelic-integration-e2e-action/internal/spec"
-
 	"github.com/newrelic/newrelic-client-go/pkg/common"
 	"github.com/newrelic/newrelic-client-go/pkg/entities"
 	"github.com/newrelic/newrelic-client-go/pkg/nrdb"
@@ -130,36 +128,15 @@ func (nrc *nrClient) NRQLQuery(query, customTagKey, entityTag string, errorExpec
 func nrqlQueryDefaultTest(nrc *nrClient, query string) error {
 	a, err := nrc.client.Query(nrc.accountID, query)
 	if err != nil {
-		if errorExpected {
-			return nil
-		}
 		return fmt.Errorf("executing nrql query %s, %w", query, err)
 	}
 	if len(a.Results) == 0 {
-		if errorExpected {
-			return nil
-		}
 		return fmt.Errorf("%w: %s", ErrNoResult, query)
 	}
-
-	if expectedResults == nil {
-		if !validValue(a.Results) {
-			return fmt.Errorf("%w: %s", ErrNotValid, query)
-		}
-		return nil
-	} else {
-		if len(expectedResults) != len(a.Results) {
-			return fmt.Errorf("%w: %s\n - expected %d got %d", errors.New("query did not return expected number of results"), query, len(expectedResults), len(a.Results))
-		}
-		for i, expectedResult := range expectedResults {
-			actualResult := a.Results[i][expectedResult.Key]
-			comparisonErr := compareResults(actualResult, expectedResult.Value, expectedResult.LowerBoundedValue, expectedResult.UpperBoundedValue)
-			if comparisonErr != nil {
-				return fmt.Errorf("%w: %s\n - Expected for key '%s': %w", errors.New("query did not return expected results"), query, expectedResult.Key, comparisonErr)
-			}
-		}
-		return nil
+	if !validValue(a.Results) {
+		return fmt.Errorf("%w: %s", ErrNotValid, query)
 	}
+	return nil
 }
 
 func preprocessResult(result any) any {
@@ -270,12 +247,13 @@ func nrqlQueryExpectedValueTest(nrc *nrClient, query string, expectedResults []s
 	a, _ := nrc.client.Query(nrc.accountID, query)
 
 	if len(expectedResults) != len(a.Results) {
-		return fmt.Errorf("%w: %s - expected %d got %d", ErrResultNumber, query, len(expectedResults), len(a.Results))
+		return fmt.Errorf("%w: %s\n - expected %d got %d", ErrResultNumber, query, len(expectedResults), len(a.Results))
 	}
 	for i, expectedResult := range expectedResults {
-		stringResult := fmt.Sprintf("%v", a.Results[i][expectedResult.Key])
-		if stringResult != expectedResult.Value {
-			return fmt.Errorf("%w: %s - expected for key '%s': '%s' got '%s'", ErrNotExpectedResult, query, expectedResult.Key, expectedResult.Value, stringResult)
+		actualResult := a.Results[i][expectedResult.Key]
+		comparisonErr := compareResults(actualResult, expectedResult.Value, expectedResult.LowerBoundedValue, expectedResult.UpperBoundedValue)
+		if comparisonErr != nil {
+			return fmt.Errorf("%w: %s\n - expected for key '%s': %w", ErrNotExpectedResult, query, expectedResult.Key, comparisonErr)
 		}
 	}
 	return nil
