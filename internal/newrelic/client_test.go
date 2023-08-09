@@ -251,7 +251,12 @@ func Test_checkBounds(t *testing.T) {
 		},
 		{
 			name:    "when the actual result is nil an error should be thrown",
-			args:    args{actualResult: nil, expectedLowerResult: nil, expectedUpperResult: nil},
+			args:    args{actualResult: nil, expectedLowerResult: &lowerResult, expectedUpperResult: &upperResult},
+			wantErr: true,
+		},
+		{
+			name:    "when bounds are missing an error should be thrown",
+			args:    args{actualResult: 99.0, expectedLowerResult: nil, expectedUpperResult: nil},
 			wantErr: true,
 		},
 	}
