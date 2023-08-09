@@ -47,10 +47,10 @@ type TestNRQL struct {
 }
 
 type TestNRQLExpectedResult struct {
-	Key               string      `yaml:"key"`
-	Value             interface{} `yaml:"value"`
-	LowerBoundedValue interface{} `yaml:"lowerBoundedValue"`
-	UpperBoundedValue interface{} `yaml:"upperBoundedValue"`
+	Key               string   `yaml:"key"`
+	Value             any      `yaml:"value"`
+	LowerBoundedValue *float64 `yaml:"lowerBoundedValue"`
+	UpperBoundedValue *float64 `yaml:"upperBoundedValue"`
 }
 
 type TestEntity struct {

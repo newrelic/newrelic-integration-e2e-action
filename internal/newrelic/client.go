@@ -150,7 +150,7 @@ func nrqlQueryExpectedValueTest(nrc *nrClient, query string, expectedResults []s
 	}
 	for i, expectedResult := range expectedResults {
 		actualResult := a.Results[i][expectedResult.Key]
-		comparisonErr := compareResults(actualResult, expectedResult.Value, expectedResult.LowerBoundedValue, expectedResult.UpperBoundedValue)
+		comparisonErr := compareResults(actualResult, expectedResult)
 		if comparisonErr != nil {
 			return fmt.Errorf("%w: %s\n - for key '%s': %s", ErrNotExpectedResult, query, expectedResult.Key, comparisonErr.Error())
 		}
@@ -158,20 +158,21 @@ func nrqlQueryExpectedValueTest(nrc *nrClient, query string, expectedResults []s
 	return nil
 }
 
-func compareResults(actualResult any, expectedResult any, expectedLowerResult any, expectedUpperResult any) error {
-	if expectedResult != nil {
+func compareResults(actualResult any, expectedResult spec.TestNRQLExpectedResult) error {
+	expectedExactResult := expectedResult.Value
+	if expectedExactResult != nil {
 		// We are checking for an exact value
-		expectedResult = preprocessResult(expectedResult)
+		expectedExactResult = preprocessResult(expectedExactResult)
 		actualResult = preprocessResult(actualResult)
 
-		if expectedResult == actualResult {
+		if expectedExactResult == actualResult {
 			return nil
 		}
-		return fmt.Errorf("%w - expected: '%s', got '%s'", ErrAssertionFailure, expectedResult, actualResult)
+		return fmt.Errorf("%w - expected: '%s', got '%s'", ErrAssertionFailure, expectedExactResult, actualResult)
 	}
 
 	// We are checking for a bounded value
-	return checkBounds(actualResult, expectedLowerResult, expectedUpperResult)
+	return checkBounds(actualResult, expectedResult.LowerBoundedValue, expectedResult.UpperBoundedValue)
 }
 
 func preprocessResult(result any) any {
@@ -208,7 +209,7 @@ func extractFloat(result any) (float64, error) {
 	return floatResult, nil
 }
 
-func checkBounds(actualResult any, expectedLowerResult any, expectedUpperResult any) error {
+func checkBounds(actualResult any, expectedLowerResult *float64, expectedUpperResult *float64) error {
 	actualFloat, err := extractFloat(actualResult)
 	if err != nil {
 		return err
@@ -218,19 +219,11 @@ func checkBounds(actualResult any, expectedLowerResult any, expectedUpperResult 
 	var upperBoundFloat float64
 
 	if expectedLowerResult != nil {
-		lowerBoundTemp, err := extractFloat(expectedLowerResult)
-		if err != nil {
-			return err
-		}
-		lowerBoundFloat = lowerBoundTemp
+		lowerBoundFloat = *expectedLowerResult
 	}
 
 	if expectedUpperResult != nil {
-		upperBoundTemp, err := extractFloat(expectedUpperResult)
-		if err != nil {
-			return err
-		}
-		upperBoundFloat = upperBoundTemp
+		upperBoundFloat = *expectedUpperResult
 	}
 
 	return assertInBounds(expectedLowerResult, expectedUpperResult, actualFloat, lowerBoundFloat, upperBoundFloat)
