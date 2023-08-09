@@ -80,14 +80,12 @@ func Test_validateNRQLTestConfig(t *testing.T) {
 			args: args{nrqlTest: spec.TestNRQL{
 				Query:         "FROM Metric SELECT sum(k8s.container.restartCountDelta)",
 				ErrorExpected: true,
-				ExpectedResults: []spec.TestNRQLExpectedResult{
-					{
-						Key:               "restartCountDelta",
-						Value:             123,
-						LowerBoundedValue: nil,
-						UpperBoundedValue: nil,
-					},
-				},
+				ExpectedResults: []spec.TestNRQLExpectedResult{{
+					Key:               "restartCountDelta",
+					Value:             123,
+					LowerBoundedValue: nil,
+					UpperBoundedValue: nil,
+				}},
 			}},
 			wantErr: true,
 		},
@@ -96,14 +94,12 @@ func Test_validateNRQLTestConfig(t *testing.T) {
 			args: args{nrqlTest: spec.TestNRQL{
 				Query:         "FROM Metric SELECT sum(k8s.container.restartCountDelta)",
 				ErrorExpected: true,
-				ExpectedResults: []spec.TestNRQLExpectedResult{
-					{
-						Key:               "restartCountDelta",
-						Value:             123,
-						LowerBoundedValue: &lowerResult,
-						UpperBoundedValue: &upperResult,
-					},
-				},
+				ExpectedResults: []spec.TestNRQLExpectedResult{{
+					Key:               "restartCountDelta",
+					Value:             123,
+					LowerBoundedValue: &lowerResult,
+					UpperBoundedValue: &upperResult,
+				}},
 			}},
 			wantErr: true,
 		},
@@ -112,14 +108,12 @@ func Test_validateNRQLTestConfig(t *testing.T) {
 			args: args{nrqlTest: spec.TestNRQL{
 				Query:         "FROM Metric SELECT sum(k8s.container.restartCountDelta)",
 				ErrorExpected: true,
-				ExpectedResults: []spec.TestNRQLExpectedResult{
-					{
-						Key:               "restartCountDelta",
-						Value:             nil,
-						LowerBoundedValue: nil,
-						UpperBoundedValue: nil,
-					},
-				},
+				ExpectedResults: []spec.TestNRQLExpectedResult{{
+					Key:               "restartCountDelta",
+					Value:             nil,
+					LowerBoundedValue: nil,
+					UpperBoundedValue: nil,
+				}},
 			}},
 			wantErr: true,
 		},
@@ -129,30 +123,10 @@ func Test_validateNRQLTestConfig(t *testing.T) {
 				Query:         "FROM Metric SELECT sum(k8s.container.restartCountDelta)",
 				ErrorExpected: true,
 				ExpectedResults: []spec.TestNRQLExpectedResult{
-					{
-						Key:               "restartCountDelta",
-						Value:             123,
-						LowerBoundedValue: nil,
-						UpperBoundedValue: nil,
-					},
-					{
-						Key:               "restartCountDelta",
-						Value:             nil,
-						LowerBoundedValue: &lowerResult,
-						UpperBoundedValue: nil,
-					},
-					{
-						Key:               "restartCountDelta",
-						Value:             nil,
-						LowerBoundedValue: nil,
-						UpperBoundedValue: &upperResult,
-					},
-					{
-						Key:               "restartCountDelta",
-						Value:             nil,
-						LowerBoundedValue: &lowerResult,
-						UpperBoundedValue: &upperResult,
-					},
+					{Key: "restartCountDelta", Value: 123, LowerBoundedValue: nil, UpperBoundedValue: nil},
+					{Key: "restartCountDelta", Value: nil, LowerBoundedValue: &lowerResult, UpperBoundedValue: nil},
+					{Key: "restartCountDelta", Value: nil, LowerBoundedValue: nil, UpperBoundedValue: &upperResult},
+					{Key: "restartCountDelta", Value: nil, LowerBoundedValue: &lowerResult, UpperBoundedValue: &upperResult},
 				},
 			}},
 			wantErr: true,
