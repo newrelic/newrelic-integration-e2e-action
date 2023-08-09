@@ -5,7 +5,7 @@ custom_test_key: k8s.clusterName
 
 scenarios:
   - description: |
-      This scenario will verify that metrics from a k8s Cluster are correcly collected.
+      This scenario will verify that metrics from a k8s Cluster are correctly collected.
     before:
       - helm upgrade --install ${SCENARIO_TAG} newrelic/nri-bundle --set global.licenseKey=${LICENSE_KEY} --set global.cluster=${SCENARIO_TAG} --set ksm.enabled=true --set webhook.enabled=false
     after:
@@ -21,7 +21,7 @@ scenarios:
             - key: "Pods Total"
               lowerBoundedValue: 0
               upperBoundedValue: 2
-        - query: "FROM Metric SELECT latest(k8s.deployment.podsTotal) as 'Pods Total' WHERE k8s.namespaceName = 'nr-${SCENARIO_TAG}'"
+        - query: "FROM Metric SELECT latest(k8s.deployment.podsTotal) as 'Pods Total' WHERE k8s.clusterName = '${SCENARIO_TAG}'"
           expected_results:
             - key: "Pods Total"
               value: 1
