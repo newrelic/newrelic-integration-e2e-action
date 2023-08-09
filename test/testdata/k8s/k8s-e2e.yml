@@ -21,6 +21,10 @@ scenarios:
             - key: "Pods Total"
               lowerBoundedValue: 0
               upperBoundedValue: 2
+        - query: "FROM Metric SELECT latest(k8s.deployment.podsTotal) as 'Pods Total' WHERE k8s.namespaceName = 'nr-${SCENARIO_TAG}'"
+          expected_results:
+            - key: "Pods Total"
+              value: 1
       entities:
         - type: "KUBERNETES_DEPLOYMENT"
           data_type: "Metric"

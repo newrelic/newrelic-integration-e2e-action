@@ -209,28 +209,13 @@ func extractFloat(result any) (float64, error) {
 	return floatResult, nil
 }
 
+//nolint:gocyclo // This function is self-explanatory and simplifying it would be more convoluted
 func checkBounds(actualResult any, expectedLowerResult *float64, expectedUpperResult *float64) error {
 	actualFloat, err := extractFloat(actualResult)
 	if err != nil {
 		return err
 	}
 
-	//var lowerBoundFloat float64
-	//var upperBoundFloat float64
-	//
-	//if expectedLowerResult != nil {
-	//	lowerBoundFloat = *expectedLowerResult
-	//}
-	//
-	//if expectedUpperResult != nil {
-	//	upperBoundFloat = *expectedUpperResult
-	//}
-
-	return assertInBounds(expectedLowerResult, expectedUpperResult, actualFloat)
-}
-
-//nolint:gocyclo // This function is self-explanatory and simplifying it would be more convoluted
-func assertInBounds(expectedLowerResult *float64, expectedUpperResult *float64, actualFloat float64) error {
 	switch {
 	case expectedLowerResult != nil && expectedUpperResult != nil:
 		// Bounded on both sides

@@ -249,6 +249,11 @@ func Test_checkBounds(t *testing.T) {
 			args:    args{actualResult: 10.0, expectedLowerResult: &lowerResult, expectedUpperResult: &upperResult},
 			wantErr: false,
 		},
+		{
+			name:    "when the actual result is nil an error should be thrown",
+			args:    args{actualResult: nil, expectedLowerResult: nil, expectedUpperResult: nil},
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
