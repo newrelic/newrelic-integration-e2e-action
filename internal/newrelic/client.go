@@ -215,41 +215,41 @@ func checkBounds(actualResult any, expectedLowerResult *float64, expectedUpperRe
 		return err
 	}
 
-	var lowerBoundFloat float64
-	var upperBoundFloat float64
+	//var lowerBoundFloat float64
+	//var upperBoundFloat float64
+	//
+	//if expectedLowerResult != nil {
+	//	lowerBoundFloat = *expectedLowerResult
+	//}
+	//
+	//if expectedUpperResult != nil {
+	//	upperBoundFloat = *expectedUpperResult
+	//}
 
-	if expectedLowerResult != nil {
-		lowerBoundFloat = *expectedLowerResult
-	}
-
-	if expectedUpperResult != nil {
-		upperBoundFloat = *expectedUpperResult
-	}
-
-	return assertInBounds(expectedLowerResult, expectedUpperResult, actualFloat, lowerBoundFloat, upperBoundFloat)
+	return assertInBounds(expectedLowerResult, expectedUpperResult, actualFloat)
 }
 
 //nolint:gocyclo // This function is self-explanatory and simplifying it would be more convoluted
-func assertInBounds(expectedLowerResult any, expectedUpperResult any, actualFloat float64, lowerBoundFloat float64, upperBoundFloat float64) error {
+func assertInBounds(expectedLowerResult *float64, expectedUpperResult *float64, actualFloat float64) error {
 	switch {
 	case expectedLowerResult != nil && expectedUpperResult != nil:
 		// Bounded on both sides
-		if actualFloat >= lowerBoundFloat && actualFloat <= upperBoundFloat {
+		if actualFloat >= *expectedLowerResult && actualFloat <= *expectedUpperResult {
 			return nil
 		}
-		return fmt.Errorf("%w - expected value in range: [%f,%f], got '%f'", ErrAssertionFailure, lowerBoundFloat, upperBoundFloat, actualFloat)
+		return fmt.Errorf("%w - expected value in range: [%f,%f], got '%f'", ErrAssertionFailure, *expectedLowerResult, *expectedUpperResult, actualFloat)
 	case expectedLowerResult != nil && expectedUpperResult == nil:
 		// Lower bound only
-		if actualFloat >= lowerBoundFloat {
+		if actualFloat >= *expectedLowerResult {
 			return nil
 		}
-		return fmt.Errorf("%w - expected value in range: [%f,INF], got '%f'", ErrAssertionFailure, lowerBoundFloat, actualFloat)
+		return fmt.Errorf("%w - expected value in range: [%f,INF], got '%f'", ErrAssertionFailure, *expectedLowerResult, actualFloat)
 	case expectedLowerResult == nil && expectedUpperResult != nil:
 		// Upper bound only
-		if actualFloat <= upperBoundFloat {
+		if actualFloat <= *expectedUpperResult {
 			return nil
 		}
-		return fmt.Errorf("%w - expected value in range: [-INF,%f], got '%f'", ErrAssertionFailure, upperBoundFloat, actualFloat)
+		return fmt.Errorf("%w - expected value in range: [-INF,%f], got '%f'", ErrAssertionFailure, *expectedUpperResult, actualFloat)
 	default:
 		return ErrMissingBounds
 	}
