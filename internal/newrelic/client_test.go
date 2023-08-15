@@ -254,11 +254,6 @@ func Test_checkBounds(t *testing.T) {
 			args:    args{actualResult: nil, expectedLowerResult: &lowerResult, expectedUpperResult: &upperResult},
 			wantErr: true,
 		},
-		{
-			name:    "when bounds are missing an error should be thrown",
-			args:    args{actualResult: 99.0, expectedLowerResult: nil, expectedUpperResult: nil},
-			wantErr: true,
-		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

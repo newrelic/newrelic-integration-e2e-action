@@ -219,7 +219,7 @@ func checkBounds(actualResult any, expectedLowerResult *float64, expectedUpperRe
 		return nil
 	}
 	rangeAsString := formatRange(expectedLowerResult, expectedUpperResult)
-	return fmt.Errorf("%w - expected value in range %s", ErrAssertionFailure, rangeAsString)
+	return fmt.Errorf("%w - expected value in range %s, got %f", ErrAssertionFailure, rangeAsString, actualFloat)
 }
 
 // Returns "[-Inf, x]" "[x, Inf]" or "[x, y]" depending of bounds
