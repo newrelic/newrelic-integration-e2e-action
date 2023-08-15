@@ -1,6 +1,14 @@
 package spec
 
-import yaml "gopkg.in/yaml.v3"
+import (
+	"errors"
+	"fmt"
+	yaml "gopkg.in/yaml.v3"
+)
+
+var (
+	ErrInvalidConfig = errors.New("invalid NRQL test config")
+)
 
 const defaultCustomTagKey = "testKey"
 
@@ -87,9 +95,54 @@ func ParseDefinitionFile(content []byte) (*Definition, error) {
 		return nil, err
 	}
 
+	for _, scenario := range specDefinition.Scenarios {
+		for _, nrql := range scenario.Tests.NRQLs {
+			err := validateNRQLTestConfig(nrql)
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+
 	if specDefinition.CustomTestKey == "" {
 		specDefinition.CustomTestKey = defaultCustomTagKey
 	}
 
 	return specDefinition, nil
+}
+
+func validateNRQLTestConfig(nrqlTest TestNRQL) error {
+	if nrqlTest.Query == "" {
+		return fmt.Errorf("%w: missing query param", ErrInvalidConfig)
+	}
+
+	if nrqlTest.ExpectedResults != nil {
+		// Check expected value config
+		if nrqlTest.ErrorExpected {
+			return fmt.Errorf("%w: expected_results cannot be used with error_expected", ErrInvalidConfig)
+		}
+
+		for i, expectedResult := range nrqlTest.ExpectedResults {
+			err := validateExpectedResult(expectedResult, i)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+func validateExpectedResult(expectedResult TestNRQLExpectedResult, i int) error {
+	if expectedResult.Value != nil {
+		// Ensure bounds are nil
+		if expectedResult.LowerBoundedValue != nil || expectedResult.UpperBoundedValue != nil {
+			return fmt.Errorf("%w: expected_results[%d].value cannot be used with bounded expected values", ErrInvalidConfig, i)
+		}
+	} else {
+		if expectedResult.LowerBoundedValue == nil && expectedResult.UpperBoundedValue == nil {
+			return fmt.Errorf("%w: at least 1 expected value bound is required when not using expected_results[%d].value", ErrInvalidConfig, i)
+		}
+	}
+	return nil
 }
