@@ -29,7 +29,6 @@ var (
 	ErrExpected          = errors.New("an error was expected")
 	ErrTypeAssertion     = errors.New("could not assert type from any")
 	ErrAssertionFailure  = errors.New("assertion failure")
-	ErrMissingBounds     = errors.New("missing comparison bounds")
 )
 
 type nrClient struct {
@@ -209,35 +208,28 @@ func extractFloat(result any) (float64, error) {
 	return floatResult, nil
 }
 
-//nolint:gocyclo // This function is self-explanatory and simplifying it would be more convoluted
 func checkBounds(actualResult any, expectedLowerResult *float64, expectedUpperResult *float64) error {
 	actualFloat, err := extractFloat(actualResult)
 	if err != nil {
 		return err
 	}
 
-	switch {
-	case expectedLowerResult != nil && expectedUpperResult != nil:
-		// Bounded on both sides
-		if actualFloat >= *expectedLowerResult && actualFloat <= *expectedUpperResult {
-			return nil
-		}
-		return fmt.Errorf("%w - expected value in range: [%f,%f], got '%f'", ErrAssertionFailure, *expectedLowerResult, *expectedUpperResult, actualFloat)
-	case expectedLowerResult != nil && expectedUpperResult == nil:
-		// Lower bound only
-		if actualFloat >= *expectedLowerResult {
-			return nil
-		}
-		return fmt.Errorf("%w - expected value in range: [%f,INF], got '%f'", ErrAssertionFailure, *expectedLowerResult, actualFloat)
-	case expectedLowerResult == nil && expectedUpperResult != nil:
-		// Upper bound only
-		if actualFloat <= *expectedUpperResult {
-			return nil
-		}
-		return fmt.Errorf("%w - expected value in range: [-INF,%f], got '%f'", ErrAssertionFailure, *expectedUpperResult, actualFloat)
-	default:
-		return ErrMissingBounds
+	// if either expectedLowerResult is nil or expectedLowerResult <= result, AND either expectedUpperResult is nil or result <= expectedUpperResult, return nil, ELSE, error
+	if (expectedLowerResult == nil || *expectedLowerResult <= actualFloat) && (expectedUpperResult == nil || actualFloat <= *expectedUpperResult) {
+		return nil
 	}
+	rangeAsString := formatRange(expectedLowerResult, expectedUpperResult)
+	return fmt.Errorf("%w - expected value in range %s", ErrAssertionFailure, rangeAsString)
+}
+
+// Returns "[-Inf, x]" "[x, Inf]" or "[x, y]" depending of bounds
+func formatRange(lowerBound *float64, upperBound *float64) string {
+	if lowerBound == nil {
+		return fmt.Sprintf("[-INF,%f]", *upperBound)
+	} else if upperBound == nil {
+		return fmt.Sprintf("[%f,INF]", *lowerBound)
+	}
+	return fmt.Sprintf("[%f,%f]", *lowerBound, *upperBound)
 }
 
 func resultMetrics(queryResults []nrdb.NRDBResult) []string {
