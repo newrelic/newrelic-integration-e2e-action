@@ -128,9 +128,9 @@ The spec file for the e2e needs to be a yaml file with the following structure:
     - `error_expected`: false by default, useful if we want to test that a metric is not being sent. This cannot be used in conjunction with `expected_results`.
     - `expected_results` : Array of expected results that will be sequentially asserted against the NRQL response.
       - `key`: The key of the expected result to assert against (i.e. `Pods Available`)
-      - `value`: The value expected for the above key (i.e. `4`)
-      - `lowerBoundedValue`: The lowest value (inclusive) expected for the above key (i.e. `3`). This cannot be used in conjunction with `value`.
-      - `upperBoundedValue`: The highest value (inclusive) expected for the above key (i.e. `5`). This cannot be used in conjunction with `value`.
+      - `value`: The value expected for the above key (i.e. `4`). Except for booleans, where `false == "false"`, and integers, where `4 == 4.0`, this field is type sensitive (`"4" != 4`) 
+      - `lowerBoundedValue`: The lowest value (inclusive) expected for the above key (i.e. `3`). This cannot be used in conjunction with `value`. Except for booleans and integers, this field is type sensitive.
+      - `upperBoundedValue`: The highest value (inclusive) expected for the above key (i.e. `5`). This cannot be used in conjunction with `value`. Except for booleans and integers, this field is type sensitive
   - `metrics` : Array of metrics to check existing in NROne
     - `source` : Relative path to the integration spec file (It defines the entities and metrics) that will be parsed to match the metrics got from NROne.
     - `except_entities` : Array of entities whose metrics will be skipped.

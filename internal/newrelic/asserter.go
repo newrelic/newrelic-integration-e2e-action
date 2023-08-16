@@ -74,6 +74,7 @@ func compareResults(actualResult any, expectedResult spec.TestNRQLExpectedResult
 	return checkBounds(actualFloat, expectedResult.LowerBoundedValue, expectedResult.UpperBoundedValue)
 }
 
+// preprocessResult convert integers into floats, `"nil" into nil`, and string booleans (`"false"`) into typed booleans (`false`)
 func preprocessResult(result any) any {
 	switch typedResult := result.(type) {
 	case int:
