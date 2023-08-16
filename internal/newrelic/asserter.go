@@ -73,7 +73,11 @@ func compareResults(actualResult any, expectedResult spec.TestNRQLExpectedResult
 	}
 
 	// We are checking for a bounded value
-	return checkBounds(actualResult, expectedResult.LowerBoundedValue, expectedResult.UpperBoundedValue)
+	actualFloat, err := extractFloat(actualResult)
+	if err != nil {
+		return err
+	}
+	return checkBounds(actualFloat, expectedResult.LowerBoundedValue, expectedResult.UpperBoundedValue)
 }
 
 func preprocessResult(result any) any {
@@ -110,13 +114,7 @@ func extractFloat(result any) (float64, error) {
 	return floatResult, nil
 }
 
-func checkBounds(actualResult any, expectedLowerResult *float64, expectedUpperResult *float64) error {
-	actualFloat, err := extractFloat(actualResult)
-	if err != nil {
-		return err
-	}
-
-	// if either expectedLowerResult is nil or expectedLowerResult <= result, AND either expectedUpperResult is nil or result <= expectedUpperResult, return nil, ELSE, error
+func checkBounds(actualFloat float64, expectedLowerResult *float64, expectedUpperResult *float64) error {
 	if (expectedLowerResult == nil || *expectedLowerResult <= actualFloat) && (expectedUpperResult == nil || actualFloat <= *expectedUpperResult) {
 		return nil
 	}
@@ -124,7 +122,7 @@ func checkBounds(actualResult any, expectedLowerResult *float64, expectedUpperRe
 	return fmt.Errorf("%w - expected value in range %s, got %f", ErrAssertionFailure, rangeAsString, actualFloat)
 }
 
-// Returns "[-Inf, x]" "[x, Inf]" or "[x, y]" depending of bounds
+// formatRange returns "[-Inf, x]" "[x, Inf]" or "[x, y]" depending of bounds
 func formatRange(lowerBound *float64, upperBound *float64) string {
 	if lowerBound == nil {
 		return fmt.Sprintf("[-INF,%f]", *upperBound)
