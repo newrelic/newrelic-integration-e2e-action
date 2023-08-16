@@ -3,9 +3,10 @@ package newrelic
 import (
 	"errors"
 	"fmt"
+	"strings"
+
 	"github.com/newrelic/newrelic-client-go/pkg/nrdb"
 	"github.com/newrelic/newrelic-integration-e2e-action/internal/spec"
-	"strings"
 )
 
 var (
