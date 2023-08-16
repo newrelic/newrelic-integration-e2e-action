@@ -16,16 +16,12 @@ var (
 	ErrNotExpectedResult = errors.New("query did not return expected results")
 )
 
-func nrqlQueryDefaultTest(nrc *nrClient, query string) error {
-	a, err := nrc.client.Query(nrc.accountID, query)
-	if err != nil {
-		return fmt.Errorf("executing nrql query %s, %w", query, err)
+func nrqlQueryDefaultTest(queryResults []nrdb.NRDBResult) error {
+	if len(queryResults) == 0 {
+		return ErrNoResult
 	}
-	if len(a.Results) == 0 {
-		return fmt.Errorf("%w: %s", ErrNoResult, query)
-	}
-	if !validValue(a.Results) {
-		return fmt.Errorf("%w: %s", ErrNotValid, query)
+	if !validValue(queryResults) {
+		return ErrNotValid
 	}
 	return nil
 }
@@ -43,17 +39,15 @@ func validValue(queryResults []nrdb.NRDBResult) bool {
 	return true
 }
 
-func nrqlQueryExpectedValueTest(nrc *nrClient, query string, expectedResults []spec.TestNRQLExpectedResult) error {
-	a, _ := nrc.client.Query(nrc.accountID, query)
-
-	if len(expectedResults) != len(a.Results) {
-		return fmt.Errorf("%w: %s\n - expected %d got %d", ErrResultNumber, query, len(expectedResults), len(a.Results))
+func nrqlQueryExpectedValueTest(queryResults []nrdb.NRDBResult, expectedResults []spec.TestNRQLExpectedResult) error {
+	if len(expectedResults) != len(queryResults) {
+		return fmt.Errorf("%w: expected %d got %d", ErrResultNumber, len(expectedResults), len(queryResults))
 	}
 	for i, expectedResult := range expectedResults {
-		actualResult := a.Results[i][expectedResult.Key]
+		actualResult := queryResults[i][expectedResult.Key]
 		comparisonErr := compareResults(actualResult, expectedResult)
 		if comparisonErr != nil {
-			return fmt.Errorf("%w: %s\n - for key '%s': %s", ErrNotExpectedResult, query, expectedResult.Key, comparisonErr.Error())
+			return fmt.Errorf("%w: for key '%s': %s", ErrNotExpectedResult, expectedResult.Key, comparisonErr.Error())
 		}
 	}
 	return nil

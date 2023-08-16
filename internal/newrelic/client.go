@@ -104,11 +104,16 @@ func (nrc *nrClient) NRQLQuery(query, customTagKey, entityTag string, errorExpec
 	query = fmt.Sprintf("%s WHERE %s = '%s'", query, customTagKey, entityTag)
 	query = strings.ReplaceAll(query, "${SCENARIO_TAG}", entityTag)
 
+	a, err := nrc.client.Query(nrc.accountID, query)
+	if err != nil {
+		return fmt.Errorf("executing nrql query %s, %w", query, err)
+	}
+
 	if expectedResults == nil {
 		// Backwards compatible test
-		err := nrqlQueryDefaultTest(nrc, query)
+		err := nrqlQueryDefaultTest(a.Results)
 		if err != nil && !errorExpected {
-			return fmt.Errorf("querying: %w", err)
+			return fmt.Errorf("querying: %w: %s", err, query)
 		}
 		if err == nil && errorExpected {
 			return fmt.Errorf("running %q: %w", query, ErrExpected)
@@ -117,9 +122,9 @@ func (nrc *nrClient) NRQLQuery(query, customTagKey, entityTag string, errorExpec
 	}
 
 	// Expected value test
-	testErr := nrqlQueryExpectedValueTest(nrc, query, expectedResults)
+	testErr := nrqlQueryExpectedValueTest(a.Results, expectedResults)
 	if testErr != nil {
-		return testErr
+		return fmt.Errorf("%w: %s", testErr, query)
 	}
 	return nil
 }
