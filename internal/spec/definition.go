@@ -1,6 +1,15 @@
 package spec
 
-import yaml "gopkg.in/yaml.v3"
+import (
+	"errors"
+	"fmt"
+
+	yaml "gopkg.in/yaml.v3"
+)
+
+var (
+	ErrInvalidConfig = errors.New("invalid NRQL test config")
+)
 
 const defaultCustomTagKey = "testKey"
 
@@ -47,8 +56,10 @@ type TestNRQL struct {
 }
 
 type TestNRQLExpectedResult struct {
-	Key   string `yaml:"key"`
-	Value string `yaml:"value"`
+	Key               string   `yaml:"key"`
+	Value             any      `yaml:"value"`
+	LowerBoundedValue *float64 `yaml:"lowerBoundedValue"`
+	UpperBoundedValue *float64 `yaml:"upperBoundedValue"`
 }
 
 type TestEntity struct {
@@ -85,9 +96,54 @@ func ParseDefinitionFile(content []byte) (*Definition, error) {
 		return nil, err
 	}
 
+	for _, scenario := range specDefinition.Scenarios {
+		for _, nrql := range scenario.Tests.NRQLs {
+			err := nrql.validate()
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+
 	if specDefinition.CustomTestKey == "" {
 		specDefinition.CustomTestKey = defaultCustomTagKey
 	}
 
 	return specDefinition, nil
+}
+
+func (nrqlTest TestNRQL) validate() error {
+	if nrqlTest.Query == "" {
+		return fmt.Errorf("%w: missing query param", ErrInvalidConfig)
+	}
+
+	if nrqlTest.ExpectedResults != nil {
+		// Check expected value config
+		if nrqlTest.ErrorExpected {
+			return fmt.Errorf("%w: expected_results cannot be used with error_expected", ErrInvalidConfig)
+		}
+
+		for i, expectedResult := range nrqlTest.ExpectedResults {
+			err := expectedResult.validate()
+			if err != nil {
+				return fmt.Errorf("%w: expected_results[%d]", err, i)
+			}
+		}
+	}
+
+	return nil
+}
+
+func (expectedResult TestNRQLExpectedResult) validate() error {
+	if expectedResult.Value != nil {
+		// Ensure bounds are nil
+		if expectedResult.LowerBoundedValue != nil || expectedResult.UpperBoundedValue != nil {
+			return fmt.Errorf("%w: expected value cannot be used with bounded expected values", ErrInvalidConfig)
+		}
+	} else {
+		if expectedResult.LowerBoundedValue == nil && expectedResult.UpperBoundedValue == nil {
+			return fmt.Errorf("%w: at least 1 expected value bound is required when not using expected value", ErrInvalidConfig)
+		}
+	}
+	return nil
 }
