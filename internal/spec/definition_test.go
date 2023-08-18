@@ -113,7 +113,7 @@ scenarios:
 	assert.Equal(t, expectedScenarios, spec.Scenarios)
 }
 
-func Test_validateNRQLTestConfig(t *testing.T) {
+func TestTestNRQL_validate(t *testing.T) {
 	lowerResult := 5.0
 	upperResult := 15.0
 
@@ -202,7 +202,7 @@ func Test_validateNRQLTestConfig(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := validateNRQLTestConfig(tt.args.nrqlTest); (err != nil) != tt.wantErr {
+			if err := tt.args.nrqlTest.validate(); (err != nil) != tt.wantErr {
 				t.Errorf("validateNRQLTestConfig() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})

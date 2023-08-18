@@ -98,7 +98,7 @@ func ParseDefinitionFile(content []byte) (*Definition, error) {
 
 	for _, scenario := range specDefinition.Scenarios {
 		for _, nrql := range scenario.Tests.NRQLs {
-			err := validateNRQLTestConfig(nrql)
+			err := nrql.validate()
 			if err != nil {
 				return nil, err
 			}
@@ -112,7 +112,7 @@ func ParseDefinitionFile(content []byte) (*Definition, error) {
 	return specDefinition, nil
 }
 
-func validateNRQLTestConfig(nrqlTest TestNRQL) error {
+func (nrqlTest TestNRQL) validate() error {
 	if nrqlTest.Query == "" {
 		return fmt.Errorf("%w: missing query param", ErrInvalidConfig)
 	}
@@ -124,7 +124,7 @@ func validateNRQLTestConfig(nrqlTest TestNRQL) error {
 		}
 
 		for i, expectedResult := range nrqlTest.ExpectedResults {
-			err := validateExpectedResult(expectedResult)
+			err := expectedResult.validate()
 			if err != nil {
 				return fmt.Errorf("%w: expected_results[%d]", err, i)
 			}
@@ -134,7 +134,7 @@ func validateNRQLTestConfig(nrqlTest TestNRQL) error {
 	return nil
 }
 
-func validateExpectedResult(expectedResult TestNRQLExpectedResult) error {
+func (expectedResult TestNRQLExpectedResult) validate() error {
 	if expectedResult.Value != nil {
 		// Ensure bounds are nil
 		if expectedResult.LowerBoundedValue != nil || expectedResult.UpperBoundedValue != nil {
