@@ -124,9 +124,9 @@ func validateNRQLTestConfig(nrqlTest TestNRQL) error {
 		}
 
 		for i, expectedResult := range nrqlTest.ExpectedResults {
-			err := validateExpectedResult(expectedResult, i)
+			err := validateExpectedResult(expectedResult)
 			if err != nil {
-				return err
+				return fmt.Errorf("%w: expected_results[%d]", err, i)
 			}
 		}
 	}
@@ -134,15 +134,15 @@ func validateNRQLTestConfig(nrqlTest TestNRQL) error {
 	return nil
 }
 
-func validateExpectedResult(expectedResult TestNRQLExpectedResult, i int) error {
+func validateExpectedResult(expectedResult TestNRQLExpectedResult) error {
 	if expectedResult.Value != nil {
 		// Ensure bounds are nil
 		if expectedResult.LowerBoundedValue != nil || expectedResult.UpperBoundedValue != nil {
-			return fmt.Errorf("%w: expected_results[%d].value cannot be used with bounded expected values", ErrInvalidConfig, i)
+			return fmt.Errorf("%w: expected value cannot be used with bounded expected values", ErrInvalidConfig)
 		}
 	} else {
 		if expectedResult.LowerBoundedValue == nil && expectedResult.UpperBoundedValue == nil {
-			return fmt.Errorf("%w: at least 1 expected value bound is required when not using expected_results[%d].value", ErrInvalidConfig, i)
+			return fmt.Errorf("%w: at least 1 expected value bound is required when not using expected value", ErrInvalidConfig)
 		}
 	}
 	return nil
