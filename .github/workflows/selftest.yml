@@ -24,9 +24,9 @@ jobs:
         uses: ./
         with:
           spec_path: test/testdata/powerdns/powerdns-e2e.yml
-          account_id: ${{ secrets.ACCOUNT_ID }}
-          api_key: ${{ secrets.API_KEY }}
-          license_key: ${{ secrets.LICENSE_KEY }}
+          account_id: ${{ secrets.COREINT_E2E_ACCOUNT_ID }}
+          api_key: ${{ secrets.COREINT_E2E_API_KEY }}
+          license_key: ${{ secrets.COREINT_E2E_LICENSE_KEY }}
   test_local_kafka:
     runs-on: ubuntu-latest
     name: Test run the e2e test on kafka local testdata
@@ -39,9 +39,9 @@ jobs:
         uses: ./
         with:
           spec_path: test/testdata/kafka/kafka-e2e.yml
-          account_id: ${{ secrets.ACCOUNT_ID }}
-          api_key: ${{ secrets.API_KEY }}
-          license_key: ${{ secrets.LICENSE_KEY }}
+          account_id: ${{ secrets.COREINT_E2E_ACCOUNT_ID }}
+          api_key: ${{ secrets.COREINT_E2E_API_KEY }}
+          license_key: ${{ secrets.COREINT_E2E_LICENSE_KEY }}
   test_local_k8s:
     # To be able to use driver=none we have to provide a CRI that kubelet allows.
     # Or we do the research to use `ubuntu-latest` or we should keep to an old version of Ubuntu and Kubernetes
@@ -70,7 +70,7 @@ jobs:
         uses: ./
         with:
           spec_path: test/testdata/k8s/k8s-e2e.yml
-          account_id: ${{ secrets.ACCOUNT_ID }}
-          api_key: ${{ secrets.API_KEY }}
-          license_key: ${{ secrets.LICENSE_KEY }}
+          account_id: ${{ secrets.COREINT_E2E_ACCOUNT_ID }}
+          api_key: ${{ secrets.COREINT_E2E_API_KEY }}
+          license_key: ${{ secrets.COREINT_E2E_LICENSE_KEY }}
           agent_enabled: "false"
