@@ -11,9 +11,9 @@ scenarios:
       This scenario will verify that metrics from a Kafka Cluster
       are correcly collected.
     before:
-      - docker-compose -f "deps/docker-compose.yml" up -d
+      - docker compose -f "deps/docker-compose.yml" up -d
     after:
-      - docker-compose -f "deps/docker-compose.yml" down -v
+      - docker compose -f "deps/docker-compose.yml" down -v
     integrations:
       - name: nri-kafka
         binary_path: bin/nri-kafka
