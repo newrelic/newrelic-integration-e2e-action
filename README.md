@@ -28,6 +28,7 @@ New Relic has two kinds of integrations:
   - If the test fails, it's retried after the `retry_seconds` (default 30s) and up to the `retry_attempts` (default 10) defined for the action.
   - It stops & removes the services if specified in the after step.
   - If `verbose` is true it logs the agent logs with other debug information.
+
 - The action is completed.
 
 ## Install
@@ -156,9 +157,9 @@ scenarios:
       This scenario will verify that metrics froms PDNS authoritative
       are correcly collected.
     before:
-      - docker-compose -f "deps/docker-compose.yml" up -d
+      - docker compose -f "deps/docker-compose.yml" up -d
     after:
-      - docker-compose -f "deps/docker-compose.yml" down -d
+      - docker compose -f "deps/docker-compose.yml" down -d
     integrations:
       - name: nri-powerdns
         binary_path: bin/nri-powerdns

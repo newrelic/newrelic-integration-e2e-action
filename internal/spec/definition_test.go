@@ -40,9 +40,9 @@ scenarios:
   - description: |
       Scenario Description.
     before:
-      - docker-compose -f deps/docker-compose.yml up -d
+      - docker compose -f deps/docker-compose.yml up -d
     after:
-      - docker-compose -f deps/docker-compose.yml down -v
+      - docker compose -f deps/docker-compose.yml down -v
     integrations:
       - name: nri-powerdns
         binary_path: bin/nri-powerdns
@@ -88,8 +88,8 @@ scenarios:
 					},
 				},
 			},
-			Before: []string{"docker-compose -f deps/docker-compose.yml up -d"},
-			After:  []string{"docker-compose -f deps/docker-compose.yml down -v"},
+			Before: []string{"docker compose -f deps/docker-compose.yml up -d"},
+			After:  []string{"docker compose -f deps/docker-compose.yml down -v"},
 			Tests: Tests{
 				NRQLs: []TestNRQL{{Query: "a-query"}},
 				Entities: []TestEntity{
