@@ -137,11 +137,11 @@ The spec file for the e2e needs to be a yaml file with the following structure:
     - `except_entities` : Array of entities whose metrics will be skipped.
     - `except_metrics` : Array of metrics to skip.
     - `exceptions_source` : Relative (to the spec file) path to a YAML file containing extra exceptions. This metrics are appended to the ones defined in `except_metrics` and `except_entities`.
-  - `entities` : Array of entities to chek existing in NROne.
+  - `entities` : Array of entities to check existing in NROne.
     - `type` : Type of the entity to look for in NROne
     - `data_type` : Name of the table to check for the entity in NROne (If V4 integration, will always be Metric)
     - `metric_name` : Name of the known metric that should be having the entity dimension in NROne.
-
+  - `scripts` : Array of shell commands to execute - will fail the test if a command fails in the scripts
 Example:
 
 ```yaml

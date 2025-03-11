@@ -47,6 +47,7 @@ type Tests struct {
 	NRQLs    []TestNRQL    `yaml:"nrqls"`
 	Entities []TestEntity  `yaml:"entities"`
 	Metrics  []TestMetrics `yaml:"metrics"`
+	Scripts  []string      `yaml:"scripts"`
 }
 
 type TestNRQL struct {
