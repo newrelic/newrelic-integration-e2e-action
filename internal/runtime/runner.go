@@ -88,7 +88,15 @@ func (r *Runner) Run() error {
 			}
 		}
 
-		errAssertions := r.executeTests(scenario.Tests, r.spec.CustomTestKey, scenarioTag)
+		errAssertions := r.executeTests(spec.Tests{
+			NRQLs:    scenario.Tests.NRQLs,
+			Entities: scenario.Tests.Entities,
+			Metrics:  scenario.Tests.Metrics,
+		}, r.spec.CustomTestKey, scenarioTag)
+
+		if err := r.executeOSCommands(scenario.Tests.Scripts, scenarioTag); err != nil {
+			return err
+		}
 
 		if err := r.executeOSCommands(scenario.After, scenarioTag); err != nil {
 			r.logger.Error(err)
