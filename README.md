@@ -189,14 +189,15 @@ scenarios:
           exceptions_source: "powerdns-custom-exceptions.yml"
       scripts:
         - echo 'example'
-        - url="http://example.com/endpoint"
-        - status_code=$(curl -o /dev/null -s -w "%{http_code}\n" "$url")
-        - if [ "$status_code" -eq 200 ]; then
-        -   echo "Endpoint responded with status code 200. Success."
-        - else
-        -   echo "Endpoint responded with status code $status_code. Failing..."
-        -   exit 1
-        - fi
+        - url="http://google.com/healthz" &&
+          status_code=$(curl -o /dev/null -s -w "%{http_code}\n" "$url") &&
+          if [ "$status_code" -eq 200 ]; then
+           echo "Endpoint responded with status code 200. Success.";
+          else
+           echo "Endpoint responded with status code $status_code. Failing...";
+           exit 1;
+          fi &&
+          echo "All tests passed."
 ```
 
 Extra exceptions file `powerdns-custom-exceptions.yml` example:
