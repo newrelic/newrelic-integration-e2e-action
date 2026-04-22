@@ -49,5 +49,5 @@ runs:
   using: "composite"
   steps:
     - id: run-spec
-      run: make -C ${{ github.action_path }} COMMIT_SHA=${{ github.sha }} AGENT_ENABLED=${{ inputs.agent_enabled }} ROOT_DIR=${{ github.workspace }} ACCOUNT_ID=${{ inputs.account_id }} API_KEY=${{ inputs.api_key }} LICENSE_KEY=${{ inputs.license_key }} SPEC_PATH=${{ inputs.spec_path }} RETRY_ATTEMPTS=${{ inputs.retry_attempts }} RETRY_SECONDS=${{ inputs.retry_seconds }} VERBOSE=${{ inputs.verbose }} REGION=${{ inputs.region }} SCENARIO_TAG=${{ inputs.scenario_tag }} run
+      run: make -C "${{ github.action_path }}" COMMIT_SHA=${{ github.sha }} AGENT_ENABLED=${{ inputs.agent_enabled }} ROOT_DIR="${{ github.workspace }}" ACCOUNT_ID=${{ inputs.account_id }} API_KEY=${{ inputs.api_key }} LICENSE_KEY=${{ inputs.license_key }} SPEC_PATH=${{ inputs.spec_path }} RETRY_ATTEMPTS=${{ inputs.retry_attempts }} RETRY_SECONDS=${{ inputs.retry_seconds }} VERBOSE=${{ inputs.verbose }} REGION=${{ inputs.region }} SCENARIO_TAG=${{ inputs.scenario_tag }} run
       shell: bash
