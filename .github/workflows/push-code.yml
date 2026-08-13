@@ -14,6 +14,9 @@ jobs:
   static-analysis:
     name: Run all static analysis checks
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
     steps:
       - uses: actions/checkout@v3
       - uses: newrelic/newrelic-infra-checkers@v1
@@ -28,6 +31,8 @@ jobs:
   test-nix:
     name: Run unit tests on *Nix
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v3
       - name: Login to DockerHub
